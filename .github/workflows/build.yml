@@ -5,6 +5,8 @@ name: Build and test
 #    every devil mob uses each of its moves (SmokeTest, gradlew runServer -PcsmSmoke)
 #  * client: the game itself on a virtual display, touring every hybrid, devil and contract (DevShowcase,
 #    gradlew runClient -PcsmShowcase -PcsmShowcaseAll) - this is what catches model/animation/render crashes
+#  * production: the built jar itself (not the dev environment) in a real Forge install from the official installer,
+#    with the release GeckoLib and PlayerAnimator jars - the server smoke test, then the game client's tour
 # Download the built mod from the run's "csm-mod-jar" artifact.
 
 on:
@@ -150,6 +152,8 @@ jobs:
           if ls run/crash-reports/*.txt >/dev/null 2>&1; then echo "::error::the game crashed"; exit 1; fi
           grep -qF "[showcase] DONE" "$LOG" || { echo "::error::the showcase did not finish"; exit 1; }
           if grep -qE "\[showcase\] (FAIL|step at)|broke and was stopped" "$LOG"; then echo "::error::something failed (see above)"; exit 1; fi
+          grep -F "[csm] assets" "$LOG" | cut -c1-3000
+          grep -qF "[csm] assets: everything is there" "$LOG" || { echo "::error::assets missing (see above)"; exit 1; }
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -158,4 +162,147 @@ jobs:
             client-console.log
             run/logs/
             run/crash-reports/
+          retention-days: 7
+
+  production-server:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: actions/download-artifact@v4
+        with:
+          name: csm-mod-jar
+          path: jar
+      - name: Install Forge, GeckoLib and PlayerAnimator
+        run: |
+          ls -l jar
+          mkdir -p prod/mods && cd prod
+          curl -sSfLo installer.jar https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.4.23/forge-1.20.1-47.4.23-installer.jar
+          java -jar installer.jar --installServer > install.log 2>&1 || { tail -60 install.log; exit 1; }
+          curl -sSfLo mods/geckolib-forge-1.20.1-4.8.4.jar https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/software/bernie/geckolib/geckolib-forge-1.20.1/4.8.4/geckolib-forge-1.20.1-4.8.4.jar
+          curl -sSfLo "mods/player-animation-lib-forge-1.0.2-rc1+1.20.jar" "https://maven.kosmx.dev/dev/kosmx/player-anim/player-animation-lib-forge/1.0.2-rc1%2B1.20/player-animation-lib-forge-1.0.2-rc1%2B1.20.jar"
+          cp ../jar/*.jar mods/
+          ls -l mods
+          echo "eula=true" > eula.txt
+          printf '%s\n' 'level-type=minecraft\:flat' 'online-mode=false' 'spawn-monsters=false' 'spawn-animals=false' \
+            'spawn-npcs=false' 'generate-structures=false' 'max-tick-time=-1' 'view-distance=6' 'simulation-distance=6' \
+            > server.properties
+          echo "-Dcsm.smoketest=true" >> user_jvm_args.txt
+      - name: Smoke test with the built jar on a real Forge server
+        run: |
+          cd prod
+          set +e
+          timeout 30m ./run.sh nogui > console.log 2>&1
+          echo "server exit: $?"
+          exit 0
+      - name: Results
+        if: always()
+        run: |
+          cd prod
+          LOG=logs/latest.log
+          [ -f "$LOG" ] || LOG=console.log
+          grep -F "[smoke]" "$LOG" | grep -vF "[smoke] skip" | head -300 || true
+          echo "===== errors and exceptions ====="
+          grep -nE "ERROR|Exception|Caused by|\sat com\.csm|broke and was stopped|Missing|missing" "$LOG" | head -300 || true
+          for f in crash-reports/*.txt; do [ -f "$f" ] && { echo "--- $f"; head -150 "$f"; }; done
+          tail -30 "$LOG"
+          if ls crash-reports/*.txt >/dev/null 2>&1; then echo "::error::the server crashed"; exit 1; fi
+          grep -qF "[smoke] DONE" "$LOG" || { echo "::error::the smoke test did not finish"; exit 1; }
+          grep -F "[smoke] DONE" "$LOG" | grep -q "failures=0" || { echo "::error::moves failed (see above)"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-server-logs
+          path: |
+            prod/console.log
+            prod/logs/
+            prod/crash-reports/
+          retention-days: 7
+
+  production-client:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: csm-mod-jar
+          path: jar
+      - name: Virtual display and software OpenGL
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q xvfb libgl1-mesa-dri libglx-mesa0 mesa-utils
+      - name: Install Minecraft 1.20.1 with Forge (portablemc), GeckoLib and PlayerAnimator
+        run: |
+          pip install -q portablemc
+          MC="$PWD/mc"
+          mkdir -p "$MC/mods" "$MC/config"
+          VERSION=forge:1.20.1-47.4.23
+          portablemc --main-dir "$MC" --work-dir "$MC" start --dry --jvm "$JAVA_HOME/bin/java" "$VERSION" > install.log 2>&1 \
+            || { tail -40 install.log; VERSION=forge:1.20.1; portablemc --main-dir "$MC" --work-dir "$MC" start --dry --jvm "$JAVA_HOME/bin/java" "$VERSION" > install.log 2>&1 || { tail -60 install.log; exit 1; }; }
+          tail -5 install.log
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          curl -sSfLo "$MC/mods/geckolib-forge-1.20.1-4.8.4.jar" https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/software/bernie/geckolib/geckolib-forge-1.20.1/4.8.4/geckolib-forge-1.20.1-4.8.4.jar
+          curl -sSfLo "$MC/mods/player-animation-lib-forge-1.0.2-rc1+1.20.jar" "https://maven.kosmx.dev/dev/kosmx/player-anim/player-animation-lib-forge/1.0.2-rc1%2B1.20/player-animation-lib-forge-1.0.2-rc1%2B1.20.jar"
+          cp jar/*.jar "$MC/mods/"
+          ls -l "$MC/mods"
+          printf '%s\n' 'onboardAccessibility:false' 'pauseOnLostFocus:false' 'renderDistance:6' 'simulationDistance:6' \
+            'narrator:0' 'tutorialStep:none' 'skipMultiplayerWarning:true' 'joinedFirstServer:true' 'maxFps:60' \
+            'soundCategory_master:0.0' > "$MC/options.txt"
+          printf '%s\n' 'earlyWindowControl = false' > "$MC/config/fml.toml"
+      - name: Tour of every hybrid, devil and contract with the built jar
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          MESA_GL_VERSION_OVERRIDE: "4.5"
+          MESA_GLSL_VERSION_OVERRIDE: "450"
+        run: |
+          MC="$PWD/mc"
+          set +e
+          timeout 75m xvfb-run -a -s "-screen 0 1280x720x24" portablemc --main-dir "$MC" --work-dir "$MC" start \
+            --jvm "$JAVA_HOME/bin/java" --jvm-args="-Xmx3G -Dcsm.showcase=true -Dcsm.showcase.all=true" \
+            --resolution 1280x720 -u Dev "$VERSION" > client-console.log 2>&1
+          echo "client exit: $?"
+          exit 0
+      - name: Results
+        if: always()
+        run: |
+          LOG=mc/logs/latest.log
+          [ -f "$LOG" ] || LOG=client-console.log
+          echo "===== launcher ====="
+          head -40 client-console.log
+          echo "===== [csm] assets ====="
+          grep -F "[csm] assets" "$LOG" | cut -c1-3000 || true
+          echo "===== resource loading ====="
+          grep -nE "Caught error loading resourcepacks|Missing textures|Unable to load model|Failed to load texture|Using missing texture|Reload" "$LOG" | head -60 || true
+          echo "===== [showcase] problems ====="
+          grep -E "\[showcase\] (FAIL|step at)|can't be used here|signed by holding" "$LOG" | head -100 || true
+          echo "===== errors and exceptions ====="
+          grep -nE "ERROR|Exception|Caused by|\sat com\.csm|\sat software\.bernie|broke and was stopped|GeckoLib" "$LOG" \
+            | grep -vE "OpenAL|ALC|sound|Sound|realms|Realms|telemetry|YggdrasilAuthentication|authlib|narrator|Narrator|flite" | head -300 || true
+          for f in mc/crash-reports/*.txt; do [ -f "$f" ] && { echo "--- $f"; head -200 "$f"; }; done
+          grep -cF "[showcase] screenshot" "$LOG" || true
+          tail -30 "$LOG"
+          if ls mc/crash-reports/*.txt >/dev/null 2>&1; then echo "::error::the game crashed"; exit 1; fi
+          grep -qF "[csm] assets: everything is there" "$LOG" || { echo "::error::assets missing (see above)"; exit 1; }
+          grep -qF "[showcase] DONE" "$LOG" || { echo "::error::the showcase did not finish"; exit 1; }
+          if grep -qE "\[showcase\] (FAIL|step at)|broke and was stopped" "$LOG"; then echo "::error::something failed (see above)"; exit 1; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-client-logs
+          path: |
+            client-console.log
+            mc/logs/
+            mc/crash-reports/
           retention-days: 7

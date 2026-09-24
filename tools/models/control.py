@@ -24,8 +24,8 @@ import devilkit as dk
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from player_anims import A, NEUTRAL_R, NEUTRAL_L, Z3  # noqa: E402
 
-HAIR = (176, 74, 52)
-HAIR_DK = (132, 48, 36)
+HAIR = (216, 122, 94)  # light red, pale auburn
+HAIR_DK = (178, 88, 66)
 
 
 def materials(size=512):
@@ -37,7 +37,7 @@ def materials(size=512):
     a.add("shirt_dk", kind="skin", color=(214, 212, 210))
     a.add("tie", kind="skin", color=(26, 26, 30))
     a.add("pants", kind="skin", color=(38, 38, 48))
-    a.add("shoe", kind="gloss", color=(22, 22, 24))
+    a.add("shoe", kind="gloss", color=(96, 60, 40))  # brown shoes with the black suit
     a.add("belt", kind="gloss", color=(30, 26, 24))
     a.add("buckle", kind="metal", color=(190, 186, 170), scratches=1)
     a.add("eye", kind="ringeye", color=(236, 196, 60), color2=(196, 42, 34), rings=3)

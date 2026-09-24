@@ -151,22 +151,26 @@ class Bone:
         d = np.asarray(dims, dtype=float) / 2
         return self.box(c - d, c + d, mat, rot=rot, pivot=c, inflate=inflate)
 
-    def obox(self, center, direction, dims, mat, up=(0, 1, 0), roll=0.0, inflate=None, full_uv=False):
+    def obox(self, center, direction, dims, mat, up=(0, 1, 0), roll=0.0, inflate=None, full_uv=False, faces=None):
         """Oriented box: dims = (width, length, height); length runs along `direction`."""
         R = frame_from(direction, up)
         if roll:
             R = R @ _ry(math.radians(roll))
         c = np.asarray(center, dtype=float)
         d = np.asarray(dims, dtype=float) / 2
-        return self.box(c - d, c + d, mat, rot=euler_for(R), pivot=c, inflate=inflate, full_uv=full_uv)
+        return self.box(c - d, c + d, mat, rot=euler_for(R), pivot=c, inflate=inflate, full_uv=full_uv, faces=faces)
 
-    def decal(self, center, normal, width, height, mat, up=(0, 1, 0), thick=0.05):
-        """A thin plate facing `normal` that shows the material's whole texture cell (painted eyes, markings)."""
+    def decal(self, center, normal, width, height, mat, up=(0, 1, 0), thick=0.05, two_sided=False):
+        """A thin plate facing `normal` that shows the material's whole texture cell (painted eyes, markings).
+
+        Only the outward face is drawn: decal cells are transparent round the painting, and a back face would show
+        through those holes mirrored (an eye patch or a scar on one side would appear on both)."""
         n = norm(normal)
         u = np.asarray(up, dtype=float)
         u = norm(u - np.dot(u, n) * n)
-        # obox's length axis runs along `up` (height), its thin axis along the normal
-        return self.obox(center, u, (width, height, thick), mat, up=n, full_uv=True)
+        # obox's length axis runs along `up` (height), its thin axis along the normal (local +z = the "south" face)
+        return self.obox(center, u, (width, height, thick), mat, up=n, full_uv=True,
+                         faces=None if two_sided else ("south",))
 
     def seg(self, a, b, w, h, mat, up=(0, 1, 0), roll=0.0, overlap=0.0):
         """Oriented box spanning point a -> point b."""

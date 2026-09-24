@@ -25,13 +25,14 @@ from player_anims import A, NEUTRAL_R, NEUTRAL_L, Z3  # noqa: E402
 
 
 def draw_scars(d, n):
-    """Yoru's scars: one straight across the bridge of the nose and both cheeks, and one running down each cheek
-    from under the eye. (The decal's image is upside down relative to the face: small y = lower on the face.)"""
+    """Yoru's scars, all on the nose and her LEFT side, crossing like the radical for "halberd" (the "war" kanji): one
+    across the bridge of the nose running onto the left cheek, one down from under the left eye, one on the left
+    cheek. (Decal images are upside down and mirrored on the face: small y = lower, small x = her left.)"""
     col = (150, 66, 66, 255)
     w = max(2, n // 24)
-    d.line([(n * 0.08, n * 0.47), (n * 0.35, n * 0.5), (n * 0.65, n * 0.5), (n * 0.92, n * 0.47)], fill=col, width=w)
-    for x in (0.27, 0.73):
-        d.line([(n * x, n * 0.46), (n * (x + (-0.03 if x < 0.5 else 0.03)), n * 0.2)], fill=col, width=w)
+    d.line([(n * 0.62, n * 0.47), (n * 0.4, n * 0.46), (n * 0.1, n * 0.43)], fill=col, width=w)
+    d.line([(n * 0.34, n * 0.58), (n * 0.25, n * 0.38), (n * 0.16, n * 0.17)], fill=col, width=w)
+    d.line([(n * 0.07, n * 0.33), (n * 0.3, n * 0.24)], fill=col, width=w)
 
 
 def materials(size=512):

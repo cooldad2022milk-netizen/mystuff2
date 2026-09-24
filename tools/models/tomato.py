@@ -1,11 +1,12 @@
 """
 The Tomato Devil - entity model (entity/devil/tomato), texture atlas and GeckoLib animations.
 
-Reference points:
-  * a round red tomato mass covered in bulging eyes, with a green calyx and stem on top
-  * propped up on eight human arms, hands flat on the ground
-  * a vertical mouth down its front
-  * it comes back from its seeds
+Reference points (anime ep. 1):
+  * a huge, round, shiny red tomato covered in protruding eyeballs - and the eyeballs look like little tomatoes,
+    each with its green leaves on top; a calyx and stem on the big one too
+  * a large VERTICAL mouth down the middle of its front, full of human-looking teeth
+  * it stands on eight pale human arms coming out of its base, hands flat on the ground
+  * it comes back from its seeds unless they are burned
 """
 import math
 
@@ -63,7 +64,7 @@ def build():
     body = m.bone("body", parent="root", pivot=(0, 18, 0))
     look = m.bone("look", parent="body", pivot=(0, 22, 0))
     f = tomato_surface()
-    mouth_skip = lambda u, v: (u < 0.03 or u > 0.97) and 0.25 < v < 0.72
+    mouth_skip = lambda u, v: (u < 0.05 or u > 0.95) and 0.22 < v < 0.74
     shapes.shell(body, f, 24, 14, "tomato", skip=mouth_skip, thick=0.5,
                  mat_fn=lambda u, v: "tomato_dk" if ((u * 8) % 1.0) < 0.2 else ("tomato_lt" if v > 0.75 else "tomato"))
     # calyx and stem
@@ -77,14 +78,15 @@ def build():
                 bend_axis=(0, 0, 1), bend=-35)
     # the vertical mouth down its front, lips and teeth
     zf = C[2] - R[2]
-    look.box((-1.2, 16.0, zf + 0.4), (1.2, 28.5, zf + 3.0), "mouth")
+    look.box((-2.4, 15.2, zf + 1.8), (2.4, 29.4, zf + 3.6), "mouth")  # the throat, behind the teeth
     for s in (-1, 1):
-        look.curve([np.array([s * 1.6, y, zf + 0.6 + 0.02 * (y - 22) ** 2]) for y in np.linspace(15.6, 28.9, 6)], 1.1,
-                   1.1, 1.0, 1.0, "lip")
-        for k in range(8):
-            y = 16.8 + k * 1.5
-            look.spike((s * 1.2, y, zf + 0.9 + 0.02 * (y - 22) ** 2), (-s * 1.0, 0, -0.1), 1.3, 0.7, 0.3, "teeth",
-                       steps=3, up=(0, 0, -1))
+        look.curve([np.array([s * 2.8, y, zf + 0.6 + 0.02 * (y - 22) ** 2]) for y in np.linspace(14.8, 29.8, 7)], 1.3,
+                   1.3, 1.2, 1.2, "lip")
+        # human teeth: flat, square, packed side by side along each lip
+        for k in range(9):
+            y = 16.0 + k * 1.5
+            look.obox((s * 1.6, y, zf + 1.0 + 0.02 * (y - 22) ** 2), (-s * 1.0, 0, 0), (1.35, 1.8, 0.6), "teeth",
+                      up=(0, 0, -1))
     # bulging eyes all over it
     rng = np.random.default_rng(7)
     eyes = m.bone("eyes", parent="look", pivot=tuple(C))
@@ -103,6 +105,14 @@ def build():
         shapes.shell(eyes, shapes.ellipsoid(c, (r, r, r)), 10, 6, "eye", thick=0.3)
         eyes.cylinder(c + n * (r * 0.92), n, r * 0.55, 0.25, "iris", segments=10)
         eyes.cylinder(c + n * (r * 1.02), n, r * 0.28, 0.2, "pupil", segments=8)
+        # each eyeball is a little tomato: its leaves on top
+        top = c + norm(np.array([0, 1.0, 0]) - n * 0.4) * r * 0.9
+        for j in range(5):
+            a = j * 2 * math.pi / 5 + rng.uniform(0, 1)
+            d = norm(np.array([math.cos(a), 0.15, math.sin(a)]))
+            shapes.horn(eyes, top, d, r * 1.1, r * 0.35, mat="calyx", flat=0.2, up=(0, 1, 0), sections=2, around=4,
+                        r1=0.05)
+        eyes.cylinder(top + np.array([0, 0.3, 0]), (0, 1, 0), r * 0.15, 0.8, "calyx_dk", segments=6)
     # eight human arms propping it up, hands flat on the ground
     names = []
     for k, ang in enumerate(ARMS):

@@ -3,7 +3,8 @@ The Gun Devil (the full devil, not the fiend) - entity model (entity/devil/gun_d
 
 Reference points:
   * a towering airborne humanoid; rifle arms the size of buildings
-  * a skeletal torso crammed with shrieking human heads; a pistol barrel juts from its bony face
+  * a skeletal torso crammed with shrieking human heads; its head is a giant gun - an oversized pistol barrel and
+    slide emerge from its skeletal face (20% of it, as the US President summoned it)
   * six belts of 7.62 ammunition hang where its legs should be
   * it kills with precise mass volleys (the Gun Devil killed a million people in minutes)
 """
@@ -129,11 +130,17 @@ def build():
         look.cbox((s * 2.4, 97.5, -5.0), (0.8, 0.8, 0.3), "eye")
     for k in range(7):
         look.spike((-2.4 + k * 0.8, 91.2, -4.6), (0, -1, -0.2), 1.4, 0.6, 0.4, "bone", steps=2)
-    look.cylinder((0, 95.0, -6.0), (0, 0, -1), 1.1, 9.0, "steel_dk", segments=10)
-    look.obox((0, 95.0, -3.0), (0, 0, -1), (2.8, 5.0, 3.6), "steel", up=(0, 1, 0))
-    look.obox((0, 97.4, -2.5), (0, 0, 1), (1.2, 3.0, 1.0), "steel_dk", up=(0, 1, 0))      # hammer
-    fx = m.bone("fx_storm_face", parent="look", pivot=(0, 95, -11))
-    fx.spike((0, 95.0, -10.8), (0, 0, -1), 5.0, 3.0, 3.0, "muzzle", steps=3)
+    # its head IS a gun: a huge pistol's slide and barrel burst out of the middle of the skull's face
+    look.obox((0, 95.6, -8.0), (0, 0, -1), (4.2, 15.0, 4.8), "steel", up=(0, 1, 0))           # the slide
+    for k in range(6):                                                                     # serrations
+        look.obox((0, 95.6, 2.6 - k * 0.9 - 3.0), (0, 0, -1), (4.4, 0.35, 4.3), "steel_dk", up=(0, 1, 0))
+    look.obox((0, 98.2, -12.0), (0, 0, -1), (0.8, 1.6, 0.9), "steel_dk", up=(0, 1, 0))       # front sight
+    look.obox((0, 98.2, -1.8), (0, 0, -1), (1.8, 1.2, 0.9), "steel_dk", up=(0, 1, 0))        # rear sight
+    look.cylinder((0, 95.0, -16.5), (0, 0, -1), 1.5, 3.0, "steel_dk", segments=10)           # muzzle
+    look.cylinder((0, 95.0, -17.9), (0, 0, -1), 0.8, 0.3, "scream", segments=8)              # the bore
+    look.obox((0, 97.8, 3.6), (0, 0, 1), (1.4, 3.4, 1.2), "steel_dk", up=(0, 1, 0))          # hammer out the back
+    fx = m.bone("fx_storm_face", parent="look", pivot=(0, 95, -18))
+    fx.spike((0, 95.0, -18.2), (0, 0, -1), 6.0, 3.6, 3.6, "muzzle", steps=3)
     for name in ("look", "fx_storm_face"):
         m.by_name[name].scale_about((0, 88.0, 2.0), 1.7)
     geo, tex, glow, anim_path = dk.devil_paths("gun_devil")

@@ -2,7 +2,8 @@
 The Eternity Devil - entity model (entity/devil/eternity), texture atlas and GeckoLib animations.
 
 Reference points:
-  * a figure-eight (infinity-shaped) knot of flesh with an eye and a mouth on each loop
+  * a figure-eight (infinity-shaped) knot of flesh - the number 8 - with an eye and a mouth on each loop and two
+    more mouths where the loops cross
   * inside its trap it is a tide of arms and heads; it heaves along on a slug-like foot
   * it loops a floor of a building into infinity (the clocks stuck at 8:18) and regenerates endlessly
 """
@@ -76,8 +77,16 @@ def build():
             mb.spike((x + 0.5, mc[1] - 2.2, mc[2] - 1.4), (0, 1, -0.1), 1.4, 0.7, 0.4, "teeth", steps=3)
         loops.append(name)
 
-    # the knot in the middle where the loops cross
+    # the knot in the middle where the loops cross - with two more mouths on it, one above the other
     shapes.shell(body, shapes.ellipsoid((0, 32.0, 0), (6.5, 8.0, 6.5)), 12, 10, "flesh_dk", thick=0.5)
+    for k, y in enumerate((36.2, 27.4)):
+        mc = np.array([0, y, -5.6])
+        mb = m.bone("knot_mouth%d" % k, parent="body", pivot=tuple(mc))
+        shapes.shell(mb, shapes.ellipsoid(mc, (3.4, 2.0, 1.8)), 10, 6, "mouth", thick=0.35)
+        for j in range(6):
+            x = -2.6 + j * 1.05
+            mb.spike((x, y + 1.6, mc[2] - 1.2), (0, -1, -0.1), 1.3, 0.7, 0.35, "teeth", steps=3)
+            mb.spike((x + 0.5, y - 1.6, mc[2] - 1.1), (0, 1, -0.1), 1.1, 0.6, 0.35, "teeth", steps=3)
     # a tide of arms and heads heaving out of the flesh
     rng = np.random.default_rng(23)
     arms = []

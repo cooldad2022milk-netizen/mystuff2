@@ -1,9 +1,10 @@
 """
 The Sea Cucumber Devil - entity model (entity/devil/sea_cucumber), texture atlas and GeckoLib animations.
 
-Reference points:
-  * a fleshy, upright cylinder bristling with human fingers
-  * an opening on top, and a skull set into the body below it
+Reference points (anime ep. 4, Power smashes it):
+  * a fleshy, upright cylinder with countless human fingers growing out of it on every side
+  * a large orifice on top, and a human skull emerging from just underneath it
+  * anime colours: a magenta and blue body, blue fingers, a white skull
 """
 import math
 
@@ -18,10 +19,10 @@ import devilkit as dk
 
 def materials():
     a = Atlas(256, 64)
-    a.add("body", kind="flesh", color=(150, 108, 88))
-    a.add("body_dk", kind="skin", color=(104, 70, 58))
-    a.add("finger", kind="skin", color=(216, 180, 156))
-    a.add("nail", kind="bone", color=(236, 214, 200))
+    a.add("body", kind="flesh", color=(176, 56, 132))
+    a.add("body_dk", kind="skin", color=(64, 70, 168))
+    a.add("finger", kind="skin", color=(104, 132, 212))
+    a.add("nail", kind="bone", color=(200, 214, 240))
     a.add("skull", kind="bone", color=(226, 214, 190))
     a.add("socket", kind="void", color=(16, 10, 10))
     a.add("maw", kind="void", color=(50, 14, 20))
@@ -57,26 +58,26 @@ def build():
                     bend_axis=np.cross(d, (0, 1, 0)) + np.array([0, 0, 0.001]), bend=50)
     # human fingers bristling all over the body
     rng = np.random.default_rng(19)
-    for k in range(46):
+    for k in range(120):
         u = rng.uniform(0, 1)
-        v = rng.uniform(0.08, 0.9)
-        if (u < 0.12 or u > 0.88) and 0.55 < v < 0.85:
+        v = rng.uniform(0.05, 0.92)
+        if (u < 0.13 or u > 0.87) and 0.68 < v < 0.97:
             continue  # leave the skull clear
         p, n, du, dv = shapes.surface_frame(f, u, v)
         d = norm(n + np.array([0, rng.uniform(-0.3, 0.6), 0]))
-        shapes.horn(body, p - n * 0.2, d, rng.uniform(2.0, 3.4), 0.5, mat="finger", tip_mat="nail", sections=3,
-                    around=6, r1=0.38, tip_from=0.75, bend_axis=np.cross(d, (0, 1, 0)) + np.array([0.001, 0, 0]),
+        shapes.horn(body, p - n * 0.2, d, rng.uniform(2.0, 3.6), 0.5, mat="finger", tip_mat="nail", sections=3,
+                    around=4, r1=0.38, tip_from=0.75, bend_axis=np.cross(d, (0, 1, 0)) + np.array([0.001, 0, 0]),
                     bend=rng.uniform(-40, 40))
-    # the skull set into the body under the opening
-    sk = shapes.ellipsoid((0, 21.0, -6.2), (3.2, 3.4, 2.8), e_lat=0.8, e_lon=0.8)
+    # the skull pushing out of the body just under the opening
+    sk = shapes.ellipsoid((0, 23.6, -6.0), (3.2, 3.4, 2.8), e_lat=0.8, e_lon=0.8)
     shapes.shell(look, sk, 12, 8, "skull", thick=0.35)
     for s in (-1, 1):
-        look.cylinder((s * 1.3, 21.8, -8.8), (0, 0, -1), 0.9, 0.3, "socket", segments=10)
-    look.obox((0, 20.4, -8.9), (0, 1, 0), (0.6, 0.8, 0.2), "socket", up=(0, 0, -1))
-    jaw = m.bone("jaw", parent="look", pivot=(0, 19.0, -5.0))
-    shapes.shell(jaw, shapes.ellipsoid((0, 18.2, -6.8), (2.3, 1.2, 1.8)), 8, 5, "skull", thick=0.3)
+        look.cylinder((s * 1.3, 24.4, -8.6), (0, 0, -1), 0.9, 0.3, "socket", segments=10)
+    look.obox((0, 23.0, -8.7), (0, 1, 0), (0.6, 0.8, 0.2), "socket", up=(0, 0, -1))
+    jaw = m.bone("jaw", parent="look", pivot=(0, 21.6, -4.8))
+    shapes.shell(jaw, shapes.ellipsoid((0, 20.8, -6.6), (2.3, 1.2, 1.8)), 8, 5, "skull", thick=0.3)
     for k in range(6):
-        jaw.cbox((-1.5 + k * 0.6, 18.9, -8.4), (0.45, 0.6, 0.35), "nail")
+        jaw.cbox((-1.5 + k * 0.6, 21.5, -8.2), (0.45, 0.6, 0.35), "nail")
     # spewed guts (only while spewing)
     g = m.bone("fx_spew_guts", parent="body", pivot=(0, 27.5, 0))
     guts = [np.array([0, 27.5, 0]), np.array([0, 33.0, -3.0]), np.array([0, 31.0, -9.0]), np.array([0, 24.0, -14.0])]

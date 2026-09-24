@@ -3,7 +3,8 @@ The Angel Devil - mob model (entity/devil/angel), the player's devil parts (hybr
 animations, authored once for both the player (PlayerAnimator) and the mob (GeckoLib).
 
 Reference points:
-  * a slight, sleepy-eyed youth with pale golden, shoulder-length hair and a halo floating over his head
+  * a slight, sleepy-eyed, androgynous youth with shoulder-length RED hair ("giant's club" in the coloured manga,
+    "japonica" in the anime) and a halo floating over his head
   * a pair of white feathered wings on his back
   * Public Safety clothes: white shirt, black tie, dark trousers
   * whatever he touches loses years of its life; he forges the lifespan he has taken into weapons - a golden sword,
@@ -24,8 +25,8 @@ import devilkit as dk
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from player_anims import A, NEUTRAL_R, NEUTRAL_L, Z3  # noqa: E402
 
-HAIR = (236, 212, 150)
-HAIR_DK = (204, 176, 112)
+HAIR = (178, 88, 72)
+HAIR_DK = (136, 62, 52)
 
 
 def draw_sleepy_eye(d, n):
@@ -50,7 +51,7 @@ def materials(size=512):
     a.add("pants", kind="skin", color=(34, 34, 42))
     a.add("shoe", kind="gloss", color=(22, 22, 24))
     a.add("eye", kind="decal", color=(200, 150, 70), draw=draw_sleepy_eye)
-    a.add("brow", kind="skin", color=(196, 166, 104))
+    a.add("brow", kind="skin", color=(150, 76, 60))
     a.add("lip", kind="skin", color=(220, 164, 150))
     a.add("feather", kind="feather", color=(248, 248, 244), color2=(206, 206, 214))
     a.add("feather_dk", kind="feather", color=(226, 226, 232), color2=(180, 180, 194))

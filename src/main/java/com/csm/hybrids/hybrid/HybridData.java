@@ -17,8 +17,8 @@ import java.util.List;
  * type's own moves on the ability wheel ({@link #abilities()}), so a plain human with a contract has a wheel too.
  */
 public class HybridData {
-    /** A hybrid's own moves plus every contract's fit (the wheel shrinks its icons past 16). */
-    public static final int MAX_ABILITIES = 24;
+    /** Room for any devil's own moves plus every contract's (the wheel shrinks its icons past 16 and 24). */
+    public static final int MAX_ABILITIES = 32;
     public static final float MAX_BLOOD = 100f;
 
     private HybridType type = HybridType.NONE;

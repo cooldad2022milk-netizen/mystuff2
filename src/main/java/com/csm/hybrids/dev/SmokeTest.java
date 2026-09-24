@@ -262,28 +262,11 @@ public final class SmokeTest {
                 refill(l);
                 target(l, reach + l.player.getBbWidth() / 2);
             }));
-            out.add(new Step(type.id + " slot " + slot + " (" + a.id + ")", a.duration() + 15, l -> {
-                HybridType before = l.data().type();
-                use(l, slot);
-                if (l.data().type() != before && l.data().inTakeover()) {
-                    // the Hero of Hell: the devil inside takes over - go through its moves too, then let it go
-                    HybridType form = l.data().type();
-                    List<Step> takeover = new ArrayList<>();
-                    takeover.add(new Step("wait for " + form.id, 30, x -> {
-                    }));
-                    for (int j = 1; j < form.abilities().size(); j++) {
-                        int s = j;
-                        Ability fa = form.abilities().get(j);
-                        takeover.add(new Step(form.id + " prepare " + fa.id, 3, x -> {
-                            refill(x);
-                            target(x, 3 + x.player.getBbWidth() / 2);
-                        }));
-                        takeover.add(new Step(form.id + " slot " + s + " (" + fa.id + ")", fa.duration() + 15,
-                                x -> use(x, s)));
-                    }
-                    takeover.add(new Step("end takeover " + form.id, 10,
-                            x -> HybridLogic.endTakeover(x.player, x.data())));
-                    l.next(takeover);
+            out.add(new Step(type.id + " slot " + slot + " (" + a.id + ")", a.duration() + 15, l -> use(l, slot)));
+            // the Hero of Hell: the devil inside takes over partway through the move - go through its moves too
+            out.add(new Step(type.id + " takeover check after " + a.id, 0, l -> {
+                if (l.data().inTakeover()) {
+                    l.next(takeoverSteps(l.data().type()));
                 }
             }));
         }
@@ -291,6 +274,33 @@ public final class SmokeTest {
             if (l.data().isTransformed() && l.data().activeRun == null) {
                 l.data().clearCooldowns();
                 use(l, 0);
+            }
+        }));
+        return out;
+    }
+
+    /** Every move of a takeover form (Pochita's true form), then the hybrid gets its body back. */
+    private static List<Step> takeoverSteps(HybridType form) {
+        List<Step> out = new ArrayList<>();
+        CsmMod.LOGGER.info("[smoke] takeover: {} with {} moves", form.id, form.abilities().size());
+        for (int j = 1; j < form.abilities().size(); j++) {
+            int s = j;
+            Ability fa = form.abilities().get(j);
+            double reach = fa instanceof DevilAbility d ? Math.max(1.5, Math.min((d.aiMin + d.aiMax) / 2, 8)) : 3;
+            out.add(new Step(form.id + " prepare " + fa.id, 3, x -> {
+                if (!x.data().inTakeover()) {
+                    throw new IllegalStateException("the " + form.id + " takeover ended early");
+                }
+                x.data().takeoverTicks = Math.max(x.data().takeoverTicks, 200); // keep it out for the whole test
+                refill(x);
+                target(x, reach + x.player.getBbWidth() / 2);
+            }));
+            out.add(new Step(form.id + " slot " + s + " (" + fa.id + ")", fa.duration() + 15, x -> use(x, s)));
+        }
+        out.add(new Step("end takeover " + form.id, 10, x -> {
+            HybridLogic.endTakeover(x.player, x.data());
+            if (x.data().inTakeover() || x.data().type() != form.host()) {
+                throw new IllegalStateException("still " + x.data().type().id + " after the takeover ended");
             }
         }));
         return out;
@@ -429,10 +439,10 @@ public final class SmokeTest {
                 target(l, 4);
                 if (a.contract == Contract.HELL) {
                     // the Hell Devil takes its price in lives from around the contractor
-                    for (int k = 0; k < com.csm.hybrids.contract.Contracts.HELL_PRICE + 1; k++) {
+                    for (int k = 0; k < com.csm.hybrids.contract.Contracts.HELL_PRICE + 3; k++) {
                         Entity e = EntityType.CHICKEN.create(l.level());
                         if (e != null) {
-                            e.moveTo(l.origin.x + 2 + k * 0.5, l.origin.y, l.origin.z + 2, 0, 0);
+                            e.moveTo(l.origin.x - 3 + k, l.origin.y, l.origin.z + 3, 0, 0);
                             l.level().addFreshEntity(e);
                         }
                     }

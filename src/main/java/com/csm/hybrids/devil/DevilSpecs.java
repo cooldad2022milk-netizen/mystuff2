@@ -60,6 +60,11 @@ public final class DevilSpecs {
                 .egg(0xF0F0F0, 0x1A1A1A).form(3.2f, 36, 8, 0.05, 10);
         put(HybridType.JUSTICE).stats(520, 14, 0.36, 10).size(3.0f, 3.6f).fight(0.45f, 4, 250)
                 .boss(BossBarColor.GREEN).egg(0x5A6A3A, 0xC8C0A0).form(2.4f, 30, 9, 0.2, 10);
+
+        // ---------------------------------------------------------------- the Hero of Hell (a Chainsaw hybrid's
+        // takeover form, and a boss)
+        put(HybridType.CHAINSAW_DEVIL).stats(760, 16, 0.34, 14).size(1.4f, 3.6f).fight(0.5f, 3, 400)
+                .boss(BossBarColor.RED).egg(0x1A1A1E, 0xE0602A).form(2.8f, 40, 12, 0.25, 12).fpHidden("head", "scarf");
     }
 
     private static DevilSpec put(HybridType type) {

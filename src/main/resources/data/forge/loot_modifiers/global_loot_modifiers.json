@@ -18,6 +18,9 @@
     "csm:fox_devil_contract_head",
     "csm:curse_devil_contract",
     "csm:future_devil_contract",
-    "csm:ghost_devil_contract"
+    "csm:ghost_devil_contract",
+    "csm:snake_devil_contract",
+    "csm:octopus_devil_contract",
+    "csm:doll_devil_contract"
   ]
 }

@@ -37,6 +37,7 @@ public final class DevilMoves {
             case ANGEL -> "angel_wings";
             case WAR -> "yoru_takes_over";
             case FAMINE -> "famine_hunger";
+            case CHAINSAW_DEVIL -> "hero_recede";
             default -> "manifest";
         };
     }
@@ -62,6 +63,7 @@ public final class DevilMoves {
             case FAMINE -> HumanDevilMoves.famine();
             case FALLING -> PartTwoMoves.falling();
             case JUSTICE -> PartTwoMoves.justice();
+            case CHAINSAW_DEVIL -> HeroMoves.chainsawDevil();
             default -> List.of();
         };
     }

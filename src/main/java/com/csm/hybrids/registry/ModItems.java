@@ -92,7 +92,7 @@ public final class ModItems {
 
     public static Item heartFor(HybridType type) {
         return switch (type) {
-            case CHAINSAW -> CHAINSAW_DEVIL_HEART.get();
+            case CHAINSAW, CHAINSAW_DEVIL -> CHAINSAW_DEVIL_HEART.get();
             case CROSSBOW -> CROSSBOW_DEVIL_HEART.get();
             case FLAMETHROWER -> FLAMETHROWER_DEVIL_HEART.get();
             case WHIP -> WHIP_DEVIL_HEART.get();

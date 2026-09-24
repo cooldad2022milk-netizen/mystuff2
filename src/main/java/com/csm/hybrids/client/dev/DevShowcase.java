@@ -372,8 +372,9 @@ public final class DevShowcase {
             }
         }));
         at(8, () -> shot(id + "_02_mob_death"));
-        if (type.contract) {
-            return; // nobody becomes a contract devil (its contract's moves are toured on their own)
+        if (!type.playable()) {
+            return; // nobody becomes a contract devil (its contract's moves are toured on their own), and the Hero of
+            // Hell only ever comes out of a Chainsaw hybrid
         }
         // the player swallows its essence
         at(30, () -> {

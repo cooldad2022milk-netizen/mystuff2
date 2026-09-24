@@ -173,6 +173,37 @@ def chainsaw():
     ls.k(17, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=TP(0.0), rightLeg=Z3, leftLeg=Z3)
     ls.save()
 
+    # Chain Bind: fling the chains, then wrap both arms round the target and hold it against you (tick 66 lets go)
+    cb = A("chainsaw_chain_bind", 70)
+    HUG_R, HUG_L = (-1.35, 0.55, -0.1), (-1.35, -0.55, 0.1)
+    cb.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=Z3, head=Z3)
+    cb.k(1, "INQUAD", rightArm=(-2.6, 0.3, 0.3), leftArm=(-0.4, 0, -0.2), torso=(0.0, 0.3, 0.0))
+    cb.k(3, "OUTBACK", rightArm=(-1.6, -0.1, 0.0), leftArm=(-0.9, -0.2, -0.1), torso=(0.05, -0.15, 0.0))
+    cb.k(7, "OUTQUAD", rightArm=HUG_R, leftArm=HUG_L, torso=(0.12, 0.0, 0.0), head=(0.15, 0, 0))
+    for i, t in enumerate(range(12, 64, 8)):
+        j = 0.06 if i % 2 == 0 else -0.06
+        cb.k(t, "INOUTSINE", rightArm=(HUG_R[0] + j, HUG_R[1], HUG_R[2]), leftArm=(HUG_L[0] - j, HUG_L[1], HUG_L[2]),
+             torso=(0.14, j, 0.0), head=(0.18, -j, 0))
+    cb.k(66, "OUTQUAD", rightArm=(-1.1, -0.3, 0.4), leftArm=(-1.1, 0.3, -0.4), torso=(-0.05, 0, 0), head=Z3)
+    cb.k(70, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=Z3, head=Z3)
+    cb.save()
+
+    # Hero of Hell: clutching his chest while something pushes out through it, then thrown open (tick 29: it's out)
+    hh = A("chainsaw_hero_of_hell", 30)
+    CLUTCH_R, CLUTCH_L = (-1.0, 0.75, 0.0), (-1.0, -0.75, 0.0)
+    hh.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=Z3, head=Z3, rightLeg=Z3, leftLeg=Z3)
+    hh.k(4, "OUTQUAD", rightArm=CLUTCH_R, leftArm=CLUTCH_L, torso=(0.35, 0, 0), head=(0.5, 0, 0),
+         rightLeg=(-0.2, 0, 0.05), leftLeg=(0.1, 0, -0.05))
+    for i, t in enumerate(range(7, 22, 3)):
+        j = 0.08 if i % 2 == 0 else -0.08
+        hh.k(t, "INOUTSINE", rightArm=(CLUTCH_R[0] + j, CLUTCH_R[1], j), leftArm=(CLUTCH_L[0] - j, CLUTCH_L[1], j),
+             torso=(0.45 + j, j, 0), head=(0.6, j * 2, 0), rightLeg=(-0.25, 0, 0.1), leftLeg=(0.15, 0, -0.1))
+    hh.k(24, "INQUAD", rightArm=(-0.6, 0.3, 0.9), leftArm=(-0.6, -0.3, -0.9), torso=(-0.2, 0, 0), head=(-0.7, 0, 0),
+         rightLeg=Z3, leftLeg=Z3)
+    hh.k(30, "OUTQUAD", rightArm=(-0.4, 0.2, 1.3), leftArm=(-0.4, -0.2, -1.3), torso=(-0.3, 0, 0), head=(-0.8, 0, 0),
+         rightLeg=Z3, leftLeg=Z3)
+    hh.save()
+
 
 # ============================================================================ CROSSBOW
 def crossbow():
@@ -1136,6 +1167,80 @@ def contracts():
     fl.k(12, "OUTQUAD", rightArm=(-1.3, -1.05, -0.3), torso=(0.05, -0.35, 0))
     fl.k(16, rightArm=NEUTRAL_R, torso=Z3)
     fl.save()
+
+    # Sawatari: her hand up, fingers spread, then brought down as she gives the command ("Snake - swallow it")
+    sn = A("contract_snake", 16)
+    sn.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3, torso=Z3)
+    sn.k(3, "OUTQUAD", rightArm=(-2.5, -0.15, 0.25), leftArm=(-0.2, 0, -0.1), head=(-0.1, 0, 0))
+    sn.k(6, "INQUAD", rightArm=(-1.5, -0.1, 0.0), leftArm=(-0.2, 0, -0.1), head=(0.05, 0, 0), torso=(0.06, 0, 0))
+    sn.k(12, rightArm=(-1.45, -0.1, 0.0), leftArm=(-0.2, 0, -0.1), head=(0.05, 0, 0), torso=(0.05, 0, 0))
+    sn.k(16, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3, torso=Z3)
+    sn.save()
+
+    # "Release": palm out towards the spot, the other hand to the nose (the nosebleed)
+    nose = tuple(poses.ik_arm(poses.SHOULDER_L, np.array([1.0, 9.4, 0.0]), np.array([0.6, -2.6, -5.0]),
+                              zr_hint=0.0)[0])
+    sr = A("contract_snake_release", 16)
+    sr.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3)
+    sr.k(3, "OUTQUAD", rightArm=(-1.55, 0.05, -0.1), leftArm=nose, head=(0.12, 0, 0))
+    sr.k(12, rightArm=(-1.6, 0.05, -0.1), leftArm=nose, head=(0.15, 0, 0))
+    sr.k(16, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3)
+    sr.save()
+
+    # the tail: a sweep of the arm from right to left, as the tail sweeps
+    st = A("contract_snake_tail", 14)
+    st.k(0, rightArm=NEUTRAL_R, torso=Z3)
+    st.k(3, "OUTQUAD", rightArm=(-1.3, 1.0, 0.4), torso=(0.0, 0.35, 0.0))
+    st.k(9, "OUTQUAD", rightArm=(-1.2, -1.1, -0.2), torso=(0.05, -0.4, 0.0))
+    st.k(14, rightArm=NEUTRAL_R, torso=Z3)
+    st.save()
+
+    # Yoshida: index and middle fingers crossed, held up, then pointed at the target
+    oc = A("contract_octopus", 16)
+    cross = (-2.0, -0.45, 0.2)
+    oc.k(0, rightArm=NEUTRAL_R, head=Z3, torso=Z3)
+    oc.k(3, "OUTQUAD", rightArm=cross, head=(0.1, 0.1, 0))
+    oc.k(5, rightArm=cross, head=(0.1, 0.1, 0))
+    oc.k(7, "OUTBACK", rightArm=(-1.6, -0.1, 0.0), head=Z3, torso=(0.06, 0, 0))
+    oc.k(13, rightArm=(-1.55, -0.1, 0.0), head=Z3, torso=(0.04, 0, 0))
+    oc.k(16, rightArm=NEUTRAL_R, head=Z3, torso=Z3)
+    oc.save()
+
+    # Ink: both hands thrown out as the cloud bursts
+    ik = A("contract_octopus_ink", 12)
+    ik.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=Z3)
+    ik.k(2, "INQUAD", rightArm=(-0.8, 0.6, 0.2), leftArm=(-0.8, -0.6, -0.2), torso=(0.15, 0, 0))
+    ik.k(4, "OUTBACK", rightArm=(-1.3, -0.4, 0.9), leftArm=(-1.3, 0.4, -0.9), torso=(-0.05, 0, 0))
+    ik.k(12, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=Z3)
+    ik.save()
+
+    # Tentacle Lift: crouch on the tentacle, then flung - arms up, knees tucked, and land
+    tl = A("contract_octopus_lift", 40)
+    tl.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=Z3, rightLeg=Z3, leftLeg=Z3)
+    tl.k(4, "OUTQUAD", rightArm=(0.4, 0, 0.3), leftArm=(0.4, 0, -0.3), torso=(0.3, 0, 0), rightLeg=(-0.6, 0, 0),
+         leftLeg=(-0.6, 0, 0))
+    tl.k(8, "OUTQUAD", rightArm=(-2.6, 0, 0.3), leftArm=(-2.6, 0, -0.3), torso=(-0.1, 0, 0), rightLeg=(-0.9, 0, 0),
+         leftLeg=(-0.7, 0, 0))
+    tl.k(22, rightArm=(-1.9, 0, 0.6), leftArm=(-1.9, 0, -0.6), torso=(0.0, 0, 0), rightLeg=(-0.4, 0, 0),
+         leftLeg=(-0.3, 0, 0))
+    tl.k(40, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=Z3, rightLeg=Z3, leftLeg=Z3)
+    tl.save()
+
+    # Santa Claus: a light touch of the fingertips
+    dt = A("contract_doll_touch", 10)
+    dt.k(0, rightArm=NEUTRAL_R, torso=Z3)
+    dt.k(3, "OUTQUAD", rightArm=(-1.5, -0.05, 0.0), torso=(0.12, 0, 0))
+    dt.k(6, rightArm=(-1.55, -0.05, 0.0), torso=(0.14, 0, 0))
+    dt.k(10, rightArm=NEUTRAL_R, torso=Z3)
+    dt.save()
+
+    # her dolls, go: the arm sweeps out and points
+    dc = A("contract_doll_command", 12)
+    dc.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3)
+    dc.k(3, "OUTQUAD", rightArm=(-1.3, 0.6, 0.6), leftArm=(-0.3, 0, -0.2), head=(-0.05, 0, 0))
+    dc.k(5, "OUTBACK", rightArm=(-1.62, -0.1, 0.0), leftArm=(-0.3, 0, -0.2), head=Z3)
+    dc.k(12, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3)
+    dc.save()
 
     # signing: bite the thumb, then press it to the paper held in the other hand
     MOUTH_R = (-2.35, -0.5, 0.2)

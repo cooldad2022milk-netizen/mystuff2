@@ -74,6 +74,7 @@ public final class ModEntities {
             case WAR -> "yoru";
             case FAMINE -> "fami";
             case GUN_DEVIL -> "gun_devil";
+            case CHAINSAW_DEVIL -> "chainsaw_devil";
             default -> type.id + "_devil";
         };
     }

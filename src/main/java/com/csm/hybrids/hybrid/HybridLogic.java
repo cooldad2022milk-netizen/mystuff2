@@ -114,6 +114,9 @@ public final class HybridLogic {
                 }
             }
         }
+        if (data.inTakeover() && --data.takeoverTicks <= 0 && data.activeRun == null) {
+            endTakeover(player, data);
+        }
         if (!data.isHybrid()) {
             if (data.consumeDirty()) {
                 sync(player, data);
@@ -152,6 +155,10 @@ public final class HybridLogic {
     }
 
     public static void revert(ServerPlayer player, HybridData data) {
+        if (data.inTakeover()) {
+            endTakeover(player, data);
+            return;
+        }
         if (!data.isTransformed()) {
             return;
         }
@@ -159,6 +166,52 @@ public final class HybridLogic {
         removeAttributes(player);
         player.refreshDimensions();
         AbilityUtil.sound(player, ModSounds.REVERT.get(), 0.8f, 1.0f);
+        sync(player, data);
+    }
+
+    /**
+     * The devil inside a hybrid takes it over (Pochita's true form tearing out of Denji): for {@code ticks} the player
+     * is that devil - its body, its size, its moves - then the hybrid comes back to itself in human form.
+     */
+    public static void takeover(ServerPlayer player, HybridData data, HybridType form, int ticks) {
+        data.activeRun = null;
+        removeAttributes(player);
+        data.startTakeover(form, ticks);
+        applyAttributes(player, data);
+        player.setHealth(player.getMaxHealth());
+        player.refreshDimensions();
+        sync(player, data);
+    }
+
+    /** The takeover ends: the devil goes back to sleep in the chest and the hybrid is left standing, spent. */
+    public static void endTakeover(ServerPlayer player, HybridData data) {
+        if (!data.inTakeover()) {
+            return;
+        }
+        if (data.activeRun != null) {
+            cancelRun(player, data);
+        }
+        removeAttributes(player);
+        data.endTakeover();
+        for (int i = 0; i < data.abilities().size(); i++) {
+            if (data.abilities().get(i) instanceof com.csm.hybrids.ability.chainsaw.ChainsawAbilities.HeroOfHell hero) {
+                data.setCooldown(i, hero.cooldown());
+            }
+        }
+        data.setCooldown(0, 100);
+        player.refreshDimensions();
+        player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.WEAKNESS, 200, 1)));
+        player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 1)));
+        ServerLevel level = player.serverLevel();
+        Vec3 c = player.position().add(0, 1.0, 0);
+        AbilityUtil.blood(level, c, 50, 0.5);
+        Fx.exhaust(level, player.getEyePosition(), 16);
+        Fx.smoke(level, c, 12, 0.6);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.CHAINSAW_SPUTTER.get(),
+                SoundSource.PLAYERS, 1.0f, 0.7f);
+        player.displayClientMessage(Component.translatable("msg.csm.takeover_end." + data.type().id)
+                .withStyle(ChatFormatting.GRAY), true);
+        broadcastAnim(player, AnimSpec.stop());
         sync(player, data);
     }
 
@@ -348,6 +401,29 @@ public final class HybridLogic {
         data.addBlood(-cost);
         if (data.activeRun != null) {
             cancelRun(player, data);
+        }
+        if (data.type() == HybridType.CHAINSAW) {
+            // Denji dies - and Pochita comes out: the Chainsaw Devil's true form stands up in his place
+            takeover(player, data, HybridType.CHAINSAW_DEVIL, com.csm.hybrids.ability.chainsaw.ChainsawAbilities.HeroOfHell.REVIVE_TICKS);
+            player.removeAllEffects();
+            player.clearFire();
+            ServerLevel level = player.serverLevel();
+            Vec3 c = player.position().add(0, 1.4, 0);
+            AbilityUtil.blood(level, c, 90, 0.8);
+            Fx.impact(level, c, 3.0);
+            Fx.shockwave(level, player.position(), 5.0, Fx.BLOOD_RING);
+            AbilityUtil.sound(player, ModSounds.CHAINSAW_START.get(), 2.0f, 0.6f);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.HEART_BEAT.get(),
+                    SoundSource.PLAYERS, 1.4f, 0.6f);
+            player.displayClientMessage(Component.translatable("msg.csm.pochita_wakes").withStyle(ChatFormatting.DARK_RED),
+                    true);
+            return true;
+        }
+        if (data.inTakeover()) {
+            // the devil was killed out of you: you wake up as yourself
+            removeAttributes(player);
+            data.endTakeover();
+            player.refreshDimensions();
         }
         if (data.isTransformed()) {
             data.setTransformed(false);

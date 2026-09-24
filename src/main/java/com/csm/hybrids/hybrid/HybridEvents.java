@@ -219,7 +219,7 @@ public final class HybridEvents {
         if (melee) {
             ServerLevel level = sp.serverLevel();
             switch (data.type()) {
-                case CHAINSAW -> {
+                case CHAINSAW, CHAINSAW_DEVIL -> {
                     AbilityUtil.blood(level, target.getBoundingBox().getCenter(), 22, 0.25);
                     level.playSound(null, target.getX(), target.getY(), target.getZ(),
                             com.csm.hybrids.registry.ModSounds.CHAINSAW_CUT.get(), SoundSource.PLAYERS, 0.8f, 1.1f);

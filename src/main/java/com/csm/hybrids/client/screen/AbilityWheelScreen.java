@@ -166,7 +166,7 @@ public class AbilityWheelScreen extends Screen {
             float r = (inner + outer) / 2f + (i == hovered ? 3 : 0);
             int ix = Math.round(cx + Mth.cos(mid) * r);
             int iy = Math.round(cy + Mth.sin(mid) * r);
-            int size = i == hovered ? 30 : 26;
+            int size = (i == hovered ? 30 : 26) - (n > 16 ? 6 : 0);
             boolean usable = !ab.requiresForm() || data.isTransformed();
             if (!usable) {
                 RenderSystem.setShaderColor(0.45f, 0.45f, 0.45f, 1f);

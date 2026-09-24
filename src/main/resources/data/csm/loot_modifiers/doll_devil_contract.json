@@ -1,0 +1,11 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:doll_devil_contract",
+  "tables": [
+    "minecraft:chests/igloo_chest",
+    "minecraft:chests/woodland_mansion",
+    "minecraft:chests/stronghold_library"
+  ],
+  "chance": 0.03
+}

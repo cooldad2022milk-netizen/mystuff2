@@ -54,6 +54,7 @@ public final class CsmParticles {
         event.registerSpriteSet(ModParticles.BLOOD.get(), s -> (t, l, x, y, z, vx, vy, vz) -> new Blood(l, x, y, z, vx, vy, vz, s));
         event.registerSpriteSet(ModParticles.BLOOD_MIST.get(), s -> (t, l, x, y, z, vx, vy, vz) -> new Puff(l, x, y, z, vx, vy, vz, s, Puff.MIST));
         event.registerSpriteSet(ModParticles.SMOKE.get(), s -> (t, l, x, y, z, vx, vy, vz) -> new Puff(l, x, y, z, vx, vy, vz, s, Puff.SMOKE));
+        event.registerSpriteSet(ModParticles.INK.get(), s -> (t, l, x, y, z, vx, vy, vz) -> new Puff(l, x, y, z, vx, vy, vz, s, Puff.INK));
         event.registerSpriteSet(ModParticles.EXHAUST.get(), s -> (t, l, x, y, z, vx, vy, vz) -> new Puff(l, x, y, z, vx, vy, vz, s, Puff.EXHAUST));
         event.registerSpriteSet(ModParticles.GORE.get(), s -> (t, l, x, y, z, vx, vy, vz) -> new Chunk(l, x, y, z, vx, vy, vz, s, false));
         event.registerSpriteSet(ModParticles.SHARD.get(), s -> (t, l, x, y, z, vx, vy, vz) -> new Chunk(l, x, y, z, vx, vy, vz, s, true));
@@ -149,6 +150,7 @@ public final class CsmParticles {
         static final int MIST = 0;
         static final int SMOKE = 1;
         static final int EXHAUST = 2;
+        static final int INK = 3;
         private final SpriteSet sprites;
         private final int kind;
         private final float startSize;
@@ -158,23 +160,25 @@ public final class CsmParticles {
             this.sprites = sprites;
             this.kind = kind;
             this.xd = vx;
-            this.yd = vy + (kind == MIST ? 0 : 0.015 + random.nextDouble() * 0.02);
+            this.yd = vy + (kind == MIST ? 0 : kind == INK ? 0.004 : 0.015 + random.nextDouble() * 0.02);
             this.zd = vz;
             this.friction = 0.9f;
             this.gravity = kind == MIST ? 0.02f : -0.01f;
             this.lifetime = switch (kind) {
                 case MIST -> 14 + random.nextInt(10);
                 case EXHAUST -> 18 + random.nextInt(12);
+                case INK -> 50 + random.nextInt(30);
                 default -> 40 + random.nextInt(30);
             };
             this.startSize = switch (kind) {
                 case MIST -> 0.18f + random.nextFloat() * 0.15f;
                 case EXHAUST -> 0.12f + random.nextFloat() * 0.1f;
+                case INK -> 0.45f + random.nextFloat() * 0.4f;
                 default -> 0.22f + random.nextFloat() * 0.25f;
             };
             this.quadSize = startSize;
             this.roll = this.oRoll = random.nextFloat() * Mth.TWO_PI;
-            this.alpha = kind == SMOKE ? 0.6f : 0.55f;
+            this.alpha = kind == SMOKE ? 0.6f : kind == INK ? 0.85f : 0.55f;
             setSpriteFromAge(sprites);
         }
 
@@ -185,7 +189,7 @@ public final class CsmParticles {
                 setSpriteFromAge(sprites);
                 float f = age / (float) lifetime;
                 quadSize = startSize * (1f + f * (kind == SMOKE ? 1.7f : 1.5f));
-                alpha = (kind == SMOKE ? 0.6f : 0.55f) * (1f - f * f);
+                alpha = (kind == SMOKE ? 0.6f : kind == INK ? 0.85f : 0.55f) * (1f - f * f);
                 oRoll = roll;
                 roll += 0.02f;
             }

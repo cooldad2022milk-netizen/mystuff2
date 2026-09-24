@@ -32,6 +32,8 @@ public final class ModParticles {
     public static final RegistryObject<SimpleParticleType> EMBER = reg("ember", false);
     /** Thick dark smoke. */
     public static final RegistryObject<SimpleParticleType> SMOKE = reg("smoke", false);
+    /** The Octopus Devil's ink: big black clouds that hang in the air. */
+    public static final RegistryObject<SimpleParticleType> INK = reg("ink", false);
     /** Flat ring on the ground. Velocity x = radius, y = colour variant (0 fire, 1 blood, 2 steel). */
     public static final RegistryObject<SimpleParticleType> SHOCKWAVE = reg("shockwave", true);
     /** Speed streak. Velocity = the streak vector (from spawn point). */

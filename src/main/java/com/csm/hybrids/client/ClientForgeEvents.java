@@ -95,6 +95,17 @@ public final class ClientForgeEvents {
                             (p.getRandom().nextDouble() - 0.5) * 0.3, 0.1 + p.getRandom().nextDouble() * 0.15,
                             (p.getRandom().nextDouble() - 0.5) * 0.3);
                 }
+            } else if (st.type == HybridType.CHAINSAW_DEVIL) {
+                // Pochita's engine never stops while it is out
+                if (!(st.engineSound instanceof EngineSound s) || s.isStopped()) {
+                    EngineSound sound = new EngineSound(p, st);
+                    st.engineSound = sound;
+                    mc.getSoundManager().play(sound);
+                }
+                if (!firstPersonSelf && p.tickCount % (st.revving(now) ? 2 : 6) == 0) {
+                    Vec3 m = p.position().add(0, p.getBbHeight() * 0.95, 0);
+                    mc.level.addParticle(ModParticles.EXHAUST.get(), m.x, m.y, m.z, 0, 0.06, 0);
+                }
             } else if (st.type == HybridType.FLAMETHROWER && p.tickCount % 6 == 0) {
                 // pilot lights drip embers under the nozzles
                 float by = p.yBodyRot * Mth.DEG_TO_RAD;

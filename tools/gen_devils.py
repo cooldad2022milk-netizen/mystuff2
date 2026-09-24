@@ -100,6 +100,24 @@ def contract_texture(c):
         put([(6, 7), (7, 7), (8, 7), (9, 7), (6, 8), (7, 8), (8, 8), (9, 8)], (206, 206, 232, 255))
         put([(x, y) for y in (9, 10, 11) for x in range(6, 10)] + [(10, 9), (10, 10)], (214, 214, 238, 255))
         put([(7, 12), (8, 12)], (190, 190, 220, 255))
+    elif c["id"] == "snake":         # a green snake coiling up, one red eye
+        G, GD = (90, 154, 58, 255), (50, 96, 34, 255)
+        put([(6, 12), (7, 12), (8, 12), (9, 11), (8, 10), (7, 10), (6, 9), (7, 8), (8, 8), (9, 7)], G)
+        put([(5, 12), (9, 12), (6, 10), (9, 8)], GD)
+        put([(10, 7), (10, 8)], G)
+        put([(10, 7)], RED)
+    elif c["id"] == "octopus":       # a purple head over curling tentacles, and a blot of ink
+        P, PD = (170, 80, 132, 255), (110, 44, 84, 255)
+        put([(7, 7), (8, 7), (6, 8), (7, 8), (8, 8), (9, 8), (6, 9), (7, 9), (8, 9), (9, 9)], P)
+        put([(7, 8), (8, 8)], DARK)
+        put([(5, 10), (6, 11), (7, 10), (7, 12), (8, 10), (8, 12), (9, 11), (10, 10)], PD)
+        put([(4, 12), (5, 13)], (20, 16, 24, 255))
+    elif c["id"] == "doll":          # a doll's pale face with black button eyes
+        F = (244, 226, 214, 255)
+        put([(x, y) for y in (8, 9, 10, 11) for x in range(6, 10)] + [(7, 7), (8, 7), (7, 12), (8, 12)], F)
+        put([(6, 7), (9, 7), (5, 8), (10, 8)], (120, 70, 40, 255))
+        put([(6, 9), (9, 9)], DARK)
+        put([(7, 11), (8, 11)], (190, 60, 60, 255))
     # the bloody thumbprint that sealed it
     put([(10, 12), (11, 12), (10, 13), (11, 13)], RED)
     put([(11, 11)], (160, 20, 20, 255))
@@ -108,7 +126,7 @@ def contract_texture(c):
 
 def items():
     for d in devil_data.DEVILS:
-        if "contract" not in d:
+        if "contract" not in d and "takeover" not in d:
             name = devil_data.essence_item(d)
             essence_texture(d).save(p("textures", "item", name + ".png"))
             with open(p("models", "item", name + ".json"), "w") as f:
@@ -876,6 +894,236 @@ def icons_contract_moves():
     finish(img, "contract_ghost_fling")
 
 
+def icons_hero():
+    """Denji's Chain Bind and Hero of Hell, and the moves of the Chainsaw Devil's true form."""
+    from gen_assets import saw_bar
+    OR = ((250, 140, 50), (120, 40, 10))
+    HH = ((150, 40, 30), (14, 10, 14))
+    BLACK = (26, 26, 30, 255)
+    GUTS = (170, 60, 70, 255)
+
+    def links(d, pts, col=(210, 214, 220, 255)):
+        for k, (x, y) in enumerate(pts):
+            if k % 2 == 0:
+                d.ellipse([x - 7, y - 4, x + 7, y + 4], outline=col, width=3)
+            else:
+                d.ellipse([x - 4, y - 7, x + 4, y + 7], outline=(150, 154, 160, 255), width=3)
+
+    def devil_head(d, cx, cy, s=1.0, mouth=True):
+        """The black chainsaw head: horns, a bar out of the front, no eyes, a grin of teeth."""
+        for sx in (-1, 1):
+            poly(d, [(cx + sx * 18 * s, cy - 14 * s), (cx + sx * 34 * s, cy - 40 * s), (cx + sx * 10 * s, cy - 22 * s)],
+                 (40, 40, 44, 255))
+        d.ellipse([cx - 24 * s, cy - 26 * s, cx + 24 * s, cy + 22 * s], fill=BLACK, outline=(8, 8, 10, 255), width=3)
+        saw_bar(d, cx, cy - 20 * s, cx, cy - 58 * s, int(12 * s))
+        if mouth:
+            d.chord([cx - 18 * s, cy - 6 * s, cx + 18 * s, cy + 18 * s], 0, 180, fill=(120, 16, 20, 255))
+            for k in range(7):
+                x = cx - 15 * s + k * 5 * s
+                poly(d, [(x - 2 * s, cy + 6 * s), (x + 2 * s, cy + 6 * s), (x, cy + 13 * s)], (244, 240, 228, 255),
+                     width=1)
+
+    # Chain Bind: two figures wrapped together in chain
+    img, d = icon_canvas(*OR)
+    for x, col in ((48, (236, 112, 34, 255)), (80, (200, 150, 120, 255))):
+        d.ellipse([x - 12, 22, x + 12, 46], fill=col, outline=(20, 10, 10, 255), width=3)
+        d.rounded_rectangle([x - 14, 46, x + 14, 104], 6, fill=col, outline=(20, 10, 10, 255), width=3)
+    for y in (58, 74, 90):
+        links(d, [(26 + k * 11, y + (k % 2) * 2) for k in range(8)])
+    finish(img, "chain_bind")
+
+    # Hero of Hell: the black head bursting up out of a bloody chest
+    img, d = icon_canvas(*HH)
+    heart_y = 96
+    d.ellipse([34, heart_y - 10, 94, heart_y + 26], fill=(150, 20, 24, 255))
+    devil_head(d, 64, 72, 1.0)
+    for x0, x1 in ((20, 40), (108, 88)):
+        d.line([(x0, 118), (x1, 92)], fill=GUTS, width=7)
+    blood_drops(d, [(30, 96, 5), (100, 100, 5)])
+    finish(img, "hero_of_hell")
+
+    # Let Denji back: the black head fading into a sleeping dog's
+    img, d = icon_canvas((120, 110, 100), (30, 26, 24))
+    devil_head(d, 46, 78, 0.7, mouth=False)
+    d.ellipse([70, 64, 110, 100], fill=(236, 120, 40, 255), outline=(30, 10, 10, 255), width=3)  # Pochita
+    saw_bar(d, 90, 66, 90, 40, 8)
+    d.arc([78, 78, 88, 86], 0, 180, fill=(30, 10, 10, 255), width=2)
+    d.arc([92, 78, 102, 86], 0, 180, fill=(30, 10, 10, 255), width=2)
+    for k in range(3):
+        d.text((100 + k * 7, 40 - k * 8), "z", fill=(255, 255, 255, 220))
+    finish(img, "hero_recede")
+
+    # Four-Saw Rend: four bars fanned out
+    img, d = icon_canvas(*HH)
+    for a in (-60, -25, 25, 60):
+        r = math.radians(a - 90)
+        saw_bar(d, 64, 104, 64 + math.cos(r) * 52, 104 + math.sin(r) * 60, 12)
+    d.arc([12, 12, 116, 116], 200, 340, fill=(255, 255, 255, 220), width=5)
+    blood_drops(d, [(28, 60, 5), (100, 58, 5)])
+    finish(img, "hero_rend")
+
+    # Rev Charge: the head coming at you, speed lines
+    img, d = icon_canvas(*HH)
+    devil_head(d, 70, 84, 0.9)
+    for k in range(4):
+        d.line([(10, 40 + k * 18), (34, 40 + k * 18)], fill=(255, 255, 255, 200), width=4)
+    finish(img, "hero_charge")
+
+    # Chain Whip: a chain circling
+    img, d = icon_canvas(*HH)
+    pts = [(64 + math.cos(math.radians(a)) * 44, 64 + math.sin(math.radians(a)) * 44) for a in range(0, 330, 22)]
+    links(d, pts)
+    poly(d, [(pts[-1][0] + 6, pts[-1][1] - 14), (pts[-1][0] + 16, pts[-1][1] + 4), (pts[-1][0] - 4, pts[-1][1])],
+         (230, 232, 236, 255))
+    devil_head(d, 64, 76, 0.5, mouth=False)
+    finish(img, "hero_chains")
+
+    # Devour: the grin wide open over a devil's horned head
+    img, d = icon_canvas(*HH)
+    d.chord([14, 20, 114, 110], 0, 360, fill=(110, 12, 18, 255))
+    for k in range(9):
+        x = 20 + k * 11
+        poly(d, [(x - 5, 30), (x + 5, 30), (x, 50)], (244, 240, 228, 255), width=1)
+        poly(d, [(x - 5, 100), (x + 5, 100), (x, 80)], (244, 240, 228, 255), width=1)
+    d.ellipse([50, 54, 78, 80], fill=(120, 100, 130, 255))
+    for sx in (-1, 1):
+        poly(d, [(64 + sx * 8, 58), (64 + sx * 16, 44), (64 + sx * 4, 56)], (200, 190, 200, 255), width=1)
+    finish(img, "hero_devour")
+
+    # Hero of Hell's roar: rings out of the head
+    img, d = icon_canvas(*HH)
+    for k in range(3):
+        r = 30 + k * 14
+        d.arc([64 - r, 70 - r, 64 + r, 70 + r], 200, 340, fill=(255, 220, 200, 200 - k * 40), width=4)
+    devil_head(d, 64, 84, 0.75)
+    finish(img, "hero_roar")
+
+
+def icons_contract_moves2():
+    """Sawatari's Snake Devil, Yoshida's Octopus Devil and Santa Claus's Doll Devil."""
+    SN = ((120, 170, 80), (20, 40, 16))
+    OC = ((180, 100, 150), (30, 14, 30))
+    DL = ((236, 214, 200), (60, 40, 40))
+    GREEN, GREEN_DK = (90, 154, 58, 255), (44, 90, 30, 255)
+    PURPLE, PURPLE_DK = (176, 84, 136, 255), (100, 40, 80, 255)
+    INK = (14, 10, 22, 255)
+
+    def snake_eye(d, cx, cy, r):
+        d.ellipse([cx - r, cy - r * 0.7, cx + r, cy + r * 0.7], fill=(10, 8, 8, 255))  # black sclera
+        d.ellipse([cx - r * 0.45, cy - r * 0.45, cx + r * 0.45, cy + r * 0.45], fill=(220, 30, 30, 255))
+
+    def hand_teeth(d, x0, x1, y, up):
+        """The Snake Devil's mouth is lined with interlocking hands instead of teeth."""
+        n = int((x1 - x0) / 11)
+        for k in range(n):
+            x = x0 + k * 11 + (5 if up else 0)
+            dy = -1 if up else 1
+            d.rounded_rectangle([x - 4, min(y, y + dy * 14), x + 4, max(y, y + dy * 14)], 3,
+                                fill=(226, 200, 178, 255), outline=(90, 60, 50, 255), width=1)
+            for f in (-2, 0, 2):
+                d.line([(x + f, y + dy * 14), (x + f, y + dy * 19)], fill=(226, 200, 178, 255), width=2)
+
+    def snake_head(d, cx, cy, s, gape=1.0):
+        poly(d, [(cx - 30 * s, cy + 40 * s), (cx - 24 * s, cy - 10 * s), (cx + 24 * s, cy - 10 * s),
+                 (cx + 30 * s, cy + 40 * s)], GREEN, outline=(20, 40, 16, 255))
+        top = cy - 10 * s - 34 * s * gape
+        poly(d, [(cx - 30 * s, cy - 10 * s), (cx - 16 * s, top), (cx + 16 * s, top), (cx + 30 * s, cy - 10 * s)],
+             GREEN, outline=(20, 40, 16, 255))
+        d.polygon([(cx - 22 * s, cy - 8 * s), (cx - 12 * s, top + 10 * s), (cx + 12 * s, top + 10 * s),
+                   (cx + 22 * s, cy - 8 * s)], fill=(90, 14, 20, 255))
+        hand_teeth(d, cx - 20 * s, cx + 20 * s, cy - 8 * s, True)
+        hand_teeth(d, cx - 12 * s, cx + 12 * s, top + 10 * s, False)
+        snake_eye(d, cx - 26 * s, cy + 6 * s, 7 * s)
+        snake_eye(d, cx + 26 * s, cy + 6 * s, 7 * s)
+        for k in range(4):
+            d.arc([cx - 24 * s, cy + (10 + k * 7) * s, cx + 24 * s, cy + (22 + k * 7) * s], 20, 160, fill=GREEN_DK,
+                  width=2)
+
+    img, d = icon_canvas(*SN)  # swallow: up out of the ground, mouth wide, a figure going in
+    d.ellipse([18, 100, 110, 122], fill=(40, 26, 18, 255))
+    snake_head(d, 64, 72, 1.0, gape=1.0)
+    d.ellipse([56, 20, 72, 36], fill=(200, 160, 140, 255))
+    d.line([(64, 36), (64, 50)], fill=(200, 160, 140, 255), width=6)
+    finish(img, "contract_snake_swallow")
+    img, d = icon_canvas(*SN)  # release: something spat back out
+    snake_head(d, 50, 76, 0.8, gape=0.8)
+    d.ellipse([84, 30, 110, 56], fill=(120, 110, 150, 255), outline=(30, 20, 40, 255), width=2)
+    for k in range(3):
+        d.line([(66 + k * 6, 44 - k * 4), (82 + k * 6, 40 - k * 4)], fill=(255, 255, 255, 200), width=3)
+    blood_drops(d, [(22, 30, 5)])  # the nosebleed
+    finish(img, "contract_snake_release")
+    img, d = icon_canvas(*SN)  # tail: a thick green tail sweeping out of the ground
+    d.ellipse([10, 100, 60, 120], fill=(40, 26, 18, 255))
+    pts = [(34, 110), (40, 80), (58, 56), (86, 44), (112, 46)]
+    for w, col in ((26, (20, 40, 16, 255)), (20, GREEN)):
+        d.line(pts, fill=col, width=w, joint="curve")
+    d.arc([14, 14, 114, 114], 200, 330, fill=(255, 255, 255, 220), width=5)
+    finish(img, "contract_snake_tail")
+
+    def tentacle(d, pts, w=12):
+        d.line(pts, fill=PURPLE_DK, width=w + 4, joint="curve")
+        d.line(pts, fill=PURPLE, width=w, joint="curve")
+        for k in range(1, len(pts) - 1):
+            x, y = pts[k]
+            d.ellipse([x - 3, y - 3, x + 3, y + 3], fill=(236, 190, 210, 255))
+
+    def crossed_fingers(d, x, y):
+        d.rounded_rectangle([x - 10, y, x + 10, y + 20], 5, fill=SKIN, outline=(90, 60, 50, 255), width=2)
+        d.line([(x - 4, y), (x + 6, y - 22)], fill=(90, 60, 50, 255), width=8)
+        d.line([(x - 4, y), (x + 6, y - 22)], fill=SKIN, width=5)
+        d.line([(x + 4, y), (x - 6, y - 22)], fill=(90, 60, 50, 255), width=8)
+        d.line([(x + 4, y), (x - 6, y - 22)], fill=SKIN, width=5)
+
+    img, d = icon_canvas(*OC)  # Octopus: tentacles out of ink coiling round a figure
+    d.ellipse([20, 90, 108, 120], fill=INK)
+    d.ellipse([56, 30, 72, 46], fill=(200, 160, 140, 255))
+    d.line([(64, 46), (64, 76)], fill=(200, 160, 140, 255), width=8)
+    tentacle(d, [(30, 104), (28, 70), (50, 52), (74, 60), (80, 74)])
+    tentacle(d, [(98, 104), (102, 74), (82, 42), (58, 40)])
+    crossed_fingers(d, 24, 30)
+    finish(img, "contract_octopus")
+    img, d = icon_canvas(*OC)  # Ink: a black cloud
+    for x, y, r in ((44, 60, 26), (74, 52, 30), (88, 76, 24), (54, 84, 26), (70, 80, 22)):
+        d.ellipse([x - r, y - r, x + r, y + r], fill=INK)
+    d.ellipse([60, 60, 70, 70], fill=(240, 240, 240, 90))
+    finish(img, "contract_octopus_ink")
+    img, d = icon_canvas(*OC)  # Tentacle Lift: a figure flung up by a tentacle
+    d.ellipse([16, 98, 70, 120], fill=INK)
+    tentacle(d, [(42, 108), (36, 80), (48, 58), (70, 48)], 14)
+    d.ellipse([80, 18, 96, 34], fill=(200, 160, 140, 255))
+    d.line([(88, 34), (96, 56)], fill=(200, 160, 140, 255), width=7)
+    for k in range(3):
+        d.line([(70 + k * 8, 72 - k * 4), (78 + k * 8, 58 - k * 4)], fill=(255, 255, 255, 200), width=3)
+    finish(img, "contract_octopus_lift")
+
+    def doll_face(d, cx, cy, s, cheeks=True):
+        d.ellipse([cx - 22 * s, cy - 24 * s, cx + 22 * s, cy + 24 * s], fill=(246, 230, 218, 255),
+                  outline=(90, 60, 50, 255), width=2)
+        d.pieslice([cx - 24 * s, cy - 28 * s, cx + 24 * s, cy + 10 * s], 180, 360, fill=(110, 64, 40, 255))
+        for sx in (-1, 1):
+            d.ellipse([cx + sx * 9 * s - 4 * s, cy - 2 * s, cx + sx * 9 * s + 4 * s, cy + 6 * s], fill=(10, 10, 12, 255))
+            if cheeks:
+                d.ellipse([cx + sx * 13 * s - 4 * s, cy + 8 * s, cx + sx * 13 * s + 4 * s, cy + 13 * s],
+                          fill=(236, 150, 150, 255))
+        d.line([(cx - 6 * s, cy + 14 * s), (cx + 6 * s, cy + 14 * s)], fill=(160, 40, 40, 255), width=2)
+        # the seams of a doll's jaw
+        for sx in (-1, 1):
+            d.line([(cx + sx * 6 * s, cy + 14 * s), (cx + sx * 6 * s, cy + 22 * s)], fill=(90, 60, 50, 255), width=2)
+
+    img, d = icon_canvas(*DL)  # Doll Touch: a hand touching a doll's face
+    doll_face(d, 72, 66, 1.3)
+    d.rounded_rectangle([12, 70, 40, 92], 8, fill=SKIN, outline=(90, 60, 50, 255), width=2)
+    d.line([(38, 76), (48, 72)], fill=(90, 60, 50, 255), width=8)
+    d.line([(38, 76), (48, 72)], fill=SKIN, width=5)
+    finish(img, "contract_doll_touch")
+    img, d = icon_canvas(*DL)  # Doll Command: a row of dolls, blades for arms
+    for k, x in enumerate((32, 64, 96)):
+        doll_face(d, x, 50, 0.55)
+        d.rounded_rectangle([x - 10, 64, x + 10, 100], 4, fill=(60, 40, 50, 255))
+        poly(d, [(x + 10, 70), (x + 26, 60), (x + 14, 82)], (220, 224, 232, 255), width=1)
+    finish(img, "contract_doll_command")
+
+
 # ----------------------------------------------------------------------------- particles
 def particles():
     base = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "resources",
@@ -900,5 +1148,7 @@ if __name__ == "__main__":
     icons_contract_moves()
     icons_part_two()
     icons_humanoid()
+    icons_hero()
+    icons_contract_moves2()
     particles()
     print("devil assets generated")

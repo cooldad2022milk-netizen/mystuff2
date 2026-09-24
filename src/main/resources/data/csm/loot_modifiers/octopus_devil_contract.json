@@ -1,0 +1,11 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:octopus_devil_contract",
+  "tables": [
+    "minecraft:chests/shipwreck_treasure",
+    "minecraft:chests/buried_treasure",
+    "minecraft:chests/underwater_ruin_big"
+  ],
+  "chance": 0.04
+}

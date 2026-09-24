@@ -319,6 +319,7 @@ if __name__ == "__main__":
     clods()
     smoke("smoke", (46, 42, 42))
     smoke("exhaust", (120, 124, 136))
+    smoke("ink", (16, 12, 24))
     dots("ember", [(255, 150, 40), (255, 90, 20)], [0.35, 0.28])
     spark()
     charge()

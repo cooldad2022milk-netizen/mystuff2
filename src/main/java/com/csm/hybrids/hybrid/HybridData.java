@@ -17,7 +17,8 @@ import java.util.List;
  * type's own moves on the ability wheel ({@link #abilities()}), so a plain human with a contract has a wheel too.
  */
 public class HybridData {
-    public static final int MAX_ABILITIES = 16;
+    /** A hybrid's own moves plus every contract's fit (the wheel shrinks its icons past 16). */
+    public static final int MAX_ABILITIES = 24;
     public static final float MAX_BLOOD = 100f;
 
     private HybridType type = HybridType.NONE;
@@ -32,6 +33,13 @@ public class HybridData {
     private int curseToll;
     /** The wheel: the type's moves then each contract's. Rebuilt when the type or the contracts change. */
     private List<Ability> abilities;
+    /**
+     * While a hybrid is taken over by its devil (Pochita's true form out of Denji), the hybrid it really is; NONE
+     * otherwise. Only the real type is ever saved: logging out mid-takeover wakes you up as yourself.
+     */
+    private HybridType baseType = HybridType.NONE;
+    /** Server: ticks of the takeover left. */
+    public int takeoverTicks;
 
     /** Server: the ability currently being performed (trigger animations included). */
     public AbilityRun activeRun;
@@ -67,7 +75,46 @@ public class HybridData {
         return abilities;
     }
 
+    /** The hybrid this player really is (their type, or the hybrid under a takeover form). */
+    public HybridType baseType() {
+        return baseType != HybridType.NONE ? baseType : type;
+    }
+
+    /** Whether the devil has taken this hybrid over (the type is a {@link HybridType#takeover()} form). */
+    public boolean inTakeover() {
+        return baseType != HybridType.NONE;
+    }
+
+    /** The devil takes over: the wheel and the body become the takeover form's until {@link #endTakeover()}. */
+    public void startTakeover(HybridType form, int ticks) {
+        baseType = baseType();
+        type = form;
+        transformed = true;
+        takeoverTicks = ticks;
+        abilities = null;
+        selected = 0;
+        clearCooldowns();
+        markDirty();
+    }
+
+    /** The devil lets go: back to the real hybrid, in human form. */
+    public void endTakeover() {
+        if (baseType == HybridType.NONE) {
+            return;
+        }
+        type = baseType;
+        baseType = HybridType.NONE;
+        takeoverTicks = 0;
+        transformed = false;
+        abilities = null;
+        selected = 0;
+        clearCooldowns();
+        markDirty();
+    }
+
     public void setType(HybridType type) {
+        baseType = HybridType.NONE;
+        takeoverTicks = 0;
         if (this.type != type) {
             this.type = type;
             this.abilities = null;
@@ -217,8 +264,8 @@ public class HybridData {
     // ------------------------------------------------------------------ persistence
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
-        tag.putString("type", type.id);
-        tag.putBoolean("transformed", transformed);
+        tag.putString("type", baseType().id);
+        tag.putBoolean("transformed", transformed && !inTakeover());
         tag.putFloat("blood", blood);
         tag.putInt("selected", selected);
         tag.putIntArray("cooldowns", cooldowns.clone());
@@ -229,8 +276,10 @@ public class HybridData {
 
     public void load(CompoundTag tag) {
         type = HybridType.byId(tag.getString("type"));
+        baseType = HybridType.NONE;
+        takeoverTicks = 0;
         if (!type.playable()) {
-            type = HybridType.NONE; // saved before the contract devils became contracts
+            type = type.takeover() ? type.host() : HybridType.NONE; // (contract devils: saved before they were contracts)
         }
         contracts = tag.getInt("contracts");
         curseToll = tag.getInt("curse_toll");

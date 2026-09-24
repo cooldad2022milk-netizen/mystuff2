@@ -81,6 +81,11 @@ public final class Fx {
         level.sendParticles(ModParticles.SMOKE.get(), p.x, p.y, p.z, count, spread, spread * 0.6, spread, 0.02);
     }
 
+    /** A cloud of the Octopus Devil's ink. */
+    public static void ink(ServerLevel level, Vec3 p, int count, double spread) {
+        level.sendParticles(ModParticles.INK.get(), p.x, p.y, p.z, count, spread, spread * 0.6, spread, 0.02);
+    }
+
     public static void embers(ServerLevel level, Vec3 p, int count, double spread) {
         level.sendParticles(ModParticles.EMBER.get(), p.x, p.y, p.z, count, spread, spread, spread, 0.05);
     }

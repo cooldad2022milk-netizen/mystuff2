@@ -20,18 +20,29 @@ import java.util.Locale;
  *       the arms and bites. Every time it comes, it takes some of your lifespan.</li>
  *   <li>FUTURE - the Future Devil lives in your right eye and shows you a few seconds ahead.</li>
  *   <li>GHOST - paid for with your right eye (Himeno): the Ghost Devil's invisible right arm does what yours does.</li>
+ *   <li>SNAKE - Sawatari's: a fingernail per command. The Snake Devil (green, a red eye in black, a mouth of
+ *       interlocking hands) swallows things whole and later spits them back out, healed, to fight for you; or
+ *       swats with its tail.</li>
+ *   <li>OCTOPUS - Yoshida's (the price is between him and the devil): cross two fingers and its tentacles come out of
+ *       clouds of ink to seize, lift and smash; or it sprays ink.</li>
+ *   <li>DOLL - Santa Claus's: whoever you touch becomes your doll, and every doll that touches someone makes another.
+ *       It does nothing to devils, hybrids or fiends, and a doll you leave behind falls over, lifeless.</li>
  * </ul>
- * The mobs of these devils still exist, but nobody becomes them any more: their loot is a contract, not an essence.
+ * The mobs of the Fox, Curse, Future and Ghost devils still exist, but nobody becomes them any more: their loot is a
+ * contract, not an essence. The Snake, Octopus and Doll devils are never met: only their contracts turn up.
  */
 public enum Contract {
     FOX_HEAD("fox_head", HybridType.FOX, 0xF4F0E6),
     FOX_PAW("fox_paw", HybridType.FOX, 0xE8D2B4),
     CURSE("curse", HybridType.CURSE, 0xD8D0B8),
     FUTURE("future", HybridType.FUTURE, 0xC8A870),
-    GHOST("ghost", HybridType.GHOST, 0xE8E0F0);
+    GHOST("ghost", HybridType.GHOST, 0xE8E0F0),
+    SNAKE("snake", HybridType.NONE, 0x5A9A3A),
+    OCTOPUS("octopus", HybridType.NONE, 0x9A4A7A),
+    DOLL("doll", HybridType.NONE, 0xE8C8B8);
 
     public final String id;
-    /** The devil the contract is with. */
+    /** The devil the contract is with (NONE for the devils that only exist as contracts in this world). */
     public final HybridType devil;
     public final int color;
 
@@ -59,7 +70,7 @@ public enum Contract {
         return switch (this) {
             case FOX_HEAD -> "fox_devil_contract_head";
             case FOX_PAW -> "fox_devil_contract_paw";
-            default -> devil.id + "_devil_contract";
+            default -> id + "_devil_contract";
         };
     }
 

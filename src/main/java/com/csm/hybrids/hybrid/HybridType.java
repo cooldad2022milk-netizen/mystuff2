@@ -79,7 +79,12 @@ public enum HybridType {
     /** Fami, the Famine Devil. */
     FAMINE("famine", 0xE890B0, true),
     FALLING("falling", 0xF0F0F0, false),
-    JUSTICE("justice", 0x8A9A5A, false);
+    JUSTICE("justice", 0x8A9A5A, false),
+    /**
+     * The Chainsaw Devil's true form - Pochita as the Hero of Hell. It is fought as a mob, but no player eats its
+     * essence: it only ever comes out of a Chainsaw hybrid, taking Denji over for a while (see {@link #host()}).
+     */
+    CHAINSAW_DEVIL("chainsaw_devil", 0x2A2A30, false);
 
     public final String id;
     public final int color;
@@ -154,9 +159,22 @@ public enum HybridType {
         this.contract = contract;
     }
 
-    /** Whether a player can be this (every type except the contract devils). */
+    /**
+     * The hybrid whose devil this form is, for the forms that only come out of a hybrid and take it over for a while
+     * (Pochita's true form out of Denji); NONE for everything else.
+     */
+    public HybridType host() {
+        return this == CHAINSAW_DEVIL ? CHAINSAW : NONE;
+    }
+
+    /** A form a hybrid is taken over by, never a type of its own (see {@link #host()}). */
+    public boolean takeover() {
+        return host() != NONE;
+    }
+
+    /** Whether a player can be this for good (not the contract devils, not a takeover form). */
     public boolean playable() {
-        return !contract;
+        return !contract && !takeover();
     }
 
     /** A devil whose form replaces the player's body with its own model. */

@@ -52,7 +52,8 @@ public final class DevilEvents {
         Entity attacker = event.getSource().getEntity();
         if (attacker instanceof ServerPlayer sp) {
             HybridData d = HybridCapability.get(sp);
-            if (d != null && d.type() == HybridType.CHAINSAW && d.isTransformed()) {
+            if (d != null && (d.type() == HybridType.CHAINSAW || d.type() == HybridType.CHAINSAW_DEVIL)
+                    && d.isTransformed()) {
                 return;
             }
         }
@@ -86,6 +87,19 @@ public final class DevilEvents {
         }
         UUID masterId = tag.getUUID(DevilEntity.THRALL_TAG);
         Entity master = level.getEntity(masterId);
+        boolean doll = tag.getBoolean(com.csm.hybrids.contract.Contracts.DOLL);
+        if (doll && (!(master instanceof LivingEntity dm) || !dm.isAlive()
+                || dm.distanceToSqr(e) > com.csm.hybrids.contract.Contracts.DOLL_RANGE
+                * com.csm.hybrids.contract.Contracts.DOLL_RANGE)) {
+            // Santa Claus has to stay near her dolls: left behind, a doll falls over, lifeless
+            com.csm.hybrids.contract.Contracts.dropDoll(level, mob);
+            return;
+        }
+        if (doll && e.tickCount % 200 == 0) {
+            // one arm is a blade now
+            mob.addEffect(AbilityUtil.quiet(new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.DAMAGE_BOOST, 600, 1)));
+        }
         if (level.getGameTime() > tag.getLong(ControlMoves.THRALL_UNTIL) || !(master instanceof LivingEntity m)
                 || !m.isAlive()) {
             tag.remove(DevilEntity.THRALL_TAG);
@@ -340,6 +354,25 @@ public final class DevilEvents {
         Vec3 c = e.getBoundingBox().getCenter();
         AbilityUtil.blood(level, c, 50, 0.4);
         Fx.impact(level, c, 1.2);
+    }
+
+    /** The Doll Devil's touch spreads: whoever a doll hurts becomes a doll of the same contractor. */
+    @SubscribeEvent
+    public static void dollTouch(net.minecraftforge.event.entity.living.LivingHurtEvent event) {
+        LivingEntity victim = event.getEntity();
+        if (!(victim.level() instanceof ServerLevel level)
+                || !(event.getSource().getEntity() instanceof Mob doll)) {
+            return;
+        }
+        CompoundTag tag = doll.getPersistentData();
+        if (!tag.getBoolean(com.csm.hybrids.contract.Contracts.DOLL) || !tag.hasUUID(DevilEntity.THRALL_TAG)) {
+            return;
+        }
+        UUID masterId = tag.getUUID(DevilEntity.THRALL_TAG);
+        if (level.getEntity(masterId) instanceof LivingEntity master && !isThrallOf(victim, masterId)
+                && com.csm.hybrids.contract.Contracts.makeDoll(level, master, victim)) {
+            event.setCanceled(true); // it isn't hurt: it is someone else's now
+        }
     }
 
     private static boolean isThrallOf(Entity e, UUID master) {

@@ -28,6 +28,8 @@ public final class Abilities {
             new ChainsawAbilities.ChainGrapple(),
             new ChainsawAbilities.RipAndTear(),
             new ChainsawAbilities.LegSawSpin(),
+            new ChainsawAbilities.ChainBind(),
+            new ChainsawAbilities.HeroOfHell(),
             new BloodDrinkAbility(HybridType.CHAINSAW));
 
     public static final List<Ability> CROSSBOW = List.of(

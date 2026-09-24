@@ -28,7 +28,8 @@ public class EngineSound extends AbstractTickableSoundInstance {
 
     @Override
     public void tick() {
-        if (player.isRemoved() || state.type != HybridType.CHAINSAW || !state.transformed) {
+        if (player.isRemoved() || (state.type != HybridType.CHAINSAW && state.type != HybridType.CHAINSAW_DEVIL)
+                || !state.transformed) {
             stop();
             return;
         }

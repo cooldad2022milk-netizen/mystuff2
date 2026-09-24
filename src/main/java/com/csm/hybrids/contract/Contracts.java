@@ -1,24 +1,33 @@
 package com.csm.hybrids.contract;
 
 import com.csm.hybrids.ability.AbilityUtil;
+import com.csm.hybrids.ability.devil.ControlMoves;
 import com.csm.hybrids.entity.ContractSummonEntity;
+import com.csm.hybrids.entity.devil.DevilEntity;
 import com.csm.hybrids.fx.Fx;
 import com.csm.hybrids.hybrid.HybridData;
 import com.csm.hybrids.hybrid.HybridLogic;
 import com.csm.hybrids.registry.ModSounds;
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -59,6 +68,24 @@ public final class Contracts {
                 player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.BLINDNESS, 80, 0, false, false)));
                 AbilityUtil.blood(level, player.getEyePosition(), 16, 0.1);
                 AbilityUtil.sound(player, ModSounds.HEART_RIP.get(), 0.9f, 1.4f);
+            }
+            case SNAKE -> {
+                // the first fingernail
+                if (!player.getAbilities().instabuild) {
+                    player.setHealth(Math.max(1f, player.getHealth() - 1f));
+                }
+                AbilityUtil.blood(level, AbilityUtil.handPos(player, true, 0.2), 8, 0.08);
+                AbilityUtil.sound(player, ModSounds.HEART_RIP.get(), 0.6f, 1.8f);
+            }
+            case OCTOPUS -> {
+                Fx.ink(level, player.position().add(0, 1.0, 0), 30, 1.2);
+                player.causeFoodExhaustion(12f);
+                AbilityUtil.sound(player, ModSounds.SHARK_DIVE.get(), 0.9f, 0.6f);
+            }
+            case DOLL -> {
+                // something in you goes stiff for a moment
+                player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 3, false, false)));
+                AbilityUtil.sound(player, ModSounds.CONTROL_DOMINATE.get(), 0.7f, 1.6f);
             }
         }
         player.displayClientMessage(Component.translatable("msg.csm.contract_signed." + c.id)
@@ -111,6 +138,142 @@ public final class Contracts {
         }
         if (player.getHealth() > player.getMaxHealth()) {
             player.setHealth(player.getMaxHealth());
+        }
+    }
+
+    // ------------------------------------------------------------------ the Snake Devil
+    /** Where the Snake Devil keeps what it has swallowed: with its contractor (entity data, last in first out). */
+    public static final String BELLY = "csm_snake_belly";
+    public static final int BELLY_SIZE = 3;
+
+    /** How many creatures the snake is holding for {@code player}. */
+    public static int bellyCount(ServerPlayer player) {
+        return player.getPersistentData().getList(BELLY, Tag.TAG_COMPOUND).size();
+    }
+
+    /** Whether the Snake Devil can swallow {@code e} whole (anything but people and the great devils). */
+    public static boolean swallowable(LivingEntity e) {
+        return e instanceof Mob && e.isAlive() && e.getMaxHealth() <= 120f && e.getBbWidth() < 3f
+                && !e.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES)
+                && !(e instanceof DevilEntity d && d.spec().boss);
+    }
+
+    /**
+     * The snake swallows {@code e} whole: it is gone from the world and kept in the belly until {@link #release}.
+     *
+     * @return false if the belly is full or it can't be kept (it only gets bitten then)
+     */
+    public static boolean swallow(ServerPlayer owner, LivingEntity e) {
+        ListTag belly = owner.getPersistentData().getList(BELLY, Tag.TAG_COMPOUND);
+        if (belly.size() >= BELLY_SIZE || !swallowable(e)) {
+            return false;
+        }
+        e.stopRiding();
+        e.ejectPassengers();
+        CompoundTag tag = new CompoundTag();
+        if (!e.save(tag)) {
+            return false;
+        }
+        tag.remove("UUID");
+        tag.remove("Passengers");
+        belly.add(tag);
+        owner.getPersistentData().put(BELLY, belly);
+        e.discard();
+        return true;
+    }
+
+    /**
+     * The snake spits the last thing it swallowed back out at {@code at}: whole again, and fighting for its contractor
+     * for two minutes (Sawatari's snake let the Ghost Devil out to fight Aki).
+     */
+    @Nullable
+    public static LivingEntity release(ServerPlayer owner, Vec3 at, float yaw) {
+        ListTag belly = owner.getPersistentData().getList(BELLY, Tag.TAG_COMPOUND);
+        if (belly.isEmpty()) {
+            return null;
+        }
+        CompoundTag tag = belly.getCompound(belly.size() - 1);
+        belly.remove(belly.size() - 1);
+        owner.getPersistentData().put(BELLY, belly);
+        ServerLevel level = owner.serverLevel();
+        Entity made = EntityType.create(tag, level).orElse(null);
+        if (!(made instanceof LivingEntity le)) {
+            return null;
+        }
+        le.moveTo(at.x, at.y, at.z, yaw, 0f);
+        le.setYHeadRot(yaw);
+        le.setHealth(le.getMaxHealth());
+        le.removeAllEffects();
+        le.clearFire();
+        le.fallDistance = 0;
+        le.setDeltaMovement(0, 0.3, 0);
+        CompoundTag data = le.getPersistentData();
+        data.remove(DOLL);
+        if (le instanceof Mob m) {
+            DevilEntity.enthrall(m, owner.getUUID());
+            data.putLong(ControlMoves.THRALL_UNTIL, level.getGameTime() + 2400);
+            m.setTarget(null);
+        }
+        level.addFreshEntity(le);
+        return le;
+    }
+
+    // ------------------------------------------------------------------ the Doll Devil
+    /** Set on a creature the Doll Devil has made into a doll (it is also a thrall of the contractor). */
+    public static final String DOLL = "csm_doll";
+    /** A contractor can only keep this many dolls at once. */
+    public static final int MAX_DOLLS = 12;
+    /** Past this distance from the contractor a doll falls over, lifeless. */
+    public static final double DOLL_RANGE = 48;
+
+    /** Whether the Doll Devil's touch works on {@code e}: people and beasts, never devils, hybrids or fiends. */
+    public static boolean dollable(LivingEntity e) {
+        return e instanceof Mob && e.isAlive() && !(e instanceof DevilEntity)
+                && !e.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES)
+                && e.getAttribute(Attributes.ATTACK_DAMAGE) != null && !e.getPersistentData().getBoolean(DOLL);
+    }
+
+    /** How many dolls {@code master} has within reach. */
+    public static int dollCount(ServerLevel level, LivingEntity master) {
+        return level.getEntitiesOfClass(Mob.class, master.getBoundingBox().inflate(DOLL_RANGE),
+                m -> m.getPersistentData().getBoolean(DOLL) && m.getPersistentData().hasUUID(DevilEntity.THRALL_TAG)
+                        && m.getPersistentData().getUUID(DevilEntity.THRALL_TAG).equals(master.getUUID())).size();
+    }
+
+    /**
+     * {@code e} becomes {@code master}'s doll: it obeys them, one of its arms is a blade now, and it can't be turned
+     * back.
+     *
+     * @return false if the touch does nothing to it (or the contractor has all the dolls they can keep)
+     */
+    public static boolean makeDoll(ServerLevel level, LivingEntity master, LivingEntity e) {
+        if (!dollable(e) || dollCount(level, master) >= MAX_DOLLS) {
+            return false;
+        }
+        Mob m = (Mob) e;
+        CompoundTag data = m.getPersistentData();
+        data.putBoolean(DOLL, true);
+        DevilEntity.enthrall(m, master.getUUID());
+        data.putLong(ControlMoves.THRALL_UNTIL, Long.MAX_VALUE / 2);
+        m.setTarget(null);
+        m.setPersistenceRequired();
+        m.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1)));
+        Vec3 c = m.getBoundingBox().getCenter();
+        Fx.stars(level, m.getEyePosition().add(0, 0.3, 0), 8, 0.25);
+        Fx.shockwave(level, m.position().add(0, 0.05, 0), 1.2, Fx.STEEL_RING);
+        AbilityUtil.soundAt(level, c, ModSounds.CONTROL_DOMINATE.get(), 0.8f, 1.7f);
+        return true;
+    }
+
+    /** A doll whose contractor is gone (dead, far away, elsewhere) falls over, lifeless. */
+    public static void dropDoll(ServerLevel level, Mob doll) {
+        Vec3 c = doll.getBoundingBox().getCenter();
+        Fx.smoke(level, c, 8, 0.4);
+        doll.getPersistentData().remove(DOLL);
+        doll.invulnerableTime = 0;
+        doll.hurt(doll.damageSources().magic(), Float.MAX_VALUE);
+        if (doll.isAlive()) {
+            doll.kill();
         }
     }
 

@@ -212,6 +212,27 @@ DEVILS = [
                                           "front of you. It heals you."),
          },
          lore="The Justice Devil is blind, like Justice herself, and wears a judge's bib."),
+    # Pochita's true form. Nobody eats its essence: it only ever comes out of a Chainsaw hybrid (Hero of Hell), and
+    # beaten as a mob it leaves its heart - the one Pochita gave Denji.
+    dict(id="chainsaw_devil", entity="chainsaw_devil", name="Chainsaw Devil", form="Chainsaw Devil (Hero of Hell)",
+         color=(42, 42, 48), boss=True, takeover=True, drops=[("chainsaw_devil_heart", 1.0)],
+         trigger=("hero_recede", "Let Denji Back",
+                  "Pochita lets go: it goes back to sleep in your chest and you're yourself again, spent. It lets "
+                  "go on its own after 30 seconds."),
+         moves={
+             "hero_rend": ("Four-Saw Rend", "Four saws - two out of each split forearm - tear through everything in "
+                                            "front of you."),
+             "hero_charge": ("Rev Charge", "Head down, the saw on your head screaming: run through everything in "
+                                           "your way."),
+             "hero_chains": ("Chain Whip", "The chains come off your saws and whip round you in a wide circle, then "
+                                           "drag everything they caught to your feet."),
+             "hero_devour": ("Devour", "Seize your prey and eat it. Anything weak enough is eaten outright - and a "
+                                       "devil you eat is erased, gone from Hell and Earth for good. The rest lose a "
+                                       "great bite of themselves. It heals you."),
+             "hero_roar": ("Hero of Hell", "The roar devils fear above everything. Whatever hears it is weakened and "
+                                           "slowed; devils break off and back away."),
+         },
+         lore="The Hero of Hell. What it eats is erased from existence."),
 ]
 
 # Contracts (contract.Contract): what a hunter gets from the Fox, Curse, Future and Ghost devils. The Fox Devil only
@@ -267,6 +288,55 @@ CONTRACTS = [
                                         "Price: none (your eye is already paid)"),
                 "contract_ghost_fling": ("Ghost Fling", "The invisible hand snatches something up and hurls it aside.",
                                          "Price: none (your eye is already paid)")}),
+    dict(id="snake", item="snake_devil_contract", name="Snake Devil",
+         item_name="Snake Devil Contract", color=(90, 154, 58),
+         tooltip="It is scaly. Something inside it swallows.",
+         price="Price: a fingernail for every command (and a nosebleed to let something out).",
+         signed="The Snake Devil takes your first fingernail. Command it with your hands, like Sawatari: \"Snake - "
+                "swallow it.\"",
+         moves={"contract_snake_swallow": ("Snake: Swallow", "The Snake Devil's huge green head bursts up out of the "
+                                                             "ground under your target, its mouth of interlocking "
+                                                             "hands wide open, and swallows it whole. Anything weak "
+                                                             "enough stays in its belly (up to 3); the rest is badly "
+                                                             "bitten.",
+                                           "Price: a fingernail"),
+                "contract_snake_release": ("Snake: Release", "The snake rises where you point and spits out the last "
+                                                             "thing it swallowed: whole again, healed, and fighting "
+                                                             "for you for two minutes.",
+                                           "Price: a fingernail and a nosebleed"),
+                "contract_snake_tail": ("Snake: Tail", "The Snake Devil's thick tail bursts out of the ground beside "
+                                                       "you and swats everything in front of you away.",
+                                        "Price: a fingernail")}),
+    dict(id="octopus", item="octopus_devil_contract", name="Octopus Devil",
+         item_name="Octopus Devil Contract", color=(154, 74, 122),
+         tooltip="The ink on it never quite dries.",
+         price="Price: between you and the devil. You come away starving: the bigger the call, the bigger the price.",
+         signed="The Octopus Devil takes its price, whatever it was. Cross your index and middle fingers to call it, "
+                "like Yoshida.",
+         moves={"contract_octopus": ("Octopus", "Cross two fingers: the Octopus Devil's tentacles come up out of "
+                                                "clouds of ink round your target, coil round it (and up to three "
+                                                "things next to it), lift, squeeze, and smash them down.",
+                                     "Price: hunger (a lot)"),
+                "contract_octopus_ink": ("Ink", "The Octopus Devil sprays a cloud of ink round you. Everything in it is "
+                                                "blinded and loses sight of you, and you slip away unseen.",
+                                         "Price: hunger"),
+                "contract_octopus_lift": ("Tentacle Lift", "A tentacle comes up out of a puddle of ink under your "
+                                                           "feet and flings you the way you're looking.",
+                                          "Price: hunger (a little)")}),
+    dict(id="doll", item="doll_devil_contract", name="Doll Devil",
+         item_name="Doll Devil Contract", color=(232, 200, 184),
+         tooltip="A child's handwriting. It smells of Christmas.",
+         price="Price: unknown. Santa Claus never said what she paid.",
+         signed="The Doll Devil accepts. Whoever you touch is yours - and whoever they touch is yours too.",
+         moves={"contract_doll_touch": ("Doll Touch", "Touch someone and they become your doll: they obey you, one "
+                                                      "of their arms is a blade now, and there's no turning them "
+                                                      "back. Anyone a doll hurts becomes a doll too. It does "
+                                                      "nothing to devils, hybrids or fiends, and a doll you leave "
+                                                      "behind (48 blocks) falls over, lifeless. Up to 12.",
+                                        "Price: unknown"),
+                "contract_doll_command": ("Doll Command", "Every doll you have turns on what you point at. Point at "
+                                                          "nothing (or at a doll) and they come back to you.",
+                                          "Price: unknown")}),
 ]
 
 # chests a contract turns up in (the devil hunters who held it didn't all make it)
@@ -280,6 +350,15 @@ CONTRACT_LOOT = {
     "future_devil_contract": (["minecraft:chests/stronghold_library", "minecraft:chests/end_city_treasure"], 0.04),
     "ghost_devil_contract": (["minecraft:chests/simple_dungeon", "minecraft:chests/abandoned_mineshaft",
                               "minecraft:chests/ancient_city"], 0.03),
+    # Sawatari's snake: jungle temples, desert pyramids and the deep dark
+    "snake_devil_contract": (["minecraft:chests/jungle_temple", "minecraft:chests/desert_pyramid",
+                              "minecraft:chests/ancient_city", "minecraft:chests/stronghold_library"], 0.03),
+    # Yoshida's octopus: the sea
+    "octopus_devil_contract": (["minecraft:chests/shipwreck_treasure", "minecraft:chests/buried_treasure",
+                                "minecraft:chests/underwater_ruin_big"], 0.04),
+    # Santa Claus: snow, and old houses full of dolls
+    "doll_devil_contract": (["minecraft:chests/igloo_chest", "minecraft:chests/woodland_mansion",
+                             "minecraft:chests/stronghold_library"], 0.03),
 }
 
 HUMANOID_TRIGGERS = {"control": "control_devil", "angel": "angel_wings", "war": "yoru_takes_over",
@@ -310,7 +389,9 @@ def lang():
         out["entity.csm." + d["entity"]] = d["name"]
         out["item.csm." + d["entity"] + "_spawn_egg"] = d["name"] + " Spawn Egg"
         out["hybrid.csm." + i] = d["form"]
-        if "contract" not in d:
+        if "takeover" in d:
+            out["msg.csm.revived." + i] = "Pochita keeps you going..."
+        elif "contract" not in d:
             out["item.csm." + essence_item(d)] = d["essence"]
             out["tooltip.csm.essence." + i] = d["tooltip"]
             out["msg.csm.became_devil." + i] = d.get("became", "You are the %s now. Press V for the ability wheel, G to "
@@ -348,6 +429,16 @@ def lang():
         "screen.csm.contractor": "Devil Hunter",
         "screen.csm.contracts": "Contracts: %s",
         "commands.csm.not_playable": "Nobody becomes the %s: make a contract with it instead (/csm contract).",
+        "commands.csm.takeover_only": "The %s only comes out of a %s (its Hero of Hell move).",
+        "msg.csm.snake_empty": "The snake's belly is empty. Have it swallow something first.",
+        "msg.csm.snake_swallowed": "The snake swallowed the %s whole (%s/%s in its belly).",
+        "msg.csm.snake_released": "The snake lets the %s out. It fights for you now.",
+        "msg.csm.doll_nothing": "Your hand touches nothing. Get close enough to touch them.",
+        "msg.csm.doll_immune": "The %s doesn't change. The Doll Devil can't touch devils, hybrids or fiends.",
+        "msg.csm.doll_max": "You can't keep more than %s dolls.",
+        "msg.csm.doll_made": "The %s is your doll now (%s dolls).",
+        "msg.csm.doll_attack": "%s dolls turn on it.",
+        "msg.csm.doll_recall": "%s dolls come back to you.",
         "commands.csm.contract_unknown": "Unknown contract: %s",
         "commands.csm.contract_add": "%s made a contract with the %s",
         "commands.csm.contract_remove": "%s's contract with the %s is broken",
@@ -363,8 +454,8 @@ def loot_table(d):
     """A boss always leaves its essence when a player kills it; lesser devils sometimes do. All of them bleed.
     A contract devil leaves no essence: beaten, it offers a contract (the Fox its paw far more often than its head)."""
     pools = []
-    if "contract" in d:
-        for item, chance in d["contract"]:
+    if "contract" in d or "drops" in d:
+        for item, chance in d.get("contract", d.get("drops")):
             conds = [{"condition": "minecraft:killed_by_player"}]
             if chance < 1:
                 conds.append({"condition": "minecraft:random_chance_with_looting", "chance": chance,

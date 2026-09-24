@@ -19,6 +19,8 @@ public abstract class ContractAbility extends Ability {
     protected double reach = 24;
     /** Health the devil eats when the move is used (the Fox Devil is paid in flesh). Never kills. */
     protected float fleshPrice;
+    /** Hunger the move leaves you with (food exhaustion; 4 = one hunger point). */
+    protected float hungerPrice;
 
     protected ContractAbility(Contract contract, String id) {
         super(contract.devil, id);
@@ -33,6 +35,11 @@ public abstract class ContractAbility extends Ability {
 
     protected ContractAbility flesh(float hp) {
         this.fleshPrice = hp;
+        return this;
+    }
+
+    protected ContractAbility hunger(float exhaustion) {
+        this.hungerPrice = exhaustion;
         return this;
     }
 
@@ -68,6 +75,9 @@ public abstract class ContractAbility extends Ability {
                 player.setHealth(player.getHealth() - take);
                 AbilityUtil.blood(player.serverLevel(), player.position().add(0, 1.2, 0), 10, 0.2);
             }
+        }
+        if (hungerPrice > 0 && !player.getAbilities().instabuild) {
+            player.causeFoodExhaustion(hungerPrice);
         }
         EntityHitResult hit = AbilityUtil.raycastEntity(player, reach);
         if (hit != null && hit.getEntity() instanceof LivingEntity target) {

@@ -43,6 +43,8 @@ public class ClientHybridState {
     public double renderNow;
     public Object engineSound;
     private HybridPartsAnimatable animatable;
+    /** Play the manifest animation on the puppet as soon as there is one (a takeover just began). */
+    private boolean pendingManifest;
     /** A monster devil's form: its model, drawn in place of the player (never added to the world). */
     @Nullable
     private DevilEntity puppet;
@@ -91,6 +93,10 @@ public class ClientHybridState {
             }
             puppet.owner = player;
             puppet.fxSource = group -> fxActive(group, renderNow);
+        }
+        if (pendingManifest) {
+            pendingManifest = false;
+            puppet.triggerAnim("action", "manifest");
         }
         return puppet;
     }
@@ -178,6 +184,11 @@ public class ClientHybridState {
             animatable = null;
             formAnim = IDLE;
             retractUntil = -1;
+            if (data.isTransformed() && type.monster()) {
+                // a hybrid taken over by its devil: the devil's body stands up out of it
+                formSince = now;
+                pendingManifest = true;
+            }
         } else if (!wasTransformed && data.isTransformed()) {
             formAnim = EMERGE;
             retractUntil = -1;

@@ -1,12 +1,15 @@
 package com.csm.hybrids.entity;
 
 import com.csm.hybrids.ability.AbilityUtil;
+import com.csm.hybrids.contract.Contracts;
 import com.csm.hybrids.entity.devil.DevilEntity;
 import com.csm.hybrids.fx.Fx;
 import com.csm.hybrids.registry.ModEntities;
 import com.csm.hybrids.registry.ModParticles;
 import com.csm.hybrids.registry.ModSounds;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -14,6 +17,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -42,6 +46,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  *       and bites into its neck and shoulders.</li>
  *   <li>{@link Kind#GHOST_HAND} / {@link Kind#GHOST_FLING} - the Ghost Devil's right arm. Only its contractor can see
  *       it (others see a faint shimmer).</li>
+ *   <li>{@link Kind#SNAKE_SWALLOW} / {@link Kind#SNAKE_RELEASE} - the Snake Devil's head out of the ground: it swallows
+ *       its prey whole, or spits out something it swallowed earlier. {@link Kind#SNAKE_TAIL} - its tail.</li>
+ *   <li>{@link Kind#OCTOPUS_GRAB} - the Octopus Devil's tentacles out of ink clouds; {@link Kind#OCTOPUS_LIFT} - one
+ *       tentacle under the contractor's feet, flinging them.</li>
  * </ul>
  * The server runs what the part does (its bite, grip, slam) here, so it keeps working after the contractor's own move
  * has finished. Positions are set once when summoned (the ghost's grip rises as it lifts its prey).
@@ -58,7 +66,12 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
         FOX_PAW_SWIPE("fox_paw", "swipe", 22, false),
         CURSE("curse", "seize", 64, false),
         GHOST_HAND("ghost_arm", "strangle", 54, true),
-        GHOST_FLING("ghost_arm", "fling", 26, true);
+        GHOST_FLING("ghost_arm", "fling", 26, true),
+        SNAKE_SWALLOW("snake_head", "swallow", 36, false),
+        SNAKE_RELEASE("snake_head", "release", 34, false),
+        SNAKE_TAIL("snake_tail", "tail", 26, false),
+        OCTOPUS_GRAB("octopus", "grab", 52, false),
+        OCTOPUS_LIFT("octopus", "lift", 22, false);
 
         /** geo/entity/contract/&lt;model&gt;.geo.json (and the texture and animation file of the same name). */
         public final String model;
@@ -84,6 +97,8 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
     @Nullable
     private LivingEntity victim;
     private Vec3 anchor = Vec3.ZERO;
+    /** Everything else the tentacles took hold of. */
+    private final java.util.List<LivingEntity> held = new java.util.ArrayList<>();
 
     public ContractSummonEntity(EntityType<? extends ContractSummonEntity> type, Level level) {
         super(type, level);
@@ -139,11 +154,14 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
         Kind kind = kind();
         if (level().isClientSide) {
             if (tickCount == 1 && !kind.ghostly) {
-                // it tears in out of nowhere
-                Vec3 c = position().add(0, kind == Kind.FOX_PAW_SLAM ? 2.5 : 1.2, 0);
-                for (int i = 0; i < 12; i++) {
-                    level().addParticle(ModParticles.SMOKE.get(), c.x + random.nextGaussian() * 0.8,
-                            c.y + random.nextGaussian() * 0.6, c.z + random.nextGaussian() * 0.8, 0, 0.02, 0);
+                // it tears in out of nowhere (the octopus's tentacles come out of ink, the snake out of the ground)
+                boolean ink = kind == Kind.OCTOPUS_GRAB || kind == Kind.OCTOPUS_LIFT;
+                boolean ground = kind == Kind.SNAKE_SWALLOW || kind == Kind.SNAKE_RELEASE || kind == Kind.SNAKE_TAIL;
+                Vec3 c = position().add(0, kind == Kind.FOX_PAW_SLAM ? 2.5 : ground || ink ? 0.3 : 1.2, 0);
+                for (int i = 0; i < (ink ? 30 : 12); i++) {
+                    level().addParticle(ink ? ModParticles.INK.get() : ground ? ModParticles.CLOD.get() : ModParticles.SMOKE.get(),
+                            c.x + random.nextGaussian() * (ink ? 1.4 : 0.8), c.y + random.nextGaussian() * 0.4,
+                            c.z + random.nextGaussian() * (ink ? 1.4 : 0.8), 0, ground ? 0.25 : 0.02, 0);
                 }
             }
             return;
@@ -163,6 +181,15 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
             case CURSE -> curse(level, owner);
             case GHOST_HAND -> ghostHand(level, owner);
             case GHOST_FLING -> ghostFling(level, owner);
+            case SNAKE_SWALLOW -> snakeSwallow(level, owner);
+            case SNAKE_RELEASE -> snakeRelease(level, owner);
+            case SNAKE_TAIL -> snakeTail(level, owner);
+            case OCTOPUS_GRAB -> octopusGrab(level, owner);
+            case OCTOPUS_LIFT -> {
+                if (tickCount % 4 == 0) {
+                    Fx.ink(level, anchor.add(0, 0.2, 0), 4, 0.6);
+                }
+            }
         }
     }
 
@@ -320,6 +347,140 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
         v.hurtMarked = true;
         AbilityUtil.hurtIgnoringIFrames(owner, v, 10f);
         AbilityUtil.soundAt(level, v.position(), ModSounds.DEVIL_GUST.get(), 1.2f, 1.4f);
+    }
+
+    // ================================================================== Snake Devil
+    /** It rears behind the prey and strikes down: its jaws (a mouth of interlocking hands) close round it on tick 11. */
+    private void snakeSwallow(ServerLevel level, LivingEntity owner) {
+        if (tickCount == 2) {
+            AbilityUtil.soundAt(level, position(), ModSounds.DEVIL_ROAR.get(), 1.6f, 1.3f);
+            Fx.clods(level, position(), 30, 0.5);
+            Fx.shockwave(level, position(), 3.0, Fx.STEEL_RING);
+        }
+        LivingEntity v = victim();
+        if (v != null && tickCount > 3 && tickCount < 11 && v.distanceToSqr(anchor) < 9) {
+            hold(v, anchor); // it can't get out from under the strike
+        }
+        if (tickCount != 11) {
+            return;
+        }
+        Vec3 jaws = anchor.add(0, 1.2, 0);
+        AbilityUtil.soundAt(level, jaws, ModSounds.DEVIL_BITE.get(), 2.0f, 0.6f);
+        for (LivingEntity e : AbilityUtil.inRadius(owner, jaws, 2.8)) {
+            Vec3 c = e.getBoundingBox().getCenter();
+            boolean weak = e.getHealth() <= e.getMaxHealth() * 0.5f || e.getMaxHealth() <= 30f;
+            if ((e == v || v == null) && weak && owner instanceof ServerPlayer sp && Contracts.swallow(sp, e)) {
+                v = null; // gone down whole
+                AbilityUtil.soundAt(level, jaws, ModSounds.BLOOD_DRINK.get(), 1.6f, 0.5f);
+                Fx.smoke(level, jaws, 6, 0.4);
+                sp.displayClientMessage(Component.translatable("msg.csm.snake_swallowed", e.getDisplayName(),
+                        Contracts.bellyCount(sp), Contracts.BELLY_SIZE).withStyle(ChatFormatting.DARK_GREEN), true);
+                continue;
+            }
+            AbilityUtil.hurtIgnoringIFrames(owner, e, e == victim ? 20f : 10f);
+            AbilityUtil.blood(level, c, 50, 0.45);
+            Fx.gore(level, c, 2);
+        }
+    }
+
+    /** It rises, opens its mouth and lets out the last thing it swallowed, whole and healed, to fight for you. */
+    private void snakeRelease(ServerLevel level, LivingEntity owner) {
+        if (tickCount == 2) {
+            AbilityUtil.soundAt(level, position(), ModSounds.DEVIL_ROAR.get(), 1.4f, 1.2f);
+            Fx.clods(level, position(), 24, 0.45);
+        }
+        if (tickCount != 14 || !(owner instanceof ServerPlayer sp)) {
+            return;
+        }
+        Vec3 mouth = anchor.add(facing().scale(1.7)).add(0, 1.4, 0);
+        LivingEntity out = Contracts.release(sp, mouth, getYRot() + 180f);
+        AbilityUtil.soundAt(level, mouth, ModSounds.DEVIL_GROWL.get(), 1.6f, 0.7f);
+        Fx.smoke(level, mouth, 10, 0.5);
+        AbilityUtil.blood(level, mouth, 20, 0.4);
+        if (out != null) {
+            if (victim() != null && out instanceof net.minecraft.world.entity.Mob m) {
+                m.setTarget(victim());
+                sp.setLastHurtMob(victim());
+            }
+            sp.displayClientMessage(Component.translatable("msg.csm.snake_released", out.getDisplayName())
+                    .withStyle(ChatFormatting.DARK_GREEN), true);
+        }
+    }
+
+    /** The tail comes up beside the contractor and swats across everything in front of them. */
+    private void snakeTail(ServerLevel level, LivingEntity owner) {
+        if (tickCount == 2) {
+            Fx.clods(level, position(), 20, 0.4);
+        }
+        if (tickCount != 10) {
+            return;
+        }
+        Vec3 fwd = facing();
+        Vec3 side = new Vec3(fwd.z, 0, -fwd.x); // from the contractor's right to their left
+        Vec3 eye = owner.getEyePosition();
+        AbilityUtil.soundAt(level, eye, ModSounds.DEVIL_GUST.get(), 1.8f, 0.7f);
+        Fx.slash(level, eye.add(fwd.scale(3.0)).add(0, -0.6, 0), side, 3.6);
+        for (LivingEntity e : AbilityUtil.inCone(owner, eye, fwd, 7.5, 80)) {
+            AbilityUtil.hurtIgnoringIFrames(owner, e, 13f);
+            Vec3 fling = side.scale(1.6).add(fwd.scale(0.5));
+            e.setDeltaMovement(fling.x, 0.6, fling.z);
+            e.hurtMarked = true;
+            AbilityUtil.blood(level, e.getBoundingBox().getCenter(), 20, 0.3);
+        }
+    }
+
+    // ================================================================== Octopus Devil
+    /** Tentacles out of the ink coil round the target (and up to three others near it), lift, squeeze and slam. */
+    private void octopusGrab(ServerLevel level, LivingEntity owner) {
+        if (tickCount % 5 == 1 && tickCount < 44) {
+            Fx.ink(level, anchor.add(0, 0.3, 0), 6, 1.4);
+        }
+        if (tickCount == 6) {
+            AbilityUtil.soundAt(level, anchor, ModSounds.WHIP_LASH.get(), 1.4f, 0.5f);
+            LivingEntity v = victim();
+            if (v != null && v.distanceToSqr(anchor) < 16) {
+                held.add(v);
+            }
+            for (LivingEntity e : AbilityUtil.inRadius(owner, anchor.add(0, 1, 0), 4.5)) {
+                if (held.size() >= 4) {
+                    break;
+                }
+                if (!held.contains(e)) {
+                    held.add(e);
+                }
+            }
+        }
+        if (tickCount < 6 || tickCount > 40) {
+            return;
+        }
+        held.removeIf(e -> !e.isAlive());
+        for (int i = 0; i < held.size(); i++) {
+            LivingEntity e = held.get(i);
+            double a = i == 0 ? 0 : (i - 1) * 2.1;
+            Vec3 ring = i == 0 ? Vec3.ZERO : new Vec3(Math.cos(a) * 1.8, 0, Math.sin(a) * 1.8);
+            double lift = Math.min(2.4, (tickCount - 6) * 0.18);
+            if (tickCount < 38) {
+                hold(e, anchor.add(ring).add(0, lift, 0));
+                e.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 5)));
+            }
+            if (tickCount % 8 == 6) {
+                AbilityUtil.hurtIgnoringIFrames(owner, e, 3f);
+                Fx.ink(level, e.getBoundingBox().getCenter(), 2, 0.3);
+            }
+            if (tickCount == 38) {
+                e.setDeltaMovement(0, -1.6, 0);
+                e.hurtMarked = true;
+            }
+            if (tickCount == 40) {
+                AbilityUtil.hurtIgnoringIFrames(owner, e, 12f);
+                AbilityUtil.blood(level, e.getBoundingBox().getCenter(), 36, 0.4);
+                Fx.clods(level, e.position(), 16, 0.4);
+            }
+        }
+        if (tickCount == 40) {
+            AbilityUtil.soundAt(level, anchor, ModSounds.DEVIL_SLAM.get(), 1.8f, 0.8f);
+            Fx.shockwave(level, anchor, 3.8, Fx.STEEL_RING);
+        }
     }
 
     // ================================================================== plumbing

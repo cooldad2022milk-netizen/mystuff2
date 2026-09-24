@@ -40,6 +40,9 @@ public final class ContractAbilities {
             case CURSE -> List.of(new CurseNail());
             case FUTURE -> List.of(new FutureSight());
             case GHOST -> List.of(new GhostHand(), new GhostFling());
+            case SNAKE -> List.of(new SnakeSwallow(), new SnakeRelease(), new SnakeTail());
+            case OCTOPUS -> List.of(new OctopusGrab(), new OctopusInk(), new TentacleLift());
+            case DOLL -> List.of(new DollTouch(), new DollCommand());
         };
     }
 
@@ -257,6 +260,274 @@ public final class ContractAbilities {
             }
             ContractSummonEntity.summon(player.serverLevel(), Kind.GHOST_FLING, player, t, t.position(),
                     flat(t.position().subtract(player.position())));
+        }
+    }
+
+    // ================================================================== Snake Devil (Sawatari)
+    /** A command costs a fingernail. */
+    private static final float FINGERNAIL = 1f;
+
+    /** The snake's head comes up under the target, facing the contractor. */
+    private static Vec3 snakeFacing(ServerPlayer player, Vec3 at) {
+        Vec3 f = flat(player.position().subtract(at));
+        return f.lengthSqr() > 1e-4 ? f : flat(player.getLookAngle()).reverse();
+    }
+
+    /**
+     * "Snake - swallow it." The Snake Devil's head bursts up out of the ground under the prey, its mouth of interlocking
+     * hands wide open, and swallows it whole. Anything weak enough is kept in its belly to be let out later; the rest
+     * is badly bitten.
+     */
+    public static class SnakeSwallow extends ContractAbility {
+        public SnakeSwallow() {
+            super(Contract.SNAKE, "contract_snake_swallow");
+            timing(16, 220);
+            anim("contract_snake", "");
+            reach(24);
+            flesh(FINGERNAIL);
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            if (run.tick != 5) {
+                return;
+            }
+            LivingEntity t = target(run);
+            Vec3 at = t != null ? t.position() : Contracts.aimPoint(player, reach);
+            AbilityUtil.sound(player, ModSounds.DEVIL_GROWL.get(), 1.0f, 1.4f);
+            ContractSummonEntity.summon(player.serverLevel(), Kind.SNAKE_SWALLOW, player, t, at, snakeFacing(player, at));
+        }
+    }
+
+    /**
+     * "Release." The snake rises where you point and spits out the last thing it swallowed: whole again, healed, and
+     * fighting for you for two minutes. It costs a fingernail and a nosebleed.
+     */
+    public static class SnakeRelease extends ContractAbility {
+        public SnakeRelease() {
+            super(Contract.SNAKE, "contract_snake_release");
+            timing(16, 300);
+            anim("contract_snake_release", "");
+            reach(16);
+            flesh(FINGERNAIL + 2f);
+        }
+
+        @Override
+        public String checkUse(ServerPlayer player, HybridData data) {
+            String fail = super.checkUse(player, data);
+            if (fail != null) {
+                return fail;
+            }
+            return Contracts.bellyCount(player) == 0 ? "msg.csm.snake_empty" : null;
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            if (run.tick == 2) {
+                AbilityUtil.blood(player.serverLevel(), player.getEyePosition().add(player.getLookAngle().scale(0.2))
+                        .add(0, -0.15, 0), 8, 0.05); // the nosebleed
+            }
+            if (run.tick != 5) {
+                return;
+            }
+            LivingEntity t = target(run);
+            Vec3 at = Contracts.aimPoint(player, reach);
+            if (t != null && t.distanceTo(player) > 4) {
+                at = t.position().add(flat(player.position().subtract(t.position())).normalize().scale(3.0));
+            }
+            ContractSummonEntity.summon(player.serverLevel(), Kind.SNAKE_RELEASE, player, t, at, snakeFacing(player, at));
+        }
+    }
+
+    /** The Snake Devil's thick tail bursts out of the ground beside you and swats everything in front of you away. */
+    public static class SnakeTail extends ContractAbility {
+        public SnakeTail() {
+            super(Contract.SNAKE, "contract_snake_tail");
+            timing(14, 90);
+            anim("contract_snake_tail", "");
+            reach(8);
+            flesh(FINGERNAIL);
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            if (run.tick != 2) {
+                return;
+            }
+            Vec3 fwd = flat(player.getLookAngle()).normalize();
+            Vec3 right = new Vec3(-fwd.z, 0, fwd.x);
+            Vec3 at = player.position().add(right.scale(2.2)).add(fwd.scale(0.5));
+            AbilityUtil.sound(player, ModSounds.DEVIL_GROWL.get(), 1.0f, 1.2f);
+            ContractSummonEntity.summon(player.serverLevel(), Kind.SNAKE_TAIL, player, null, at, fwd);
+        }
+    }
+
+    // ================================================================== Octopus Devil (Yoshida)
+    /**
+     * Cross your index and middle fingers: the Octopus Devil's tentacles come up out of clouds of ink round the target,
+     * coil round it (and whatever stands next to it), lift, squeeze and smash it down.
+     */
+    public static class OctopusGrab extends ContractAbility {
+        public OctopusGrab() {
+            super(Contract.OCTOPUS, "contract_octopus");
+            timing(16, 180);
+            anim("contract_octopus", "");
+            reach(24);
+            hunger(8f);
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            if (run.tick != 5) {
+                return;
+            }
+            LivingEntity t = target(run);
+            Vec3 at = t != null ? t.position() : Contracts.aimPoint(player, reach);
+            AbilityUtil.sound(player, ModSounds.SHARK_DIVE.get(), 1.2f, 0.6f);
+            ContractSummonEntity.summon(player.serverLevel(), Kind.OCTOPUS_GRAB, player, t, at,
+                    flat(at.subtract(player.position())));
+        }
+    }
+
+    /** The Octopus Devil sprays a cloud of ink round you: everything in it is blind and loses sight of you. */
+    public static class OctopusInk extends ContractAbility {
+        public OctopusInk() {
+            super(Contract.OCTOPUS, "contract_octopus_ink");
+            timing(12, 320);
+            anim("contract_octopus_ink", "");
+            hunger(4f);
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            if (run.tick != 4) {
+                return;
+            }
+            ServerLevel level = player.serverLevel();
+            Vec3 c = player.position().add(0, 1.0, 0);
+            Fx.ink(level, c, 90, 2.8);
+            Fx.ink(level, c.add(0, 1.2, 0), 40, 3.5);
+            AbilityUtil.sound(player, ModSounds.SHARK_DIVE.get(), 1.4f, 0.5f);
+            for (LivingEntity e : AbilityUtil.inRadius(player, c, 8)) {
+                e.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.BLINDNESS, 120, 0)));
+                e.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1)));
+                if (e instanceof Mob m && m.getTarget() == player) {
+                    m.setTarget(null);
+                }
+            }
+            player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.INVISIBILITY, 70, 0)));
+            player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 70, 1)));
+        }
+    }
+
+    /** A tentacle comes up out of a puddle of ink under your feet and flings you the way you're looking. */
+    public static class TentacleLift extends ContractAbility {
+        public TentacleLift() {
+            super(Contract.OCTOPUS, "contract_octopus_lift");
+            timing(40, 120);
+            anim("contract_octopus_lift", "");
+            hunger(3f);
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            player.fallDistance = 0;
+            if (run.tick == 1) {
+                ContractSummonEntity.summon(player.serverLevel(), Kind.OCTOPUS_LIFT, player, null, player.position(),
+                        flat(player.getLookAngle()));
+                Fx.ink(player.serverLevel(), player.position().add(0, 0.2, 0), 20, 0.8);
+            }
+            if (run.tick == 6) {
+                Vec3 look = player.getLookAngle();
+                Vec3 f = flat(look).lengthSqr() > 1e-4 ? flat(look).normalize() : Vec3.ZERO;
+                player.setDeltaMovement(f.x * 1.5, 0.95 + Math.max(0, look.y) * 0.6, f.z * 1.5);
+                player.hurtMarked = true;
+                AbilityUtil.sound(player, ModSounds.DEVIL_GUST.get(), 1.2f, 1.1f);
+            }
+        }
+    }
+
+    // ================================================================== Doll Devil (Santa Claus)
+    /**
+     * Touch someone and they are your doll: they obey you, one of their arms is a blade now, and there is no turning
+     * them back. Anyone a doll hurts becomes a doll too. It does nothing to devils, hybrids or fiends.
+     */
+    public static class DollTouch extends ContractAbility {
+        public DollTouch() {
+            super(Contract.DOLL, "contract_doll_touch");
+            timing(10, 100);
+            anim("contract_doll_touch", "");
+            reach(4.5);
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            if (run.tick != 4) {
+                return;
+            }
+            LivingEntity t = target(run);
+            if (t == null || t.distanceTo(player) > reach + t.getBbWidth()) {
+                player.displayClientMessage(Component.translatable("msg.csm.doll_nothing").withStyle(ChatFormatting.GRAY),
+                        true);
+                return;
+            }
+            ServerLevel level = player.serverLevel();
+            if (!Contracts.dollable(t)) {
+                player.displayClientMessage(Component.translatable("msg.csm.doll_immune", t.getDisplayName())
+                        .withStyle(ChatFormatting.GRAY), true);
+                return;
+            }
+            if (!Contracts.makeDoll(level, player, t)) {
+                player.displayClientMessage(Component.translatable("msg.csm.doll_max", Contracts.MAX_DOLLS)
+                        .withStyle(ChatFormatting.GRAY), true);
+                return;
+            }
+            player.displayClientMessage(Component.translatable("msg.csm.doll_made", t.getDisplayName(),
+                    Contracts.dollCount(level, player)).withStyle(ChatFormatting.RED), true);
+        }
+    }
+
+    /** Every doll you have turns on what you point at (or, pointing at nothing, comes back to you). */
+    public static class DollCommand extends ContractAbility {
+        public DollCommand() {
+            super(Contract.DOLL, "contract_doll_command");
+            timing(12, 60);
+            anim("contract_doll_command", "");
+            reach(48);
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            if (run.tick != 4) {
+                return;
+            }
+            ServerLevel level = player.serverLevel();
+            LivingEntity t = target(run);
+            if (t != null && t.getPersistentData().getBoolean(Contracts.DOLL)) {
+                t = null; // pointing at one of your own dolls: call them in
+            }
+            if (t != null) {
+                player.setLastHurtMob(t); // thralls go for what their master last hurt
+            }
+            int n = 0;
+            for (Mob m : level.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(Contracts.DOLL_RANGE),
+                    m -> m.getPersistentData().getBoolean(Contracts.DOLL)
+                            && m.getPersistentData().hasUUID(com.csm.hybrids.entity.devil.DevilEntity.THRALL_TAG)
+                            && m.getPersistentData().getUUID(com.csm.hybrids.entity.devil.DevilEntity.THRALL_TAG)
+                            .equals(player.getUUID()))) {
+                m.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 120, 1)));
+                if (t != null) {
+                    m.setTarget(t);
+                } else {
+                    m.setTarget(null);
+                    m.getNavigation().moveTo(player, 1.3);
+                }
+                Fx.stars(level, m.getEyePosition().add(0, 0.4, 0), 2, 0.15);
+                n++;
+            }
+            AbilityUtil.sound(player, ModSounds.CONTROL_DOMINATE.get(), 0.8f, 1.5f);
+            player.displayClientMessage(Component.translatable(t != null ? "msg.csm.doll_attack" : "msg.csm.doll_recall",
+                    n).withStyle(ChatFormatting.RED), true);
         }
     }
 

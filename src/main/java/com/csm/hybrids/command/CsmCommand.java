@@ -60,7 +60,8 @@ public final class CsmCommand {
             return 0;
         }
         if (!type.playable()) {
-            ctx.getSource().sendFailure(Component.translatable("commands.csm.not_playable", type.displayName()));
+            ctx.getSource().sendFailure(Component.translatable(type.takeover() ? "commands.csm.takeover_only"
+                    : "commands.csm.not_playable", type.displayName(), type.host().displayName()));
             return 0;
         }
         HybridLogic.setType(player, data, type);

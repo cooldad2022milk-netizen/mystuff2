@@ -57,6 +57,10 @@ public final class AbilityUtil {
                 || e instanceof ArmorStand || user.isAlliedTo(e)) {
             return false;
         }
+        net.minecraft.nbt.CompoundTag tag = e.getPersistentData();
+        if (tag.hasUUID(DevilEntity.THRALL_TAG) && tag.getUUID(DevilEntity.THRALL_TAG).equals(user.getUUID())) {
+            return false; // your own thralls, dolls and what your snake let out
+        }
         if (user instanceof Player player) {
             return !(e instanceof Player other) || player.canHarmPlayer(other);
         }

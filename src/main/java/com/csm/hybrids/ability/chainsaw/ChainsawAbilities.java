@@ -6,6 +6,7 @@ import com.csm.hybrids.ability.AbilityRun;
 import com.csm.hybrids.ability.AbilityUtil;
 import com.csm.hybrids.entity.ChainHookEntity;
 import com.csm.hybrids.hybrid.HybridData;
+import com.csm.hybrids.hybrid.HybridLogic;
 import com.csm.hybrids.hybrid.HybridType;
 import com.csm.hybrids.registry.ModSounds;
 import net.minecraft.server.level.ServerLevel;
@@ -219,6 +220,141 @@ public final class ChainsawAbilities {
                         AbilityUtil.blood(level, e.getBoundingBox().getCenter(), 30, 0.3);
                         AbilityUtil.sound(player, ModSounds.CHAINSAW_CUT.get(), 1f, 1.1f);
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * The chains come off the saws and wrap round the target - and round Denji too - so neither of them gets away
+     * (how he beat Reze: bound to her, he dragged her into the water where the Bomb Devil can't go off). The target is
+     * held against you and can barely fight; in water it drowns.
+     */
+    public static class ChainBind extends Ability {
+        public ChainBind() {
+            super(HybridType.CHAINSAW, "chain_bind");
+            timing(70, 260);
+            cost(6);
+            anim("chainsaw_chain_bind", "throw");
+        }
+
+        @Override
+        public void tick(ServerPlayer player, HybridData data, AbilityRun run) {
+            ServerLevel level = player.serverLevel();
+            if (run.tick == 3) {
+                AbilityUtil.sound(player, ModSounds.CHAIN_THROW.get(), 1.1f, 0.8f);
+                EntityHitResult hit = AbilityUtil.raycastEntity(player, 7.0);
+                if (hit != null && hit.getEntity() instanceof LivingEntity target
+                        && !target.getType().is(Tags.EntityTypes.BOSSES) && target.getBbWidth() < 3f) {
+                    run.target = target;
+                    AbilityUtil.sound(player, ModSounds.CHAIN_HIT.get(), 1.2f, 0.9f);
+                } else {
+                    run.failed = true;
+                    run.duration = Math.min(run.duration, 10);
+                }
+                return;
+            }
+            if (run.failed || run.tick < 4 || !(run.target instanceof LivingEntity target) || !target.isAlive()) {
+                return;
+            }
+            Vec3 look = player.getLookAngle();
+            Vec3 flat = new Vec3(look.x, 0, look.z).lengthSqr() < 1e-4 ? new Vec3(0, 0, 1)
+                    : new Vec3(look.x, 0, look.z).normalize();
+            if (run.tick < 66) {
+                // lashed chest to chest: it goes where you go
+                Vec3 hold = player.position().add(flat.scale(0.75 + target.getBbWidth() * 0.5));
+                target.setDeltaMovement(hold.subtract(target.position()).scale(0.5));
+                target.hurtMarked = true;
+                target.fallDistance = 0;
+                target.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 5, 6, false, false, false)));
+                target.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.WEAKNESS, 5, 3, false, false, false)));
+                if (target instanceof net.minecraft.world.entity.Mob mob) {
+                    mob.getNavigation().stop();
+                }
+                player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 5, 1, false, false, false)));
+                boolean water = target.isInWater() || player.isInWater();
+                if (water) {
+                    // under water with you: it drowns (you are a hybrid - your heart drags you back)
+                    target.setAirSupply(Math.max(-20, target.getAirSupply() - 12));
+                    if (target instanceof ServerPlayer tp) {
+                        tp.setAirSupply(Math.max(-20, tp.getAirSupply() - 12));
+                    }
+                }
+                if (run.tick % 10 == 4) {
+                    Vec3 a = player.position().add(0, 1.0, 0);
+                    Vec3 b = target.getBoundingBox().getCenter();
+                    Fx.chain(level, a.add(AbilityUtil.right(player).scale(0.5)), b.add(AbilityUtil.right(player).scale(-0.5)), 12);
+                    Fx.chain(level, a.add(AbilityUtil.right(player).scale(-0.5)), b.add(AbilityUtil.right(player).scale(0.5)), 12);
+                    Fx.chain(level, a.add(0, 0.4, 0), b.add(0, -0.3, 0), 12);
+                    AbilityUtil.hurtIgnoringIFrames(player, target, water ? 5f : 2.5f);
+                    AbilityUtil.blood(level, b, 10, 0.25);
+                    AbilityUtil.sound(player, ModSounds.CHAIN_HIT.get(), 0.7f, 1.2f);
+                }
+            }
+            if (run.tick == 66) {
+                AbilityUtil.push(target, player.position(), 0.6, 0.2);
+                AbilityUtil.sound(player, ModSounds.CHAIN_THROW.get(), 1.0f, 1.3f);
+            }
+        }
+    }
+
+    /**
+     * Hero of Hell: stop holding Pochita back. The Chainsaw Devil's true form tears out of Denji - huge, black, a
+     * saw from its head and one from each split forearm, guts round its neck like a scarf - and takes him over for
+     * half a minute. Its own moves replace yours until it lets go; then you are left standing in human form, spent.
+     * It also happens on its own when Denji dies with blood in him (see HybridLogic#tryRevive).
+     */
+    public static class HeroOfHell extends Ability {
+        /** How long Pochita stays out when called. */
+        public static final int TICKS = 600;
+        /** How long it stays out when it comes out on its own, over Denji's body. */
+        public static final int REVIVE_TICKS = 400;
+
+        public HeroOfHell() {
+            super(HybridType.CHAINSAW, "hero_of_hell");
+            timing(30, 2400);
+            cost(50);
+            anim("chainsaw_hero_of_hell", "roar");
+            revs();
+        }
+
+        @Override
+        public String checkUse(ServerPlayer player, HybridData data) {
+            String fail = super.checkUse(player, data);
+            if (fail != null) {
+                return fail;
+            }
+            return com.csm.hybrids.ability.TriggerAbility.roomToManifest(player, HybridType.CHAINSAW_DEVIL)
+                    ? null : "msg.csm.no_room";
+        }
+
+        @Override
+        public void tick(ServerPlayer player, HybridData data, AbilityRun run) {
+            ServerLevel level = player.serverLevel();
+            Vec3 chest = player.position().add(0, 1.2, 0);
+            if (run.tick == 2 || run.tick == 9 || run.tick == 15) {
+                AbilityUtil.sound(player, ModSounds.HEART_BEAT.get(), 1.0f + run.tick * 0.05f, 0.7f);
+            }
+            if (run.tick >= 6 && run.tick < 28 && run.tick % 3 == 0) {
+                // the black body pushes out through him
+                AbilityUtil.blood(level, chest, 12 + run.tick, 0.35);
+                Fx.sparks(level, chest, player.getLookAngle(), 4, 0.4);
+                AbilityUtil.sound(player, ModSounds.CHAINSAW_REV.get(), 0.8f + run.tick * 0.03f, 0.6f + run.tick * 0.02f);
+            }
+            if (run.tick == 20) {
+                AbilityUtil.sound(player, ModSounds.CHAINSAW_START.get(), 2.0f, 0.55f);
+            }
+            if (run.tick == 29) {
+                HybridLogic.takeover(player, data, HybridType.CHAINSAW_DEVIL, TICKS);
+                AbilityUtil.sound(player, ModSounds.DEVIL_ROAR.get(), 2.2f, 0.6f);
+                AbilityUtil.blood(level, chest, 100, 0.9);
+                Fx.gore(level, chest, 6);
+                Fx.impact(level, chest.add(0, 0.8, 0), 3.2);
+                Fx.shockwave(level, player.position(), 6.0, Fx.BLOOD_RING);
+                Fx.exhaust(level, chest.add(0, 1.4, 0), 20);
+                for (LivingEntity e : AbilityUtil.inRadius(player, chest, 4.0)) {
+                    AbilityUtil.hurt(player, e, 6f);
+                    AbilityUtil.push(e, player.position(), 1.4, 0.4);
                 }
             }
         }

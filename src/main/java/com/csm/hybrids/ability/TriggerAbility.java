@@ -56,14 +56,14 @@ public class TriggerAbility extends Ability {
 
     @Override
     public String checkUse(ServerPlayer player, HybridData data) {
-        if (type.monster() && !data.isTransformed() && !roomToManifest(player)) {
+        if (type.monster() && !data.isTransformed() && !roomToManifest(player, type)) {
             return "msg.csm.no_room";
         }
         return null; // a failed start is part of the fantasy (the engine sputters)
     }
 
     /** A monster devil's true form is bigger than a person: it needs the space to stand up in. */
-    private boolean roomToManifest(ServerPlayer player) {
+    public static boolean roomToManifest(ServerPlayer player, HybridType type) {
         com.csm.hybrids.devil.DevilSpec spec = com.csm.hybrids.devil.DevilSpecs.of(type);
         double hw = spec.playerWidth / 2.0;
         net.minecraft.world.phys.AABB box = new net.minecraft.world.phys.AABB(player.getX() - hw, player.getY() + 0.01,

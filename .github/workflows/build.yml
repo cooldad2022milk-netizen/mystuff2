@@ -270,7 +270,7 @@ jobs:
           MC="$PWD/mc"
           set +e
           timeout 75m xvfb-run -a -s "-screen 0 1280x720x24" portablemc --main-dir "$MC" --work-dir "$MC" start \
-            --jvm "$JAVA_HOME/bin/java" --jvm-args="-Xmx3G -Dcsm.showcase=true -Dcsm.showcase.all=true" \
+            --jvm "$JAVA_HOME/bin/java" --jvm-args="-Xmx2G -Dcsm.showcase=true -Dcsm.showcase.all=true" \
             --resolution 1280x720 -u Dev "$VERSION" > client-console.log 2>&1
           echo "client exit: $?"
           exit 0

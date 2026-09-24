@@ -332,6 +332,7 @@ Damage multiplier, block griefing (Piercing Bolt holes, fire and Bomb Devil crat
   - `[csm] assets: ... textures, ... models, ...` then `everything is there` means all is well.
   - `the mod's textures/models did not load at all` means the game's resource loading failed and took the mod's textures with it: every icon and effect goes invisible, and every hybrid form then crashes when drawn. Search further up the log for `Caught error loading resourcepacks` or `GeckoLib` to see which mod or resource pack broke it.
   - `N missing: [...]` lists exactly which files are missing.
+- **Memory:** the devils are detailed models, and GeckoLib builds them all in memory while the game loads. Give Minecraft at least **4 GB** (launcher → Installations → Edit → More options → JVM arguments: change `-Xmx2G` to `-Xmx4G`). If memory runs out while resources load, Minecraft drops every mod's textures, the same symptom as above.
 - **OptiFine** is known to break GeckoLib and PlayerAnimator models on Forge 1.20.1. Try without it (Embeddium works).
 - **If the game crashes**, the report is in `.minecraft/crash-reports/crash-<date>-client.txt`. Please share it, or `logs/latest.log`. If a move or model breaks, the mod now stops just that thing and logs `[csm] ... broke and was stopped` with the details, instead of crashing.
 

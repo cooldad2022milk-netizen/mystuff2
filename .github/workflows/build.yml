@@ -191,7 +191,9 @@ jobs:
           printf '%s\n' 'level-type=minecraft\:flat' 'online-mode=false' 'spawn-monsters=false' 'spawn-animals=false' \
             'spawn-npcs=false' 'generate-structures=false' 'max-tick-time=-1' 'view-distance=6' 'simulation-distance=6' \
             > server.properties
-          echo "-Dcsm.smoketest=true" >> user_jvm_args.txt
+          # (the installer's file ends in a comment with no newline: start a fresh line)
+          printf '\n-Dcsm.smoketest=true\n' >> user_jvm_args.txt
+          tail -3 user_jvm_args.txt
       - name: Smoke test with the built jar on a real Forge server
         run: |
           cd prod

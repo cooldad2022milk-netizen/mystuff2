@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "YXY",
+    "PBP",
+    " P "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "B": {
+      "item": "csm:blood_vial"
+    },
+    "X": {
+      "item": "minecraft:bone"
+    },
+    "Y": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "result": {
+    "item": "csm:curse_devil_contract",
+    "count": 1
+  }
+}

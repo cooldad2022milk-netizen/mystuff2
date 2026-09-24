@@ -28,6 +28,13 @@ public class ContractSummonRenderer extends GeoEntityRenderer<ContractSummonEnti
         this.shadowRadius = 0f;
     }
 
+    @Override
+    public void render(ContractSummonEntity summon, float entityYaw, float partialTick, PoseStack poseStack,
+                       MultiBufferSource bufferSource, int packedLight) {
+        SafeRender.draw("contract model " + summon.kind().model, poseStack,
+                () -> super.render(summon, entityYaw, partialTick, poseStack, bufferSource, packedLight));
+    }
+
     /** Not a living thing: turn it by its own yaw (its front faces the way it attacks). */
     @Override
     protected void applyRotations(ContractSummonEntity summon, PoseStack poseStack, float ageInTicks, float rotationYaw,

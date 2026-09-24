@@ -35,6 +35,13 @@ public class DevilRenderer extends GeoEntityRenderer<DevilEntity> {
     }
 
     @Override
+    public void render(DevilEntity devil, float entityYaw, float partialTick, PoseStack poseStack,
+                       MultiBufferSource bufferSource, int packedLight) {
+        SafeRender.draw("devil model " + devil.devilType().id, poseStack,
+                () -> super.render(devil, entityYaw, partialTick, poseStack, bufferSource, packedLight));
+    }
+
+    @Override
     public void preRender(PoseStack poseStack, DevilEntity devil, BakedGeoModel model, MultiBufferSource bufferSource,
                           VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay,
                           float red, float green, float blue, float alpha) {

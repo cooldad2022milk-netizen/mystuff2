@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "YXY",
+    "PBP",
+    " P "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "B": {
+      "item": "csm:blood_vial"
+    },
+    "X": {
+      "item": "minecraft:blaze_powder"
+    },
+    "Y": {
+      "item": "minecraft:netherrack"
+    }
+  },
+  "result": {
+    "item": "csm:hell_devil_contract",
+    "count": 1
+  }
+}

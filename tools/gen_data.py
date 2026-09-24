@@ -329,6 +329,29 @@ FIEND_LOOT = {
 }
 
 
+# Contracts in survival: a devil's contract is paper sealed in blood (a blood vial - use a glass bottle on a mob)
+# around something of the devil's. Pattern keys: P paper, B blood vial, X/Y the devil's part.
+CONTRACT_RECIPES = {
+    "fox_devil_contract_paw": ([" X ", "PBP", " P "], {"X": "minecraft:sweet_berries"}),
+    # the Fox Devil lends its head to few: gold for the handsome
+    "fox_devil_contract_head": (["YXY", "PBP", " P "], {"X": "minecraft:sweet_berries", "Y": "minecraft:gold_ingot"}),
+    "curse_devil_contract": (["YXY", "PBP", " P "], {"X": "minecraft:bone", "Y": "minecraft:iron_nugget"}),
+    "future_devil_contract": ([" X ", "PBP", " P "], {"X": "minecraft:ender_eye"}),
+    "ghost_devil_contract": ([" X ", "PBP", " P "], {"X": "minecraft:phantom_membrane"}),
+    "snake_devil_contract": ([" X ", "PBP", " P "], {"X": "minecraft:scute"}),
+    "octopus_devil_contract": ([" X ", "PBP", " P "], {"X": "minecraft:ink_sac"}),
+    "doll_devil_contract": ([" X ", "PBP", " P "], {"X": "minecraft:armor_stand"}),
+    "hell_devil_contract": (["YXY", "PBP", " P "], {"X": "minecraft:blaze_powder", "Y": "minecraft:netherrack"}),
+}
+
+
+def contract_recipe(item, pattern, extra):
+    key = {"P": {"item": "minecraft:paper"}, "B": {"item": "csm:blood_vial"}}
+    key.update({k: {"item": v} for k, v in extra.items()})
+    return {"type": "minecraft:crafting_shaped", "category": "misc", "pattern": pattern, "key": key,
+            "result": {"item": "csm:" + item, "count": 1}}
+
+
 def write(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -363,9 +386,11 @@ def main():
         write(os.path.join(RES, "data", "csm", "loot_modifiers", item + ".json"),
               {"type": "csm:devil_heart_loot", "conditions": [], "item": "csm:" + item, "tables": tables,
                "chance": chance})
+    for item, (pattern, extra) in CONTRACT_RECIPES.items():
+        write(os.path.join(RES, "data", "csm", "recipes", item + ".json"), contract_recipe(item, pattern, extra))
     write(os.path.join(RES, "data", "forge", "loot_modifiers", "global_loot_modifiers.json"),
           {"replace": False, "entries": entries})
-    print(len(lang), "lang keys,", len(entries), "loot modifiers")
+    print(len(lang), "lang keys,", len(entries), "loot modifiers,", len(CONTRACT_RECIPES), "recipes")
 
 
 if __name__ == "__main__":

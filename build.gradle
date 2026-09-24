@@ -44,12 +44,18 @@ minecraft {
                 property 'csm.showcase.types', project.findProperty('csmShowcaseTypes') ?: ''
                 // -PcsmShowcaseDevils=control,bat : the full devils (mob fight, then becoming them)
                 property 'csm.showcase.devils', project.findProperty('csmShowcaseDevils') ?: ''
+                // -PcsmShowcaseAll : a quick pass of every hybrid, every devil, then every contract (what CI runs)
+                property 'csm.showcase.all', project.hasProperty('csmShowcaseAll') ? 'true' : 'false'
                 args '--width', '1280', '--height', '720'
             }
         }
 
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
+            // gradlew runServer -PcsmSmoke : headless smoke test of every hybrid, devil and contract (see SmokeTest)
+            if (project.hasProperty('csmSmoke')) {
+                property 'csm.smoketest', 'true'
+            }
             args '--nogui'
         }
     }

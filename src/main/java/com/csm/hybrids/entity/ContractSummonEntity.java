@@ -177,6 +177,14 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
             return;
         }
         ServerLevel level = (ServerLevel) level();
+        if (!com.csm.hybrids.util.Safe.run("contract summon " + kind.name().toLowerCase(java.util.Locale.ROOT),
+                () -> serverTick(level, kind))) {
+            discard(); // it broke: the devil goes back where it came from
+        }
+    }
+
+    private void serverTick(ServerLevel level, Kind kind) {
+        LivingEntity owner = this.owner;
         switch (kind) {
             case FOX_HEAD -> foxHead(level, owner);
             case FOX_PAW_SLAM -> pawSlam(level, owner);

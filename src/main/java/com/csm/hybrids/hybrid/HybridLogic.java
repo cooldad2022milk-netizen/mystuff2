@@ -11,6 +11,7 @@ import com.csm.hybrids.network.AnimSpec;
 import com.csm.hybrids.network.CsmNetwork;
 import com.csm.hybrids.network.PlayAnimPacket;
 import com.csm.hybrids.network.SyncHybridPacket;
+import com.csm.hybrids.util.Safe;
 import com.csm.hybrids.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -67,15 +68,25 @@ public final class HybridLogic {
             return;
         }
         AbilityRun run = new AbilityRun(ability, index);
-        ability.prepare(player, data, run);
+        if (!Safe.run(what(ability), () -> ability.prepare(player, data, run))) {
+            return;
+        }
         data.activeRun = run;
         if (ability.consumesBloodOnStart()) {
             data.addBlood(-ability.bloodCost());
         }
         data.setCooldown(index, ability.cooldown() + run.duration);
-        ability.start(player, data, run);
+        if (!Safe.run(what(ability), () -> ability.start(player, data, run))) {
+            data.activeRun = null;
+            sync(player, data);
+            return;
+        }
         broadcastAnim(player, run.anim);
         sync(player, data);
+    }
+
+    private static String what(Ability ability) {
+        return "move " + ability.type.id + "/" + ability.id;
     }
 
     public static void broadcastAnim(ServerPlayer player, AnimSpec spec) {
@@ -85,9 +96,10 @@ public final class HybridLogic {
     }
 
     public static void cancelRun(ServerPlayer player, HybridData data) {
-        if (data.activeRun != null) {
-            data.activeRun.ability.end(player, data, data.activeRun);
+        AbilityRun run = data.activeRun;
+        if (run != null) {
             data.activeRun = null;
+            Safe.run(what(run.ability), () -> run.ability.end(player, data, run));
             broadcastAnim(player, AnimSpec.stop());
         }
     }
@@ -103,7 +115,7 @@ public final class HybridLogic {
         if (run != null) {
             if (!player.isAlive()) {
                 data.activeRun = null;
-            } else {
+            } else if (!Safe.run(what(run.ability), () -> {
                 run.ability.tick(player, data, run);
                 run.tick++;
                 if (run.tick >= run.duration) {
@@ -112,6 +124,13 @@ public final class HybridLogic {
                         data.activeRun = null;
                     }
                 }
+            })) {
+                // it broke: drop it (and let the player move again)
+                if (data.activeRun == run) {
+                    data.activeRun = null;
+                }
+                broadcastAnim(player, AnimSpec.stop());
+                data.markDirty();
             }
         }
         if (data.inTakeover() && --data.takeoverTicks <= 0 && data.activeRun == null) {

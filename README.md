@@ -241,7 +241,27 @@ The barrel of an M1911 juts out from between your eyes, its hammer poking out of
 | Drink Blood | Heal by drinking |
 
 ## Devil contracts
-Public Safety's hunters don't become devils: they make **contracts** with them, pay the devil's price, and borrow a part of it. Contract papers turn up in structure chests. The contract devils also leave one behind when you beat them (the Fox gives its paw far more often than its head). The Snake, Octopus, Doll and Hell devils never turn up in person: their contracts are only found in chests. **Hold Use** on one to bite your thumb and seal it in blood. Its moves join your ability wheel (**V**, use with **R**), so a plain human gets a wheel too. You can hold several contracts at once, and on top of being a hybrid.
+Public Safety's hunters don't become devils: they make **contracts** with them, pay the devil's price, and borrow a part of it.
+
+**Getting a contract:**
+- **Craft it** (survival): a contract is paper sealed in blood around something of the devil's (see the table below). You get a **blood vial** by using an empty glass bottle on a mob.
+- **Find it**: contract papers turn up in structure chests.
+- **Creative**: every contract is in the mod's creative tab.
+- **Command**: `/csm contract <player> add <id>`. This needs cheats: in single player, open to LAN with **Allow Cheats: ON** or create the world with cheats on. On a server you need op.
+
+| Contract | Crafting (shaped: `P` paper, `B` blood vial) |
+|---|---|
+| Fox Devil (Paw) | ` S ` / `PBP` / ` P ` with S = sweet berries |
+| Fox Devil (Head) | `GSG` / `PBP` / ` P ` with G = gold ingot, S = sweet berries |
+| Curse Devil | `NbN` / `PBP` / ` P ` with N = iron nugget (the nail), b = bone |
+| Future Devil | ` E ` / `PBP` / ` P ` with E = eye of ender |
+| Ghost Devil | ` M ` / `PBP` / ` P ` with M = phantom membrane |
+| Snake Devil | ` T ` / `PBP` / ` P ` with T = turtle scute |
+| Octopus Devil | ` I ` / `PBP` / ` P ` with I = ink sac |
+| Doll Devil | ` A ` / `PBP` / ` P ` with A = armor stand |
+| Hell Devil | `NbN` / `PBP` / ` P ` with N = netherrack, b = blaze powder |
+
+Beyond crafting and chests, the contract devils also leave one behind when you beat them (the Fox gives its paw far more often than its head). The Snake, Octopus, Doll and Hell devils never turn up in person: their contracts are only found in chests. **Hold Use** on one to bite your thumb and seal it in blood. Its moves join your ability wheel (**V**, use with **R**), so a plain human gets a wheel too. You can hold several contracts at once, and on top of being a hybrid.
 
 | Contract | Found in (per chest) | Price | What you get |
 |---|---|---|---|
@@ -295,7 +315,8 @@ Every particle is the mod's own, and no vanilla particles are used:
 - billowing fireballs for the Bomb Devil's explosions, fuse sparks, and whip-crack streaks
 - bullet tracers, twinkling cosmos stars, drifting "Halloween" words and clods of earth
 
-## Commands (op)
+## Commands (op / cheats on)
+`/csm` only exists for players allowed to cheat: op on a server, or cheats on in single player (**Open to LAN → Allow Cheats: ON** works on an existing world).
 - `/csm hybrid <player> <none|any hybrid, fiend or full devil id>` (not the contract devils)
 - `/csm contract <player> <add|remove> <fox_head|fox_paw|curse|future|ghost|snake|octopus|doll|hell>` and `/csm contract <player> list`
 - `/csm blood <player> <amount>`
@@ -310,7 +331,13 @@ gradlew build
 ```
 The jar lands in `build/libs/`. Gradle compiles with a JDK 17 toolchain (Minecraft 1.20.1 targets Java 17); a JDK 17 must be installed. `gradlew runClient` launches a dev client.
 
-`gradlew runClient -PcsmShowcase` runs a **scripted screenshot tour**. It creates a flat world, replaces your heart with each devil heart, and runs each trigger and every ability. It also takes first-person shots while moves play. Screenshots go to `run/screenshots/csm_*.png`, then the game quits. Add `-PcsmShowcaseTypes=whip,bomb` to tour only some hybrids; the others just get the first-person check.
+`gradlew runClient -PcsmShowcase` runs a **scripted screenshot tour**. It creates a flat world, replaces your heart with each devil heart, and runs each trigger and every ability. It also takes first-person shots while moves play. Screenshots go to `run/screenshots/csm_*.png`, then the game quits. Add `-PcsmShowcaseTypes=whip,bomb` to tour only some hybrids; the others just get the first-person check. Add `-PcsmShowcaseDevils=spider,contracts` to tour devils (and `contracts`: sign every contract and use every contract move). `-PcsmShowcaseAll` tours everything.
+
+`gradlew runServer -PcsmSmoke` runs a **headless smoke test**. On a dedicated server, fake players become every hybrid, fiend and devil and use every move. They also sign every contract and use every contract move, and every devil mob uses each of its moves. It logs `[smoke] DONE ... failures=N` and stops. It needs `run/eula.txt` with `eula=true`; a flat world is fastest.
+
+GitHub Actions (`.github/workflows/build.yml`) runs the build, the smoke test and the full showcase (on a virtual display) on every push. The built jar is the run's `csm-mod-jar` artifact.
+
+If a move, devil or model ever breaks, the mod stops just that thing (the move ends, the summon vanishes, the model is skipped) and logs `[csm] ... broke and was stopped` with the stack trace, instead of crashing the game. Please report that log line.
 
 ## How the models and animations are made
 Everything visual is generated by the Python scripts in `tools/` (numpy + Pillow; `soundfile` for the sounds). You can edit and re-run them, or open the `.geo.json` files in Blockbench with the GeckoLib plugin.

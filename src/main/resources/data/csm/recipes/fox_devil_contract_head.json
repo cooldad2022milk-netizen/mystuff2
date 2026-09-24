@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "YXY",
+    "PBP",
+    " P "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "B": {
+      "item": "csm:blood_vial"
+    },
+    "X": {
+      "item": "minecraft:sweet_berries"
+    },
+    "Y": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "item": "csm:fox_devil_contract_head",
+    "count": 1
+  }
+}

@@ -113,6 +113,28 @@ public final class DevShowcase {
             Minecraft.getInstance().options.hideGui = false;
             Minecraft.getInstance().getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
         });
+        if (Boolean.getBoolean("csm.showcase.all")) {
+            // CI: every hybrid (one in full), every devil, every contract - screenshots and logs, then quit
+            at(0, () -> Minecraft.getInstance().options.renderDistance().set(6));
+            for (HybridType type : HybridType.values()) {
+                if (type == HybridType.CHAINSAW) {
+                    fullTour(type);
+                } else if (type != HybridType.NONE && !type.devil) {
+                    firstPersonPass(type);
+                }
+            }
+            for (HybridType type : HybridType.values()) {
+                if (type.devil) {
+                    devilTour(type);
+                }
+            }
+            contractTour();
+            at(20, () -> {
+                CsmMod.LOGGER.info("[showcase] DONE");
+                Minecraft.getInstance().stop();
+            });
+            return;
+        }
         String filter = System.getProperty("csm.showcase.types", "").trim();
         String devils = System.getProperty("csm.showcase.devils", "").trim();
         List<String> full = filter.isEmpty() ? List.of("chainsaw", "crossbow", "flamethrower", "whip", "bomb", "spear")
@@ -130,9 +152,16 @@ public final class DevShowcase {
             }
         }
         for (String id : devils.isEmpty() ? new String[0] : devils.split(",")) {
-            devilTour(HybridType.byId(id));
+            if (id.equals("contracts")) {
+                contractTour();
+            } else {
+                devilTour(HybridType.byId(id));
+            }
         }
-        at(20, () -> Minecraft.getInstance().stop());
+        at(20, () -> {
+            CsmMod.LOGGER.info("[showcase] DONE");
+            Minecraft.getInstance().stop();
+        });
     }
 
     /** A tough, brain-dead husk 6 blocks in front of the player (behind the front camera) to aim moves at. */
@@ -434,6 +463,114 @@ public final class DevShowcase {
         firstPersonMoves(type, 1, 2);
         at(4, () -> server(p -> HybridLogic.tryUseAbility(p, 0)));
         at(24, () -> shot(id + "_09_reverted"));
+    }
+
+    // ------------------------------------------------------------------ contracts
+    /**
+     * Every contract signed the way a player signs it (hold Use on the contract: bite the thumb, seal it in blood),
+     * then every contract move used on a dummy.
+     */
+    private static void contractTour() {
+        at(6, () -> {
+            cmd("kill @e[type=!minecraft:player]");
+            cmd("clear @s");
+            server(p -> {
+                HybridData d = HybridCapability.get(p);
+                if (d != null) {
+                    HybridLogic.setType(p, d, HybridType.NONE);
+                    for (com.csm.hybrids.contract.Contract c : d.contracts()) {
+                        com.csm.hybrids.contract.Contracts.breakContract(p, d, c);
+                    }
+                }
+                p.teleportTo(0, -60, 0);
+                p.setYRot(180);
+                p.setYHeadRot(180);
+                p.setXRot(10);
+            });
+            Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+        });
+        for (com.csm.hybrids.contract.Contract c : com.csm.hybrids.contract.Contract.values()) {
+            String id = "contract_" + c.id;
+            at(6, () -> cmd("item replace entity @s weapon.mainhand with csm:" + c.itemName()));
+            at(4, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                mc.options.keyUse.setDown(true);
+                if (mc.gameMode != null && mc.player != null) {
+                    mc.gameMode.useItem(mc.player, InteractionHand.MAIN_HAND);
+                }
+            });
+            at(com.csm.hybrids.item.ContractItem.SEAL_TICK, () -> shot(id + "_00_sign"));
+            at(com.csm.hybrids.item.ContractItem.USE_TICKS - com.csm.hybrids.item.ContractItem.SEAL_TICK + 6, () -> {
+                Minecraft.getInstance().options.keyUse.setDown(false);
+                server(p -> {
+                    HybridData d = HybridCapability.get(p);
+                    boolean signed = d != null && d.hasContract(c);
+                    CsmMod.LOGGER.info("[showcase] contract {} signed by holding Use: {}", c.id, signed);
+                    if (!signed && d != null) {
+                        CsmMod.LOGGER.error("[showcase] FAIL contract {} was not signed by using its item", c.id);
+                        com.csm.hybrids.contract.Contracts.sign(p, d, c);
+                    }
+                });
+            });
+        }
+        at(4, () -> {
+            cmd("clear @s");
+            com.csm.hybrids.hybrid.HybridData wheel = HybridCapability.get(Minecraft.getInstance().player);
+            if (wheel != null && wheel.hasAbilities()) {
+                Minecraft.getInstance().setScreen(new AbilityWheelScreen(wheel, false));
+            }
+        });
+        at(8, () -> shot("contracts_wheel"));
+        at(2, () -> Minecraft.getInstance().setScreen(null));
+        for (com.csm.hybrids.contract.Contract c : com.csm.hybrids.contract.Contract.values()) {
+            for (com.csm.hybrids.ability.Ability a : c.abilities()) {
+                String id = "contract_" + c.id + "_" + a.id;
+                at(4, () -> server(p -> {
+                    p.teleportTo(0, -60, 0);
+                    p.setYRot(180);
+                    p.setYHeadRot(180);
+                    p.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+                    HybridData d = HybridCapability.get(p);
+                    if (d != null) {
+                        d.setBlood(100);
+                        d.clearCooldowns();
+                    }
+                    p.setHealth(p.getMaxHealth());
+                    p.getFoodData().setFoodLevel(20);
+                }));
+                at(2, () -> {
+                    target();
+                    if (c == com.csm.hybrids.contract.Contract.HELL) {
+                        for (int k = 0; k < 4; k++) {
+                            cmd("summon minecraft:chicken " + (k - 2) + " -60 -3");
+                        }
+                    }
+                });
+                at(4, () -> server(p -> {
+                    HybridData d = HybridCapability.get(p);
+                    int slot = d == null ? -1 : d.abilities().indexOf(a);
+                    if (slot < 0) {
+                        CsmMod.LOGGER.error("[showcase] FAIL {} is not on the ability wheel", id);
+                        return;
+                    }
+                    String why = a.checkUse(p, d);
+                    if (why != null) {
+                        CsmMod.LOGGER.info("[showcase] {} can't be used here: {}", id, why);
+                    }
+                    HybridLogic.tryUseAbility(p, slot);
+                }));
+                int wait = a.duration();
+                int first = Math.max(3, Math.min(wait / 2, 12));
+                at(first, () -> shot(id + "a"));
+                at(Math.max(3, wait - first) + 4, () -> {
+                    shot(id + "b");
+                    logState(id);
+                });
+                at(50, () -> {
+                });
+            }
+        }
+        at(4, () -> cmd("kill @e[type=!minecraft:player]"));
     }
 
     private static void cmd(String command) {

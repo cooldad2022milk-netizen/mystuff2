@@ -88,10 +88,12 @@ public class HybridPartRenderer extends GeoObjectRenderer<HybridPartsAnimatable>
         state.renderNow = this.now;
         this.handleTarget = computeHandleTarget(model);
         try {
-            render(poseStack, state.animatable(), buffers, null, null, light);
-            if (cordStart != null && cordEnd != null && onlyPart == null && !firstPersonPass) {
-                drawCord(buffers.getBuffer(RenderType.entityCutoutNoCull(CORD_TEXTURE)), cordStart, cordEnd, light);
-            }
+            SafeRender.draw("hybrid model " + state.type.id, poseStack, () -> {
+                render(poseStack, state.animatable(), buffers, null, null, light);
+                if (cordStart != null && cordEnd != null && onlyPart == null && !firstPersonPass) {
+                    drawCord(buffers.getBuffer(RenderType.entityCutoutNoCull(CORD_TEXTURE)), cordStart, cordEnd, light);
+                }
+            });
         } finally {
             this.parts = null;
             this.player = null;

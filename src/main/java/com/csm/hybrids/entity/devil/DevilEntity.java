@@ -173,7 +173,10 @@ public class DevilEntity extends Monster implements GeoEntity {
         run.duration = move.duration();
         run.target = target;
         activeRun = run;
-        move.begin(this, run);
+        if (!com.csm.hybrids.util.Safe.run(what(move), () -> move.begin(this, run))) {
+            activeRun = null;
+            return;
+        }
         if (!move.geoAnim().isEmpty()) {
             triggerAnim("action", move.geoAnim());
         }
@@ -194,12 +197,21 @@ public class DevilEntity extends Monster implements GeoEntity {
                 face(t);
             }
         }
-        move.perform(this, run);
-        run.tick++;
-        if (activeRun == run && run.tick >= run.duration) {
-            move.finish(this, run);
-            activeRun = null;
+        boolean ok = com.csm.hybrids.util.Safe.run(what(move), () -> {
+            move.perform(this, run);
+            run.tick++;
+            if (activeRun == run && run.tick >= run.duration) {
+                move.finish(this, run);
+                activeRun = null;
+            }
+        });
+        if (!ok && activeRun == run) {
+            activeRun = null; // it broke: the devil just carries on fighting
         }
+    }
+
+    private String what(DevilAbility move) {
+        return "devil move " + devilType().id + "/" + move.id;
     }
 
     /** Turn the whole body to face the target right away (moves are aimed at it). */

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " X ",
+    "PBP",
+    " P "
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "B": {
+      "item": "csm:blood_vial"
+    },
+    "X": {
+      "item": "minecraft:scute"
+    }
+  },
+  "result": {
+    "item": "csm:snake_devil_contract",
+    "count": 1
+  }
+}

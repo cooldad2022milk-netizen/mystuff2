@@ -31,6 +31,7 @@ public final class ModTabs {
                 out.accept(ModItems.HUMAN_HEART.get());
                 out.accept(ModItems.BLOOD_VIAL.get());
                 ModItems.ESSENCES.values().forEach(e -> out.accept(e.get()));
+                ModItems.CONTRACTS.values().forEach(e -> out.accept(e.get()));
                 ModItems.SPAWN_EGGS.values().forEach(e -> out.accept(e.get()));
             })
             .build());

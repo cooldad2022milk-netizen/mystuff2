@@ -83,6 +83,7 @@ public final class HybridEvents {
                 } else {
                     HybridLogic.removeAttributes(sp);
                 }
+                com.csm.hybrids.contract.Contracts.applyToll(sp, data);
                 sp.refreshDimensions();
                 HybridLogic.sync(sp, data);
             }

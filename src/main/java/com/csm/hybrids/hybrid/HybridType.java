@@ -68,10 +68,11 @@ public enum HybridType {
     /** The Gun Devil itself (the Gun Fiend is a fragment of it wearing Aki). */
     GUN_DEVIL("gun_devil", 0x8A8E96, false),
     TYPHOON("typhoon", 0x9AB0C8, false),
-    FOX("fox", 0xE8A060, false),
-    CURSE("curse", 0xD8D0B8, false),
-    FUTURE("future", 0xC8A870, false),
-    GHOST("ghost", 0xE8E0F0, false),
+    // the devils Public Safety makes contracts with: fought as mobs, never become (see contract.Contract)
+    FOX("fox", 0xF4F0E6, false, true),
+    CURSE("curse", 0xD8D0B8, false, true),
+    FUTURE("future", 0xC8A870, false, true),
+    GHOST("ghost", 0xE8E0F0, false, true),
     ANGEL("angel", 0xF0E0B0, true),
     /** Yoru, the War Devil. */
     WAR("war", 0xB02828, true),
@@ -102,6 +103,11 @@ public enum HybridType {
     public final boolean devil;
     /** A devil in human shape (Makima, Angel, Yoru, Fami): its parts are worn on the player like a fiend's. */
     public final boolean humanoid;
+    /**
+     * A devil people make contracts with (Fox, Curse, Future, Ghost). It is only ever a mob: players get its power
+     * through a {@link com.csm.hybrids.contract.Contract}, never by becoming it.
+     */
+    public final boolean contract;
 
     HybridType(String id, int color, int triggerTicks, int transformAt, int revertTicks, int revertAt,
                boolean replacesArms, String animPrefix) {
@@ -123,10 +129,15 @@ public enum HybridType {
         this.formHidesHead = formHidesHead;
         this.devil = false;
         this.humanoid = false;
+        this.contract = false;
     }
 
     /** A full devil. Slot 0 manifests its true form (monsters) or lets the devil take over (humanoids). */
     HybridType(String id, int color, boolean humanoid) {
+        this(id, color, humanoid, false);
+    }
+
+    HybridType(String id, int color, boolean humanoid, boolean contract) {
         this.id = id;
         this.color = color;
         this.triggerTicks = humanoid ? 20 : 24;
@@ -140,6 +151,12 @@ public enum HybridType {
         this.formHidesHead = false;
         this.devil = true;
         this.humanoid = humanoid;
+        this.contract = contract;
+    }
+
+    /** Whether a player can be this (every type except the contract devils). */
+    public boolean playable() {
+        return !contract;
     }
 
     /** A devil whose form replaces the player's body with its own model. */

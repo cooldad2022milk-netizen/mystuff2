@@ -1062,6 +1062,96 @@ def devils():
     r.save()
 
 
+# ============================================================================ contracts
+def contracts():
+    """A contractor stays human: these are the gestures that call a contract devil (contract.ContractAbilities) and the
+    signing itself (item.ContractItem). Ticks line up with the moves' summon ticks."""
+    import numpy as np
+    # Aki holds the fox sign up in front of his eye like a lens, then points it: "Kon!"
+    lens = tuple(poses.ik_arm(poses.SHOULDER_R, poses.GRIP_R, np.array([-1.2, -3.6, -9.5]), zr_hint=0.0)[0])
+    point = (-1.62, -0.12, 0.0)
+    k = A("contract_kon", 18)
+    k.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3, torso=Z3)
+    k.k(3, "OUTQUAD", rightArm=lens, leftArm=(-0.2, 0.0, -0.1), head=(0.06, 0.0, 0.0), torso=Z3)
+    k.k(5, rightArm=lens, leftArm=(-0.2, 0.0, -0.1), head=(0.08, 0.0, 0.0), torso=Z3)
+    k.k(7, "OUTBACK", rightArm=point, leftArm=(-0.1, 0.0, -0.15), head=(0.0, 0.0, 0.0), torso=(0.08, 0.0, 0.0))
+    k.k(14, rightArm=(point[0] + 0.1, point[1], point[2]), leftArm=(-0.1, 0.0, -0.15), head=Z3, torso=(0.05, 0, 0))
+    k.k(18, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3, torso=Z3)
+    k.save()
+
+    # the paw: point up at the sky, then bring the finger down on the prey as the paw drops
+    w = A("contract_paw", 14)
+    w.k(0, rightArm=NEUTRAL_R, head=Z3, torso=Z3)
+    w.k(2, "OUTQUAD", rightArm=(-2.75, -0.1, 0.1), head=(-0.2, 0, 0), torso=(-0.05, 0, 0))
+    w.k(4, "INQUAD", rightArm=(-1.45, -0.12, 0.0), head=(0.05, 0, 0), torso=(0.1, 0, 0))
+    w.k(10, rightArm=(-1.4, -0.1, 0.0), head=(0.05, 0, 0), torso=(0.08, 0, 0))
+    w.k(14, rightArm=NEUTRAL_R, head=Z3, torso=Z3)
+    w.save()
+
+    # the paw sweeping across: the arm leads it from the right to the left
+    sw = A("contract_paw_swipe", 14)
+    sw.k(0, rightArm=NEUTRAL_R, torso=Z3)
+    sw.k(2, "OUTQUAD", rightArm=(-1.5, 0.95, 0.35), torso=(0.0, 0.3, 0.0))
+    sw.k(7, "OUTQUAD", rightArm=(-1.4, -1.0, -0.2), torso=(0.05, -0.35, 0.0))
+    sw.k(10, rightArm=(-1.1, -0.8, -0.1), torso=(0.03, -0.25, 0.0))
+    sw.k(14, rightArm=NEUTRAL_R, torso=Z3)
+    sw.save()
+
+    # the nail: draw back, drive it in
+    n = A("contract_curse_nail", 12)
+    n.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, torso=Z3)
+    n.k(2, "OUTQUAD", rightArm=arm_at((-1.1, 0.25, 0.25), (0, 0, 1.5)), leftArm=(-0.5, 0.2, -0.1), torso=(0.0, 0.25, 0))
+    n.k(5, "INQUAD", rightArm=arm_at((-1.58, -0.12, 0.0), (0, 0, -2.5)), leftArm=(-0.3, 0.1, -0.2),
+        torso=(0.12, -0.18, 0.0))
+    n.k(8, rightArm=arm_at((-1.5, -0.1, 0.0), (0, 0, -2.0)), leftArm=(-0.3, 0.1, -0.2), torso=(0.1, -0.12, 0.0))
+    n.k(12, rightArm=arm_at(NEUTRAL_R), leftArm=NEUTRAL_L, torso=Z3)
+    n.save()
+
+    # the Future Devil lives in the right eye: two fingers to it
+    eye = tuple(poses.ik_arm(poses.SHOULDER_R, poses.GRIP_R, poses.RIGHT_EYE + np.array([0.3, 0.6, -2.4]),
+                             zr_hint=0.0)[0])
+    f = A("contract_future", 16)
+    f.k(0, rightArm=NEUTRAL_R, head=Z3)
+    f.k(4, "OUTQUAD", rightArm=eye, head=(0.05, -0.08, 0.0))
+    f.k(8, rightArm=eye, head=(-0.12, 0.0, 0.0))
+    f.k(11, rightArm=(-0.7, 0.0, 0.1), head=(-0.05, 0, 0))
+    f.k(16, rightArm=NEUTRAL_R, head=Z3)
+    f.save()
+
+    # Himeno's arm: the ghost's invisible arm does what hers does - reach, close on the throat, lift and squeeze
+    g = A("contract_ghost_grab", 20)
+    g.k(0, rightArm=NEUTRAL_R, torso=Z3)
+    g.k(3, "OUTQUAD", rightArm=(-1.62, -0.15, 0.05), torso=(0.06, 0, 0))
+    g.k(6, "INOUTQUAD", rightArm=(-1.95, -0.1, 0.0), torso=(0.0, 0, 0))
+    for i, t in enumerate(range(8, 17, 2)):
+        j = 0.04 if i % 2 == 0 else -0.04
+        g.k(t, "linear", rightArm=(-2.0 + j, -0.1, j), torso=Z3)
+    g.k(20, rightArm=NEUTRAL_R, torso=Z3)
+    g.save()
+
+    fl = A("contract_ghost_fling", 16)
+    fl.k(0, rightArm=NEUTRAL_R, torso=Z3)
+    fl.k(3, "OUTQUAD", rightArm=(-1.6, -0.15, 0.05), torso=(0.05, 0, 0))
+    fl.k(9, "INOUTQUAD", rightArm=(-2.3, 0.45, 0.2), torso=(0.0, 0.25, 0))
+    fl.k(12, "OUTQUAD", rightArm=(-1.3, -1.05, -0.3), torso=(0.05, -0.35, 0))
+    fl.k(16, rightArm=NEUTRAL_R, torso=Z3)
+    fl.save()
+
+    # signing: bite the thumb, then press it to the paper held in the other hand
+    MOUTH_R = (-2.35, -0.5, 0.2)
+    c = A("contract_sign", 40)
+    c.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3, torso=Z3)
+    c.k(4, "OUTQUAD", rightArm=MOUTH_R, leftArm=(-0.95, 0.3, -0.1), head=(0.15, 0, 0))
+    c.k(8, rightArm=(MOUTH_R[0] - 0.05, MOUTH_R[1], MOUTH_R[2]), leftArm=(-0.95, 0.3, -0.1), head=(-0.08, 0, 0))
+    c.k(12, rightArm=MOUTH_R, leftArm=(-0.95, 0.3, -0.1), head=(0.1, 0, 0))
+    c.k(18, "INOUTQUAD", rightArm=(-1.15, -0.35, 0.1), leftArm=(-1.0, 0.3, -0.1), head=(0.45, 0, 0), torso=(0.1, 0, 0))
+    c.k(22, "INQUAD", rightArm=(-1.0, -0.38, 0.1), leftArm=(-1.0, 0.3, -0.1), head=(0.5, 0, 0), torso=(0.18, 0, 0))
+    c.k(30, rightArm=(-1.0, -0.38, 0.1), leftArm=(-1.0, 0.3, -0.1), head=(0.45, 0, 0), torso=(0.15, 0, 0))
+    c.k(35, rightArm=(-0.4, -0.1, 0.1), leftArm=(-0.6, 0.2, -0.1), head=(0.1, 0, 0), torso=Z3)
+    c.k(40, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3, torso=Z3)
+    c.save()
+
+
 if __name__ == "__main__":
     chainsaw()
     crossbow()
@@ -1079,4 +1169,5 @@ if __name__ == "__main__":
     gun()
     shared()
     devils()
+    contracts()
     print("wrote", len(os.listdir(OUT)), "player animations to", OUT)

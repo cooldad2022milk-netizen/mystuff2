@@ -45,10 +45,10 @@ public final class HybridLogic {
     // ------------------------------------------------------------------ abilities
     public static void tryUseAbility(ServerPlayer player, int index) {
         HybridData data = HybridCapability.get(player);
-        if (data == null || !data.isHybrid() || player.isSpectator() || !player.isAlive()) {
+        if (data == null || !data.hasAbilities() || player.isSpectator() || !player.isAlive()) {
             return;
         }
-        List<Ability> abilities = data.type().abilities();
+        List<Ability> abilities = data.abilities();
         if (index < 0 || index >= abilities.size()) {
             return;
         }
@@ -98,12 +98,7 @@ public final class HybridLogic {
             return;
         }
         data.tickCooldowns();
-        if (!data.isHybrid()) {
-            if (data.consumeDirty()) {
-                sync(player, data);
-            }
-            return;
-        }
+        // moves run for anyone with a wheel (a human contractor too)
         AbilityRun run = data.activeRun;
         if (run != null) {
             if (!player.isAlive()) {
@@ -118,6 +113,12 @@ public final class HybridLogic {
                     }
                 }
             }
+        }
+        if (!data.isHybrid()) {
+            if (data.consumeDirty()) {
+                sync(player, data);
+            }
+            return;
         }
 
         // Hybrids knit their flesh back together by burning the blood they have drunk.

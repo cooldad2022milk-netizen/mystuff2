@@ -44,15 +44,15 @@ public class AbilityWheelScreen extends Screen {
     private int hovered = -1;
     private float appear;
 
-    public AbilityWheelScreen(HybridType type) {
-        this(type, true);
+    public AbilityWheelScreen(HybridData data) {
+        this(data, true);
     }
 
     /** @param holdMode true when opened by holding the wheel key (release selects). */
-    public AbilityWheelScreen(HybridType type, boolean holdMode) {
+    public AbilityWheelScreen(HybridData data, boolean holdMode) {
         super(Component.translatable("screen.csm.ability_wheel"));
-        this.type = type;
-        this.abilities = type.abilities();
+        this.type = data.type();
+        this.abilities = data.abilities();
         this.holdMode = holdMode;
     }
 
@@ -146,9 +146,9 @@ public class AbilityWheelScreen extends Screen {
             hovered = -1;
         }
 
-        int base = type.color;
         g.flush();
         for (int i = 0; i < n; i++) {
+            int base = abilities.get(i).wheelColor();
             float a0 = -90 - slice / 2 + i * slice + 1.2f;
             float a1 = a0 + slice - 2.4f;
             boolean hot = i == hovered;
@@ -184,10 +184,18 @@ public class AbilityWheelScreen extends Screen {
         }
 
         // centre panel: name, description, cost
-        g.drawCenteredString(font, type.displayName().copy().withStyle(ChatFormatting.BOLD), (int) cx,
-                (int) (cy - outer - 22), type.color);
-        g.drawCenteredString(font, Component.translatable("screen.csm.blood", (int) data.blood()), (int) cx,
-                (int) (cy - outer - 11), 0xFFD02020);
+        // a plain human with contracts is a devil hunter; anyone else is what lives in them
+        Component title = type == HybridType.NONE ? Component.translatable("screen.csm.contractor") : type.displayName();
+        int titleColor = type == HybridType.NONE ? abilities.get(0).wheelColor() : type.color;
+        g.drawCenteredString(font, title.copy().withStyle(ChatFormatting.BOLD), (int) cx, (int) (cy - outer - 22),
+                titleColor);
+        if (data.isHybrid()) {
+            g.drawCenteredString(font, Component.translatable("screen.csm.blood", (int) data.blood()), (int) cx,
+                    (int) (cy - outer - 11), 0xFFD02020);
+        } else {
+            g.drawCenteredString(font, Component.translatable("screen.csm.contracts", data.contracts().size()),
+                    (int) cx, (int) (cy - outer - 11), 0xFFB0A090);
+        }
         int show = hovered >= 0 ? hovered : data.selected();
         if (show >= 0 && show < n) {
             Ability ab = abilities.get(show);
@@ -207,7 +215,8 @@ public class AbilityWheelScreen extends Screen {
                 g.drawString(font, line, (int) (cx - font.width(line) / 2f), y, 0xFFDDDDDD);
                 y += 10;
             }
-            String cost = ab.bloodCost() > 0 ? Component.translatable("screen.csm.cost", (int) ab.bloodCost()).getString() : "";
+            String cost = ab.price() != null ? ab.price().getString()
+                    : ab.bloodCost() > 0 ? Component.translatable("screen.csm.cost", (int) ab.bloodCost()).getString() : "";
             g.drawCenteredString(font, cost, (int) cx, (int) cy - 4, 0xFFFF5555);
             g.drawCenteredString(font, Component.translatable("screen.csm.cooldown",
                     String.format("%.1f", ab.cooldown() / 20f)), (int) cx, (int) cy + 6, 0xFFAAAAAA);

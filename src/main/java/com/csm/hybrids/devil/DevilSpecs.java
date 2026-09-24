@@ -44,8 +44,9 @@ public final class DevilSpecs {
                 .fpHidden("head", "gale3", "gale4")
                 .egg(0xB8A0A8, 0x6A8AB0).form(3.2f, 36, 10, 0.1, 10);
 
-        // ---------------------------------------------------------------- contract devils
-        put(HybridType.FOX).stats(150, 12, 0.34, 6).size(2.2f, 2.6f).fight(0.4f, 3, 50)
+        // ---------------------------------------------------------------- contract devils (mobs only: players make
+        // contracts with them instead of becoming them, so their form stats are never used)
+        put(HybridType.FOX).stats(150, 12, 0.34, 6).size(3.0f, 3.6f).fight(0.4f, 3, 50)
                 .egg(0xE8A060, 0xF4F0E6).form(2.4f, 16, 7, 0.2, 5);
         put(HybridType.CURSE).stats(230, 14, 0.22, 8).size(2.0f, 4.4f).fight(0.4f, 4, 90).boss(BossBarColor.WHITE)
                 .egg(0xD8D0B8, 0x3A3A3A).form(3.0f, 24, 8, 0.05, 8).eye(0.95f);

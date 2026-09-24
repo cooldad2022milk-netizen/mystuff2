@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "csm:item/curse_devil_essence"
+    "layer0": "csm:item/fox_devil_contract_head"
   }
 }

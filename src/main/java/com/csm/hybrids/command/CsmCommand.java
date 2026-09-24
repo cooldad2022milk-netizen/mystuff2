@@ -1,5 +1,7 @@
 package com.csm.hybrids.command;
 
+import com.csm.hybrids.contract.Contract;
+import com.csm.hybrids.contract.Contracts;
 import com.csm.hybrids.hybrid.HybridCapability;
 import com.csm.hybrids.hybrid.HybridData;
 import com.csm.hybrids.hybrid.HybridLogic;
@@ -17,9 +19,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
- * /csm hybrid <player> <none|any hybrid or fiend id>
+ * /csm hybrid <player> <none|any hybrid, fiend or devil id>
+ * /csm contract <player> add|remove <fox_head|fox_paw|curse|future|ghost>
+ * /csm contract <player> list
  * /csm blood <player> <amount>
  * /csm transform <player>
  */
@@ -29,8 +34,18 @@ public final class CsmCommand {
                 .then(Commands.literal("hybrid").then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("type", StringArgumentType.word())
                                 .suggests((c, b) -> SharedSuggestionProvider.suggest(
-                                        Arrays.stream(HybridType.values()).map(t -> t.id), b))
+                                        Arrays.stream(HybridType.values()).filter(HybridType::playable).map(t -> t.id), b))
                                 .executes(CsmCommand::setHybrid))))
+                .then(Commands.literal("contract").then(Commands.argument("player", EntityArgument.player())
+                        .then(Commands.literal("add").then(Commands.argument("contract", StringArgumentType.word())
+                                .suggests((c, b) -> SharedSuggestionProvider.suggest(
+                                        Arrays.stream(Contract.values()).map(k -> k.id), b))
+                                .executes(c -> contract(c, true))))
+                        .then(Commands.literal("remove").then(Commands.argument("contract", StringArgumentType.word())
+                                .suggests((c, b) -> SharedSuggestionProvider.suggest(
+                                        Arrays.stream(Contract.values()).map(k -> k.id), b))
+                                .executes(c -> contract(c, false))))
+                        .then(Commands.literal("list").executes(CsmCommand::listContracts))))
                 .then(Commands.literal("blood").then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("amount", FloatArgumentType.floatArg(0, HybridData.MAX_BLOOD))
                                 .executes(CsmCommand::setBlood))))
@@ -45,9 +60,48 @@ public final class CsmCommand {
         if (data == null) {
             return 0;
         }
+        if (!type.playable()) {
+            ctx.getSource().sendFailure(Component.translatable("commands.csm.not_playable", type.displayName()));
+            return 0;
+        }
         HybridLogic.setType(player, data, type);
         ctx.getSource().sendSuccess(() -> Component.translatable("commands.csm.hybrid", player.getDisplayName(), type.displayName()), true);
         return 1;
+    }
+
+    private static int contract(CommandContext<CommandSourceStack> ctx, boolean add) throws CommandSyntaxException {
+        ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
+        String id = StringArgumentType.getString(ctx, "contract");
+        Contract c = Contract.byId(id);
+        HybridData data = HybridCapability.get(player);
+        if (c == null) {
+            ctx.getSource().sendFailure(Component.translatable("commands.csm.contract_unknown", id));
+            return 0;
+        }
+        if (data == null) {
+            return 0;
+        }
+        boolean changed = add ? Contracts.sign(player, data, c) : Contracts.breakContract(player, data, c);
+        if (!changed) {
+            ctx.getSource().sendFailure(Component.translatable(add ? "commands.csm.contract_has" : "commands.csm.contract_hasnt",
+                    player.getDisplayName(), c.displayName()));
+            return 0;
+        }
+        ctx.getSource().sendSuccess(() -> Component.translatable(add ? "commands.csm.contract_add" : "commands.csm.contract_remove",
+                player.getDisplayName(), c.displayName()), true);
+        return 1;
+    }
+
+    private static int listContracts(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = EntityArgument.getPlayer(ctx, "player");
+        HybridData data = HybridCapability.get(player);
+        if (data == null) {
+            return 0;
+        }
+        String list = data.contracts().stream().map(c -> c.displayName().getString()).collect(Collectors.joining(", "));
+        ctx.getSource().sendSuccess(() -> Component.translatable("commands.csm.contract_list", player.getDisplayName(),
+                list.isEmpty() ? "-" : list, data.curseToll()), false);
+        return data.contracts().size();
     }
 
     private static int setBlood(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

@@ -1,0 +1,10 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:future_devil_contract",
+  "tables": [
+    "minecraft:chests/stronghold_library",
+    "minecraft:chests/end_city_treasure"
+  ],
+  "chance": 0.04
+}

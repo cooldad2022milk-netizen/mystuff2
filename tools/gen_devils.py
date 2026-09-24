@@ -51,14 +51,75 @@ def essence_texture(d):
     return img
 
 
+def contract_texture(c):
+    """A devil's contract: an old sheet of paper with a few lines of writing, the devil's mark and a bloody thumbprint."""
+    rng = random.Random(c["id"])
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    pix = img.load()
+    paper, edge, ink = (232, 220, 188, 255), (192, 174, 138, 255), (70, 60, 56, 255)
+    for y in range(1, 15):
+        for x in range(3, 13):
+            if (x, y) in ((12, 1), (3, 14)):
+                continue  # dog-eared corners
+            shade = rng.randint(-10, 6)
+            pix[x, y] = tuple(max(0, min(255, v + shade)) for v in paper[:3]) + (255,)
+    for y in range(1, 15):
+        pix[3, y] = edge if y != 14 else (0, 0, 0, 0)
+        pix[12, y] = edge if y != 1 else (0, 0, 0, 0)
+    for x in range(4, 12):
+        pix[x, 1] = edge if x != 12 else pix[x, 1]
+        pix[x, 14] = edge
+    for y in (3, 5):  # lines of writing
+        for x in range(5, 11):
+            if rng.random() < 0.75:
+                pix[x, y] = ink
+
+    def put(pts, col):
+        for x, y in pts:
+            pix[x, y] = col
+    WHITE, RED, DARK = (250, 248, 240, 255), (200, 30, 30, 255), (40, 30, 30, 255)
+    if c["id"] == "fox_head":        # a white fox's head with red eyes
+        put([(5, 7), (10, 7), (5, 8), (6, 8), (9, 8), (10, 8)], WHITE)
+        put([(x, y) for y in (9, 10) for x in range(5, 11)] + [(x, 11) for x in range(6, 10)] + [(7, 12), (8, 12)],
+            WHITE)
+        put([(6, 9), (9, 9)], RED)
+        put([(7, 12), (8, 12)], DARK)
+    elif c["id"] == "fox_paw":       # a paw print
+        put([(5, 8), (7, 7), (9, 7), (11, 8)], DARK)
+        put([(x, y) for y in (10, 11) for x in range(6, 11)] + [(7, 12), (8, 12), (9, 12)], DARK)
+    elif c["id"] == "curse":         # a rusty nail
+        put([(5, 7), (6, 7), (7, 7), (6, 8)], (110, 96, 86, 255))
+        put([(7, 9), (8, 10), (9, 11), (10, 12)], (140, 90, 60, 255))
+        put([(8, 9), (9, 10)], (100, 66, 44, 255))
+    elif c["id"] == "future":        # a ringed eye
+        put([(5, 9), (6, 8), (7, 8), (8, 8), (9, 8), (10, 9), (6, 10), (7, 10), (8, 10), (9, 10)], DARK)
+        put([(6, 9), (9, 9)], WHITE)
+        put([(7, 9), (8, 9)], (236, 190, 60, 255))
+        put([(7, 9)], (190, 50, 30, 255))
+    elif c["id"] == "ghost":         # a pale hand
+        put([(6, 7), (7, 7), (8, 7), (9, 7), (6, 8), (7, 8), (8, 8), (9, 8)], (206, 206, 232, 255))
+        put([(x, y) for y in (9, 10, 11) for x in range(6, 10)] + [(10, 9), (10, 10)], (214, 214, 238, 255))
+        put([(7, 12), (8, 12)], (190, 190, 220, 255))
+    # the bloody thumbprint that sealed it
+    put([(10, 12), (11, 12), (10, 13), (11, 13)], RED)
+    put([(11, 11)], (160, 20, 20, 255))
+    return img
+
+
 def items():
     for d in devil_data.DEVILS:
-        name = devil_data.essence_item(d)
-        essence_texture(d).save(p("textures", "item", name + ".png"))
-        with open(p("models", "item", name + ".json"), "w") as f:
-            json.dump({"parent": "minecraft:item/generated", "textures": {"layer0": "csm:item/" + name}}, f, indent=2)
+        if "contract" not in d:
+            name = devil_data.essence_item(d)
+            essence_texture(d).save(p("textures", "item", name + ".png"))
+            with open(p("models", "item", name + ".json"), "w") as f:
+                json.dump({"parent": "minecraft:item/generated", "textures": {"layer0": "csm:item/" + name}}, f, indent=2)
         with open(p("models", "item", d["entity"] + "_spawn_egg.json"), "w") as f:
             json.dump({"parent": "minecraft:item/template_spawn_egg"}, f, indent=2)
+    for c in devil_data.CONTRACTS:
+        contract_texture(c).save(p("textures", "item", c["item"] + ".png"))
+        with open(p("models", "item", c["item"] + ".json"), "w") as f:
+            json.dump({"parent": "minecraft:item/generated", "textures": {"layer0": "csm:item/" + c["item"]}}, f,
+                      indent=2)
 
 
 # ----------------------------------------------------------------------------- icons
@@ -403,11 +464,11 @@ def icons_big():
 
 
 def icons_contract():
-    FX = ((236, 170, 100), (60, 30, 14))
+    FX = ((226, 120, 90), (60, 20, 14))
     CU = ((210, 200, 176), (30, 26, 22))
     FU = ((220, 190, 120), (40, 30, 20))
     GH = ((230, 224, 240), (60, 50, 80))
-    FUR = (226, 152, 88, 255)
+    FUR = (244, 240, 230, 255)
     BONE = (226, 218, 196, 255)
 
     def fox_head(d, cx, cy, s=1.0, open_mouth=True):
@@ -415,10 +476,16 @@ def icons_contract():
         poly(d, [(cx + 26 * s, cy - 10 * s), (cx + 34 * s, cy - 46 * s), (cx + 8 * s, cy - 22 * s)], FUR)
         poly(d, [(cx - 28 * s, cy - 18 * s), (cx + 28 * s, cy - 18 * s), (cx + 6 * s, cy + 30 * s),
                  (cx - 6 * s, cy + 30 * s)], FUR, outline=(90, 50, 30, 255), width=2)
-        poly(d, [(cx - 14 * s, cy + 4 * s), (cx + 14 * s, cy + 4 * s), (cx + 5 * s, cy + 30 * s),
-                 (cx - 5 * s, cy + 30 * s)], (244, 222, 190, 255))
+        if open_mouth:
+            poly(d, [(cx - 12 * s, cy + 6 * s), (cx + 12 * s, cy + 6 * s), (cx + 4 * s, cy + 28 * s),
+                     (cx - 4 * s, cy + 28 * s)], (90, 14, 20, 255))
+            for k in range(4):
+                x = cx - 9 * s + k * 6 * s
+                poly(d, [(x - 2 * s, cy + 7 * s), (x + 2 * s, cy + 7 * s), (x, cy + 13 * s)], (246, 242, 230, 255),
+                     outline=(60, 40, 40, 255), width=1)
         d.ellipse([cx - 4 * s, cy + 26 * s, cx + 4 * s, cy + 33 * s], fill=(30, 22, 22, 255))
-        for sx, sy, r in ((-12, -8, 6), (12, -8, 6), (0, -14, 4), (-20, -14, 3), (20, -14, 3)):
+        for sx, sy, r in ((-12, -8, 6), (12, -8, 6), (0, -14, 4), (-20, -14, 3), (20, -14, 3), (-6, -22, 3),
+                          (6, -22, 3)):
             ring_eye(d, cx + sx * s, cy + sy * s, r * s)
 
     img, d = icon_canvas(*FX)  # kon - the hand sign and the jaws
@@ -543,6 +610,126 @@ def icons_contract():
     finish(img, "ghost_fear")
 
 
+def icons_contract_moves():
+    """The moves a contractor borrows (contract.ContractAbilities)."""
+    FX = ((226, 120, 90), (60, 20, 14))
+    CU = ((210, 200, 176), (30, 26, 22))
+    FU = ((220, 190, 120), (40, 30, 20))
+    GH = ((200, 196, 226), (40, 36, 70))
+    FUR = (244, 240, 230, 255)
+    BONE = (226, 218, 196, 255)
+    GHOST = (226, 224, 240, 170)
+
+    def fox_sign(d, x, y, s=1.0):
+        """Aki's hand sign: middle and ring fingers pressed to the thumb (the snout), index and pinky up (the ears)."""
+        d.ellipse([x - 12 * s, y - 6 * s, x + 12 * s, y + 18 * s], fill=SKIN, outline=(90, 60, 50, 255), width=2)
+        for dx in (-9, 9):
+            poly(d, [(x + (dx - 3) * s, y - 2 * s), (x + (dx + 3) * s, y - 2 * s), (x + dx * s, y - 22 * s)], SKIN,
+                 outline=(90, 60, 50, 255), width=2)
+        poly(d, [(x - 6 * s, y + 4 * s), (x + 6 * s, y + 4 * s), (x, y - 10 * s + 30 * s)], SKIN,
+             outline=(90, 60, 50, 255), width=2)
+
+    def fox_face(d, cx, cy, s):
+        for sx in (-1, 1):
+            poly(d, [(cx + sx * 26 * s, cy - 10 * s), (cx + sx * 34 * s, cy - 46 * s), (cx + sx * 8 * s, cy - 22 * s)],
+                 FUR)
+        poly(d, [(cx - 30 * s, cy - 18 * s), (cx + 30 * s, cy - 18 * s), (cx + 8 * s, cy + 22 * s),
+                 (cx - 8 * s, cy + 22 * s)], FUR, outline=(90, 70, 60, 255), width=2)
+        for sx, sy, r in ((-13, -6, 6), (13, -6, 6), (0, -14, 4), (-22, -14, 3), (22, -14, 3), (-7, -24, 3),
+                          (7, -24, 3)):
+            ring_eye(d, cx + sx * s, cy + sy * s, r * s)
+
+    # Kon: the head alone, jaws gaping, out of nowhere - and the hand sign that calls it
+    img, d = icon_canvas(*FX)
+    d.ellipse([34, 8, 118, 92], fill=(30, 10, 16, 200))  # the dark it comes out of
+    fox_face(d, 76, 44, 1.0)
+    poly(d, [(56, 58), (96, 58), (86, 100), (66, 100)], (100, 16, 24, 255))
+    for k in range(5):
+        x = 60 + k * 8
+        poly(d, [(x - 3, 58), (x + 3, 58), (x, 70)], (246, 242, 230, 255), outline=(60, 40, 40, 255), width=1)
+        poly(d, [(x - 3, 100), (x + 3, 100), (x, 88)], (246, 242, 230, 255), outline=(60, 40, 40, 255), width=1)
+    fox_sign(d, 28, 92, 0.9)
+    finish(img, "contract_kon")
+
+    def paw(d, cx, cy, s, down=True):
+        # the forearm reaching out of nowhere, eyes all over it, and the claws
+        arm = [(cx - 16 * s, cy - 60 * s), (cx + 16 * s, cy - 60 * s), (cx + 22 * s, cy), (cx - 22 * s, cy)]
+        poly(d, arm, FUR, outline=(90, 70, 60, 255), width=2)
+        d.ellipse([cx - 28 * s, cy - 14 * s, cx + 28 * s, cy + 16 * s], fill=FUR, outline=(90, 70, 60, 255), width=2)
+        for k in range(4):
+            x = cx - 18 * s + k * 12 * s
+            poly(d, [(x - 3 * s, cy + 12 * s), (x + 3 * s, cy + 12 * s), (x, cy + 26 * s)], (40, 30, 28, 255))
+        for ex, ey in ((-6, -40), (6, -26), (-8, -8), (10, -2)):
+            ring_eye(d, cx + ex * s, cy + ey * s, 4 * s)
+
+    img, d = icon_canvas(*FX)  # paw slam, from above
+    d.ellipse([34, 0, 94, 24], fill=(30, 10, 16, 200))
+    paw(d, 64, 74, 1.0)
+    d.line([(20, 114), (108, 114)], fill=(60, 40, 30, 255), width=6)
+    blood_drops(d, [(40, 106, 4), (90, 108, 4)])
+    finish(img, "contract_paw_slam")
+    img, d = icon_canvas(*FX)  # paw swipe, sideways
+    d.arc([14, 14, 114, 114], 200, 340, fill=(255, 255, 255, 220), width=5)
+    rot = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    paw(ImageDraw.Draw(rot), 64, 90, 0.9)
+    img.alpha_composite(rot.rotate(70, center=(64, 64)))
+    finish(img, "contract_paw_swipe")
+
+    # the nail, three stabs, and the mouth counting down
+    img, d = icon_canvas(*CU)
+    d.line([(26, 26), (92, 92)], fill=(120, 100, 86, 255), width=8)
+    d.line([(18, 34), (34, 18)], fill=(80, 70, 64, 255), width=8)
+    poly(d, [(88, 96), (104, 104), (96, 88)], (150, 130, 110, 255))
+    d.ellipse([60, 86, 96, 110], fill=(150, 30, 40, 255), outline=(40, 10, 10, 255), width=2)  # the lips
+    d.line([(66, 98), (90, 98)], fill=(40, 10, 10, 255), width=3)
+    for k in range(3):
+        d.ellipse([74 + k * 12, 16, 84 + k * 12, 26], fill=(200, 30, 30, 255))
+    finish(img, "contract_curse_nail")
+
+    # the Future Devil in your right eye
+    img, d = icon_canvas(*FU)
+    d.ellipse([22, 36, 106, 92], fill=(246, 238, 210, 255), outline=(60, 40, 30, 255), width=3)
+    d.ellipse([44, 42, 84, 82], fill=(236, 196, 70, 255))
+    for k in range(3):
+        rr = 20 * (1 - (k + 0.5) / 3.6)
+        d.ellipse([64 - rr, 62 - rr, 64 + rr, 62 + rr], outline=(150, 50, 20, 255), width=3)
+    for k in range(3):
+        d.arc([10 - k * 6, 10 - k * 6, 118 + k * 6, 118 + k * 6], -40, 40, fill=(255, 255, 255, 180), width=3)
+    finish(img, "contract_future_sight")
+
+    # the ghost's arm: a huge pale hand only you can see
+    def ghost_hand(d, cx, cy, s, fist=False):
+        col = (236, 236, 252, 230)
+        line = (150, 146, 190, 255)
+        d.line([(cx - 64 * s, cy + 64 * s), (cx - 6 * s, cy + 6 * s)], fill=line, width=int(24 * s))
+        d.line([(cx - 64 * s, cy + 64 * s), (cx - 6 * s, cy + 6 * s)], fill=col, width=int(18 * s))
+        d.ellipse([cx - 20 * s, cy - 20 * s, cx + 20 * s, cy + 20 * s], fill=col, outline=line, width=3)
+        # four long fingers (curled round a throat when it grips) and a thumb
+        for k in range(4):
+            a = math.radians(-160 + k * 30)
+            L = 26 if fist else 44
+            tip = (cx + math.cos(a) * L * s, cy + math.sin(a) * L * s)
+            d.line([(cx + math.cos(a) * 12 * s, cy + math.sin(a) * 12 * s), tip], fill=line, width=int(13 * s))
+            d.line([(cx + math.cos(a) * 12 * s, cy + math.sin(a) * 12 * s), tip], fill=col, width=int(8 * s))
+            if fist:
+                d.line([tip, (tip[0] + math.cos(a + 1.9) * 10 * s, tip[1] + math.sin(a + 1.9) * 10 * s)], fill=col,
+                       width=int(8 * s))
+        a = math.radians(40)
+        d.line([(cx, cy), (cx + math.cos(a) * 30 * s, cy + math.sin(a) * 30 * s)], fill=line, width=int(13 * s))
+        d.line([(cx, cy), (cx + math.cos(a) * 30 * s, cy + math.sin(a) * 30 * s)], fill=col, width=int(8 * s))
+
+    img, d = icon_canvas(*GH)  # the grip on a throat
+    d.ellipse([70, 14, 104, 50], fill=(120, 110, 130, 255))
+    d.rectangle([80, 48, 94, 66], fill=(120, 110, 130, 255))
+    ghost_hand(d, 82, 64, 1.0, fist=True)
+    finish(img, "contract_ghost_hand")
+    img, d = icon_canvas(*GH)  # the fling
+    d.arc([12, 12, 116, 116], 180, 320, fill=(255, 255, 255, 200), width=5)
+    ghost_hand(d, 76, 52, 0.9)
+    d.ellipse([22, 20, 46, 44], fill=(120, 110, 130, 255))
+    finish(img, "contract_ghost_fling")
+
+
 # ----------------------------------------------------------------------------- particles
 def particles():
     base = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "resources",
@@ -564,5 +751,6 @@ if __name__ == "__main__":
     icons_early()
     icons_big()
     icons_contract()
+    icons_contract_moves()
     particles()
     print("devil assets generated")

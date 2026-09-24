@@ -1,0 +1,92 @@
+{
+ "version": 3,
+ "name": "contract_future",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 16,
+  "stopTick": 19,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 4,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -2.3392,
+     "yaw": -0.3049,
+     "roll": 0.3854
+    },
+    "head": {
+     "pitch": 0.05,
+     "yaw": -0.08,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 8,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -2.3392,
+     "yaw": -0.3049,
+     "roll": 0.3854
+    },
+    "head": {
+     "pitch": -0.12,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 11,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -0.7,
+     "yaw": 0.0,
+     "roll": 0.1
+    },
+    "head": {
+     "pitch": -0.05,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 16,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

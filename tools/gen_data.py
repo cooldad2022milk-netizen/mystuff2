@@ -351,6 +351,11 @@ def main():
         entries.append("csm:" + item)
         write(os.path.join(RES, "data", "csm", "loot_modifiers", item + ".json"),
               {"type": "csm:devil_heart_loot", "conditions": [], "item": "csm:" + item, "tables": tables, "chance": 0.05})
+    for item, (tables, chance) in devil_data.CONTRACT_LOOT.items():
+        entries.append("csm:" + item)
+        write(os.path.join(RES, "data", "csm", "loot_modifiers", item + ".json"),
+              {"type": "csm:devil_heart_loot", "conditions": [], "item": "csm:" + item, "tables": tables,
+               "chance": chance})
     write(os.path.join(RES, "data", "forge", "loot_modifiers", "global_loot_modifiers.json"),
           {"replace": False, "entries": entries})
     print(len(lang), "lang keys,", len(entries), "loot modifiers")

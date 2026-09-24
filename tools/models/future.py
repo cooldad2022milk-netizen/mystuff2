@@ -1,11 +1,14 @@
 """
 The Future Devil - entity model (entity/devil/future) and animations.
 
-Reference points:
-  * it never leaves its cell: a long, gnarled body rooted into the floor of the dark, only the upper half moving
-  * a long pale face under drooping strands, crowned with horns; a wide, delighted mouth
-  * an eye set in its chest (it lives in its contractor's eye and sees the future through it)
-  * long many-jointed arms it throws up when it chants "Future's the best!"
+Reference points (manga ch. 31 "The Future Rules"):
+  * it never leaves its cell in Public Safety's basement: its lower half is a TREE growing out of the floor - trunk
+    and roots and branches - rising into a humanoid body with its arms held OUT, and vine-like streamers hanging from
+    its arms and chest
+  * a HORNED head with a wide, delighted grin
+  * seven eyes: six on its head and ONE BIG EYE staring out of a large HOLE in the middle of its chest
+  * it throws its arms up and chants "The future's the best! The future's the best!"
+  * its contract: it lives in the contractor's right eye (Aki) - see contract.Contract#FUTURE
 """
 import math
 
@@ -31,7 +34,19 @@ def materials():
     a.add("eye_glow", kind="glow", color=(255, 220, 110), emissive=True)
     a.add("lid", kind="skin", color=(150, 120, 100))
     a.add("nail", kind="bone", color=(60, 48, 40))
+    a.add("vine", kind="fiber", color=(66, 58, 44))
+    a.add("sclera", kind="skin", color=(240, 232, 208))
+    a.add("hole", kind="void", color=(20, 10, 12))
     return a
+
+
+def streamers(bone, anchors, rng, length=(9.0, 16.0)):
+    """Vine-like streamers hanging from the arms and chest."""
+    for p in anchors:
+        L = rng.uniform(*length)
+        shapes.horn(bone, np.asarray(p, dtype=float), (rng.uniform(-0.15, 0.15), -1, rng.uniform(-0.15, 0.15)), L, 0.9,
+                    mat="vine", flat=0.25, up=(0, 0, 1), sections=5, around=5, r1=0.25,
+                    bend_axis=(1, 0, 0), bend=rng.uniform(-25, 25))
 
 
 def arm(m, name, side, sh):
@@ -50,6 +65,10 @@ def arm(m, name, side, sh):
     shapes.shell(fb, shapes.loft(shapes.polyline([el, mid, wr]), shapes.profile((0, 1.5), (1, 1.0)),
                                  shapes.profile((0, 1.4), (1, 0.9))), 8, 10, "bark", thick=0.3)
     shapes.shell(fb, shapes.ellipsoid(mid, (1.6, 1.4, 1.6)), 6, 4, "bark_dk", thick=0.3)
+    rng = np.random.default_rng(271 if side > 0 else 277)
+    streamers(b, [sh + np.array([side * 2.0, -4.0, 1.0]), sh + np.array([side * 3.8, -8.5, 1.2])], rng)
+    streamers(fb, [el + np.array([side * 0.6, -4.0, 1.0]), mid + np.array([side * 0.6, -2.0, 1.2]),
+                   wr + np.array([0, 2.0, 1.0])], rng)
     palm = wr + np.array([0, -1.6, -0.4])
     shapes.shell(fb, shapes.ellipsoid(palm, (1.8, 2.0, 1.0)), 7, 5, "skin", thick=0.3)
     for k in range(5):
@@ -88,16 +107,23 @@ def build():
         u, v = rng.uniform(0, 1), rng.uniform(0.1, 0.7)
         p, n, du, dv = shapes.surface_frame(trunk, u, v)
         shapes.shell(body, shapes.ellipsoid(p, (1.2, 1.6, 1.2)), 6, 4, "bark_dk", thick=0.3)
-    # the chest: broad, with the eye set in its breastbone
-    chest = shapes.ellipsoid((0, 39.0, 0.0), (7.8, 6.4, 4.8), e_lat=0.9, e_lon=0.9)
-    shapes.shell(body, chest, 16, 10, "bark", thick=0.45)
-    ey = m.bone("chest_eye", parent="body", pivot=(0, 39.5, -4.8))
-    p, n, du, dv = shapes.surface_frame(chest, 0.0, 0.53)
-    ey.decal(p + n * 0.1, n, 3.8, 5.4, "eye", up=(1, 0, 0))
+    # the chest: broad, with a large hole in the middle - and the big eye staring out of it
+    chest = shapes.ellipsoid((0, 39.0, 0.0), (8.4, 7.0, 5.0), e_lat=0.9, e_lon=0.9)
+    shapes.shell(body, chest, 18, 12, "bark", thick=0.45,
+                 skip=lambda u, v: min(u, 1 - u) < 0.13 and 0.34 < v < 0.72)
+    shapes.shell(body, shapes.ellipsoid((0, 39.2, -0.6), (4.4, 4.8, 3.6)), 12, 8, "hole", thick=0.3)
+    for i in range(14):  # the ragged rim of the hole
+        a = i * 2 * math.pi / 14
+        p = np.array([math.cos(a) * 4.3, 39.2 + math.sin(a) * 4.6, -4.2])
+        shapes.shell(body, shapes.ellipsoid(p, (1.2, 1.2, 0.9)), 5, 3, "bark_dk", thick=0.3)
+    ey = m.bone("chest_eye", parent="body", pivot=(0, 39.2, -2.6))
+    shapes.shell(ey, shapes.ellipsoid((0, 39.2, -2.2), (3.2, 3.2, 2.8)), 12, 8, "sclera", thick=0.3)
+    ey.decal((0, 39.2, -5.02), (0, 0, -1), 5.0, 3.6, "eye", up=(0, 1, 0))
     for s in (-1, 1):
         # heavy lids above and below
-        shapes.shell(body, shapes.ellipsoid(p + n * 0.2 + np.array([0, s * 2.9, 0]), (2.6, 0.9, 0.9)), 8, 4, "lid",
-                     thick=0.3)
+        shapes.shell(ey, shapes.ellipsoid((0, 39.2 + s * 3.1, -3.8), (3.4, 1.0, 1.4)), 8, 4, "lid", thick=0.3)
+    streamers(body, [(-6.0, 44.0, -3.0), (-3.5, 45.0, -4.0), (3.5, 45.0, -4.0), (6.0, 44.0, -3.0), (-7.5, 36.0, -2.0),
+                     (7.5, 36.0, -2.0)], np.random.default_rng(281), length=(10.0, 20.0))
     # neck
     shapes.shell(body, shapes.loft(shapes.polyline([(0, 44.0, 0.5), (0, 48.0, -0.5), (0, 51.0, -1.0)]),
                                    shapes.profile((0, 3.0), (1, 2.2)), shapes.profile((0, 2.8), (1, 2.0)),
@@ -118,26 +144,15 @@ def build():
         q, n2, _, _ = shapes.surface_frame(face, u, vv - 0.05)
         jaw.spike(q + n2 * 0.25 + np.array([0, -0.1, 0]), (0, 1, 0), 0.7, 0.45, 0.2, "teeth", steps=2, up=n2)
     shapes.shell(jaw, shapes.ellipsoid((0, 50.0, -2.0), (3.2, 1.3, 3.4)), 10, 5, "skin", thick=0.35)
-    # small gleeful eyes
+    # six eyes on its head, three up each side of the face (the seventh is in its chest)
     for s in (-1, 1):
-        p, n, du, dv = shapes.surface_frame(face, 0.08 if s > 0 else 0.92, 0.6)
-        look.decal(p + n * 0.1, n, 1.6, 1.0, "eye_glow", up=(0, 1, 0))
-    # the crown of horns
-    for k in range(7):
-        a = math.radians(-75 + k * 25)
-        base = np.array([math.sin(a) * 3.4, 59.5 + math.cos(a) * 1.0, -1.5 + math.cos(a) * 0.5])
-        d = norm(np.array([math.sin(a) * 0.7, 1.0, 0.25]))
-        shapes.horn(look, base, d, 6.0 + 3.0 * math.cos(a), 1.0, mat="horn", sections=5, around=6, r1=0.1,
-                    bend_axis=(math.cos(a), 0, -math.sin(a)), bend=-25)
-    # hair: long black strands draping down from the crown over the back and shoulders
-    for k in range(16):
-        a = math.radians(-120 + k * 16)
-        base = np.array([math.sin(a) * 4.0, 59.0, -1.5 - math.cos(a) * 4.0])
-        if math.cos(a) > 0.55:
-            continue  # leave the face clear
-        d = norm(np.array([math.sin(a) * 0.3, -1.0, -math.cos(a) * 0.3]))
-        shapes.horn(look, base, d, 12.0 + (k % 3) * 3.0, 1.2, mat="hair", flat=0.4, sections=5, around=5, r1=0.3,
-                    bend_axis=(math.cos(a), 0, math.sin(a)), bend=15)
+        for i, (u, v, w) in enumerate(((0.07, 0.5, 1.7), (0.1, 0.62, 1.5), (0.12, 0.74, 1.3))):
+            p, n, du, dv = shapes.surface_frame(face, u if s > 0 else 1 - u, v)
+            look.decal(p + n * 0.1, n, w * 1.4, w, "eye", up=(0, 1, 0))
+    # two long horns sweeping up and out
+    for s in (-1, 1):
+        shapes.horn(look, (s * 3.0, 59.8, -0.5), (s * 0.55, 1.0, 0.15), 15.0, 1.5, mat="horn", tip_mat="nail",
+                    tip_from=0.85, sections=8, around=7, r1=0.12, bend_axis=(0, 0, s), bend=-45 * s)
     # arms
     arm(m, "right_arm", -1, (-8.5, 42.0, 0.5))
     arm(m, "left_arm", 1, (8.5, 42.0, 0.5))
@@ -159,8 +174,8 @@ def animations():
         ph = 2 * math.pi * i / 8
         idle.rot("body", t, (2 * math.sin(ph), 4 * math.sin(ph * 0.5), 2 * math.sin(ph)))
         idle.rot("head", t, (3 * math.sin(ph + 1), 10 * math.sin(ph * 0.5), 6 * math.sin(ph)))
-        idle.rot("right_arm", t, (-6 + 5 * math.sin(ph), 0, 8))
-        idle.rot("left_arm", t, (-6 + 5 * math.sin(ph + 2), 0, -8))
+        idle.rot("right_arm", t, (-8 + 5 * math.sin(ph), 0, 62 + 4 * math.sin(ph)))
+        idle.rot("left_arm", t, (-8 + 5 * math.sin(ph + 2), 0, -62 - 4 * math.sin(ph + 2)))
         idle.rot("right_arm_fore", t, (-20 + 6 * math.sin(ph), 0, 0))
         idle.rot("left_arm_fore", t, (-20 + 6 * math.sin(ph + 2), 0, 0))
         idle.scale("chest_eye", t, (1, 1 + 0.08 * math.sin(ph * 2), 1))
@@ -172,8 +187,8 @@ def animations():
         ph = 2 * math.pi * i / 8
         mv.rot("body", t, (4 * math.sin(ph), 8 * math.sin(ph), 4 * math.sin(ph)))
         mv.rot("head", t, (0, -8 * math.sin(ph), 0))
-        mv.rot("right_arm", t, (-10 + 10 * math.sin(ph), 0, 10))
-        mv.rot("left_arm", t, (-10 - 10 * math.sin(ph), 0, -10))
+        mv.rot("right_arm", t, (-10 + 10 * math.sin(ph), 0, 60))
+        mv.rot("left_arm", t, (-10 - 10 * math.sin(ph), 0, -60))
     A.append(mv)
     # foresight: arms spread, the chest eye opens wide and stares
     fs = Anim("foresight", 0.8)

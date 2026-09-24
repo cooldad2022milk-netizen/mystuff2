@@ -2,6 +2,7 @@ package com.csm.hybrids.registry;
 
 import com.csm.hybrids.CsmMod;
 import com.csm.hybrids.entity.ChainHookEntity;
+import com.csm.hybrids.entity.ContractSummonEntity;
 import com.csm.hybrids.entity.CrossbowBoltEntity;
 import com.csm.hybrids.entity.HeadBombEntity;
 import com.csm.hybrids.entity.NapalmEntity;
@@ -43,6 +44,11 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<HeadBombEntity>> HEAD_BOMB = ENTITIES.register("head_bomb",
             () -> EntityType.Builder.<HeadBombEntity>of(HeadBombEntity::new, MobCategory.MISC)
                     .sized(0.6f, 0.6f).clientTrackingRange(8).updateInterval(1).fireImmune().build("head_bomb"));
+
+    /** The part of a contract devil its contractor calls up (the fox's head, its paw, the Curse, the ghost's arm). */
+    public static final RegistryObject<EntityType<ContractSummonEntity>> CONTRACT_SUMMON = ENTITIES.register("contract_summon",
+            () -> EntityType.Builder.<ContractSummonEntity>of(ContractSummonEntity::new, MobCategory.MISC)
+                    .sized(1.0f, 1.0f).clientTrackingRange(10).updateInterval(1).fireImmune().build("contract_summon"));
 
     // ------------------------------------------------------------------ full devils
     public static final Map<HybridType, RegistryObject<EntityType<DevilEntity>>> DEVILS = new EnumMap<>(HybridType.class);

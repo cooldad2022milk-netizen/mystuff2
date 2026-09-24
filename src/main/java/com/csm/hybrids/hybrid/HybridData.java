@@ -1,15 +1,23 @@
 package com.csm.hybrids.hybrid;
 
+import com.csm.hybrids.ability.Ability;
 import com.csm.hybrids.ability.AbilityRun;
+import com.csm.hybrids.contract.Contract;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Per-player hybrid state (Forge capability). Saved with the player and synced to clients.
+ * <p>
+ * Besides the devil living in them ({@link #type()}), a player can hold devil <b>contracts</b>; their moves follow the
+ * type's own moves on the ability wheel ({@link #abilities()}), so a plain human with a contract has a wheel too.
  */
 public class HybridData {
-    public static final int MAX_ABILITIES = 8;
+    public static final int MAX_ABILITIES = 16;
     public static final float MAX_BLOOD = 100f;
 
     private HybridType type = HybridType.NONE;
@@ -18,6 +26,12 @@ public class HybridData {
     private int selected;
     private final int[] cooldowns = new int[MAX_ABILITIES];
     private final int[] cooldownMax = new int[MAX_ABILITIES];
+    /** Bit mask of {@link Contract#bit()}. */
+    private int contracts;
+    /** Hearts of lifespan the Curse Devil has taken so far. */
+    private int curseToll;
+    /** The wheel: the type's moves then each contract's. Rebuilt when the type or the contracts change. */
+    private List<Ability> abilities;
 
     /** Server: the ability currently being performed (trigger animations included). */
     public AbilityRun activeRun;
@@ -36,14 +50,90 @@ public class HybridData {
         return type != HybridType.NONE;
     }
 
+    /** Whether there is anything on the ability wheel (a hybrid, a devil, or a human contractor). */
+    public boolean hasAbilities() {
+        return !abilities().isEmpty();
+    }
+
+    /** Everything on the ability wheel, in order: the type's moves, then the moves of each contract held. */
+    public List<Ability> abilities() {
+        if (abilities == null) {
+            List<Ability> list = new ArrayList<>(type.abilities());
+            for (Contract c : Contract.fromMask(contracts)) {
+                list.addAll(c.abilities());
+            }
+            abilities = List.copyOf(list.subList(0, Math.min(list.size(), MAX_ABILITIES)));
+        }
+        return abilities;
+    }
+
     public void setType(HybridType type) {
         if (this.type != type) {
             this.type = type;
+            this.abilities = null;
             this.selected = 0;
             this.transformed = false;
             clearCooldowns();
             markDirty();
         }
+    }
+
+    // ------------------------------------------------------------------ contracts
+    public boolean hasContract(Contract c) {
+        return (contracts & c.bit()) != 0;
+    }
+
+    public boolean hasContracts() {
+        return contracts != 0;
+    }
+
+    public int contractMask() {
+        return contracts;
+    }
+
+    public List<Contract> contracts() {
+        return Contract.fromMask(contracts);
+    }
+
+    /** @return false if the contract was already held. */
+    public boolean addContract(Contract c) {
+        if (hasContract(c)) {
+            return false;
+        }
+        setContractMask(contracts | c.bit());
+        return true;
+    }
+
+    /** @return false if the contract was not held. */
+    public boolean removeContract(Contract c) {
+        if (!hasContract(c)) {
+            return false;
+        }
+        setContractMask(contracts & ~c.bit());
+        return true;
+    }
+
+    public void setContractMask(int mask) {
+        if (mask != contracts) {
+            // contract moves sit after the type's: dropping one shifts the slots behind it
+            boolean removed = (contracts & ~mask) != 0;
+            contracts = mask;
+            abilities = null;
+            if (removed) {
+                clearCooldowns();
+            }
+            selected = Mth.clamp(selected, 0, Math.max(0, abilities().size() - 1));
+            markDirty();
+        }
+    }
+
+    public int curseToll() {
+        return curseToll;
+    }
+
+    public void setCurseToll(int hearts) {
+        curseToll = Math.max(0, hearts);
+        markDirty();
     }
 
     public boolean isTransformed() {
@@ -74,7 +164,7 @@ public class HybridData {
     }
 
     public void setSelected(int selected) {
-        int count = type.abilities().size();
+        int count = abilities().size();
         int s = count == 0 ? 0 : Mth.clamp(selected, 0, count - 1);
         if (s != this.selected) {
             this.selected = s;
@@ -132,11 +222,19 @@ public class HybridData {
         tag.putFloat("blood", blood);
         tag.putInt("selected", selected);
         tag.putIntArray("cooldowns", cooldowns.clone());
+        tag.putInt("contracts", contracts);
+        tag.putInt("curse_toll", curseToll);
         return tag;
     }
 
     public void load(CompoundTag tag) {
         type = HybridType.byId(tag.getString("type"));
+        if (!type.playable()) {
+            type = HybridType.NONE; // saved before the contract devils became contracts
+        }
+        contracts = tag.getInt("contracts");
+        curseToll = tag.getInt("curse_toll");
+        abilities = null;
         transformed = tag.getBoolean("transformed") && type != HybridType.NONE;
         blood = tag.getFloat("blood");
         selected = tag.getInt("selected");
@@ -163,6 +261,7 @@ public class HybridData {
         buf.writeBoolean(transformed);
         buf.writeFloat(blood);
         buf.writeByte(selected);
+        buf.writeVarInt(contracts);
         buf.writeBoolean(full);
         if (full) {
             for (int i = 0; i < MAX_ABILITIES; i++) {
@@ -178,6 +277,7 @@ public class HybridData {
         out.transformed = buf.readBoolean();
         out.blood = buf.readFloat();
         out.selected = buf.readByte();
+        out.contracts = buf.readVarInt();
         out.full = buf.readBoolean();
         if (out.full) {
             for (int i = 0; i < MAX_ABILITIES; i++) {
@@ -188,7 +288,11 @@ public class HybridData {
     }
 
     public void applySync(SyncState s) {
+        if (this.type != s.type || this.contracts != s.contracts) {
+            this.abilities = null;
+        }
         this.type = s.type;
+        this.contracts = s.contracts;
         this.transformed = s.transformed;
         this.blood = s.blood;
         this.selected = s.selected;
@@ -203,6 +307,7 @@ public class HybridData {
         public boolean transformed;
         public float blood;
         public int selected;
+        public int contracts;
         public boolean full;
         public final int[] cooldowns = new int[MAX_ABILITIES];
         public final int[] cooldownMax = new int[MAX_ABILITIES];

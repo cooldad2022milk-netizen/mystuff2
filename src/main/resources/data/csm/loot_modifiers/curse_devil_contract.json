@@ -1,0 +1,11 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:curse_devil_contract",
+  "tables": [
+    "minecraft:chests/ancient_city",
+    "minecraft:chests/stronghold_library",
+    "minecraft:chests/desert_pyramid"
+  ],
+  "chance": 0.03
+}

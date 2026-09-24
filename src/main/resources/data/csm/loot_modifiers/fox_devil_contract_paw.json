@@ -1,0 +1,12 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:fox_devil_contract_paw",
+  "tables": [
+    "minecraft:chests/village/village_temple",
+    "minecraft:chests/pillager_outpost",
+    "minecraft:chests/woodland_mansion",
+    "minecraft:chests/simple_dungeon"
+  ],
+  "chance": 0.05
+}

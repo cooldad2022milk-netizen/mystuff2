@@ -116,8 +116,8 @@ DEVILS = [
                                             "battered, then flung away."),
              "typhoon_hurl": ("Hurl Debris", "Tear up rubble and hurl it."),
          }),
-    dict(id="fox", entity="fox_devil", name="Fox Devil", form="Fox Devil", color=(232, 160, 96), boss=False,
-         essence="Fox Devil's Essence", tooltip="Covered in fur and eyes. It is hungry.",
+    dict(id="fox", entity="fox_devil", name="Fox Devil", form="Fox Devil", color=(244, 240, 230), boss=False,
+         contract=[("fox_devil_contract_paw", 0.25), ("fox_devil_contract_head", 0.06)],
          moves={
              "fox_kon": ("Kon!", "Your jaws lunge out of nowhere at whatever you point at and bite it clean through."),
              "fox_claw": ("Eyed Claw", "A swipe of the forepaw covered in eyes."),
@@ -127,7 +127,7 @@ DEVILS = [
          },
          lore="The Fox Devil only lends its head to hunters it likes."),
     dict(id="curse", entity="curse_devil", name="Curse Devil", form="Curse Devil", color=(216, 208, 184), boss=True,
-         essence="Curse Devil's Essence", tooltip="A rusty nail is driven through it.",
+         contract=[("curse_devil_contract", 1.0)],
          moves={
              "curse_nail": ("The Nail", "Stab. Stab the same thing three times within 30 seconds and the Curse takes it "
                                         "in its hand and wrings it."),
@@ -140,7 +140,7 @@ DEVILS = [
          },
          lore="The Curse Devil takes a heavy price for every life it takes."),
     dict(id="future", entity="future_devil", name="Future Devil", form="Future Devil", color=(200, 168, 112), boss=False,
-         essence="Future Devil's Essence", tooltip="The future is the best!",
+         contract=[("future_devil_contract", 0.3)],
          moves={
              "future_foresight": ("Foresight", "See what's coming: the next five blows aimed at you in 15 seconds miss, "
                                                "and everything nearby is revealed."),
@@ -152,7 +152,7 @@ DEVILS = [
          },
          lore="The Future Devil never leaves its cell. Sometimes it dodges blows before they are thrown."),
     dict(id="ghost", entity="ghost_devil", name="Ghost Devil", form="Ghost Devil", color=(232, 224, 240), boss=False,
-         essence="Ghost Devil's Essence", tooltip="You can barely see it. It is cold.",
+         contract=[("ghost_devil_contract", 0.25)],
          moves={
              "ghost_strangle": ("Strangle", "Hands no one can see close round a throat and lift it off the ground."),
              "ghost_snatch": ("Snatch", "An unseen hand snatches your prey up and throws it aside."),
@@ -172,6 +172,74 @@ DEVILS = [
     dict(id="justice", entity="justice_devil", name="Justice Devil", form="Justice Devil", color=(138, 154, 90),
          boss=True, essence="Justice Devil's Essence", tooltip="It squirms like a caterpillar.", moves={}),
 ]
+
+# Contracts (contract.Contract): what a hunter gets from the Fox, Curse, Future and Ghost devils. The Fox Devil only
+# lends its head to hunters it finds handsome; everyone else it deals with gets its paw - two different contracts.
+CONTRACTS = [
+    dict(id="fox_head", item="fox_devil_contract_head", name="Fox Devil (Head)",
+         item_name="Fox Devil Contract: Head", color=(244, 240, 230),
+         tooltip="The Fox Devil likes your face. It will lend you its head.",
+         price="Price: it bites off a little of you every time (1 heart).",
+         signed="The Fox Devil takes its first mouthful of you. Make the fox with your hand and say \"Kon!\" (it is on "
+                "your ability wheel, V).",
+         moves={"contract_kon": ("Kon!", "Make the fox with your hand, point it and say the word. The Fox Devil's head - "
+                                        "only its head - appears around your prey with its jaws wide open and bites down. "
+                                        "Small prey is swallowed whole.",
+                                 "Price: 1 heart of flesh")}),
+    dict(id="fox_paw", item="fox_devil_contract_paw", name="Fox Devil (Paw)",
+         item_name="Fox Devil Contract: Paw", color=(232, 210, 180),
+         tooltip="The Fox Devil doesn't think much of your face. It will lend you a paw.",
+         price="Price: it bites off a little of you every time (half a heart).",
+         signed="The Fox Devil takes its first mouthful of you. It won't lend you its head, but its paw is yours (V).",
+         moves={"contract_paw_slam": ("Fox Paw", "Point at your prey: the Fox Devil's huge paw, covered in eyes, comes down "
+                                                 "on it out of the sky, claws first.",
+                                      "Price: half a heart of flesh"),
+                "contract_paw_swipe": ("Paw Swipe", "The paw sweeps across in front of you and bats everything aside.",
+                                       "Price: half a heart of flesh")}),
+    dict(id="curse", item="curse_devil_contract", name="Curse Devil",
+         item_name="Curse Devil Contract", color=(216, 208, 184),
+         tooltip="A rusty nail is pinned to it.",
+         price="Price: every time the Curse comes, it takes a heart of your lifespan. For good.",
+         signed="The Curse Devil will come for anything you drive the nail into three times. It will take your lifespan "
+                "for it.",
+         moves={"contract_curse_nail": ("Curse Nail", "Stab with the nail. Stab the same thing three times within 30 "
+                                                      "seconds and the mouth on it counts down to zero: the Curse Devil "
+                                                      "rises behind it, takes it by both arms and bites.",
+                                        "Price: a heart of lifespan when the Curse comes")}),
+    dict(id="future", item="future_devil_contract", name="Future Devil",
+         item_name="Future Devil Contract", color=(200, 168, 112),
+         tooltip="\"The future is the best!\"",
+         price="Price: it lives in your right eye, and watches.",
+         signed="The Future Devil moves into your right eye. It laughs: \"You will die the worst possible death!\"",
+         moves={"contract_future_sight": ("Future Sight", "The Future Devil in your right eye shows you the next few "
+                                                          "seconds: for 15 seconds the next four blows aimed at you miss, "
+                                                          "and whatever means you harm shows itself. Now and then it "
+                                                          "shows you a blow coming even when you don't ask.",
+                                          "Price: none (it lives in your eye)")}),
+    dict(id="ghost", item="ghost_devil_contract", name="Ghost Devil",
+         item_name="Ghost Devil Contract", color=(232, 224, 240),
+         tooltip="You can barely see the writing. It is cold.",
+         price="Price: your right eye.",
+         signed="The Ghost Devil takes your right eye. Its right arm is yours now: nobody else can see it.",
+         moves={"contract_ghost_hand": ("Ghost Hand", "The Ghost Devil's invisible right arm reaches out, closes round a "
+                                                      "throat, lifts it off the ground and squeezes.",
+                                        "Price: none (your eye is already paid)"),
+                "contract_ghost_fling": ("Ghost Fling", "The invisible hand snatches something up and hurls it aside.",
+                                         "Price: none (your eye is already paid)")}),
+]
+
+# chests a contract turns up in (the devil hunters who held it didn't all make it)
+CONTRACT_LOOT = {
+    "fox_devil_contract_paw": (["minecraft:chests/village/village_temple", "minecraft:chests/pillager_outpost",
+                                "minecraft:chests/woodland_mansion", "minecraft:chests/simple_dungeon"], 0.05),
+    "fox_devil_contract_head": (["minecraft:chests/woodland_mansion", "minecraft:chests/ancient_city",
+                                 "minecraft:chests/stronghold_library"], 0.03),
+    "curse_devil_contract": (["minecraft:chests/ancient_city", "minecraft:chests/stronghold_library",
+                              "minecraft:chests/desert_pyramid"], 0.03),
+    "future_devil_contract": (["minecraft:chests/stronghold_library", "minecraft:chests/end_city_treasure"], 0.04),
+    "ghost_devil_contract": (["minecraft:chests/simple_dungeon", "minecraft:chests/abandoned_mineshaft",
+                              "minecraft:chests/ancient_city"], 0.03),
+}
 
 HUMANOID_TRIGGERS = {"control": "control_devil", "angel": "angel_wings", "war": "yoru_takes_over",
                      "famine": "famine_hunger"}
@@ -199,14 +267,15 @@ def lang():
     for d in DEVILS:
         i = d["id"]
         out["entity.csm." + d["entity"]] = d["name"]
-        out["item.csm." + essence_item(d)] = d["essence"]
         out["item.csm." + d["entity"] + "_spawn_egg"] = d["name"] + " Spawn Egg"
         out["hybrid.csm." + i] = d["form"]
-        out["tooltip.csm.essence." + i] = d["tooltip"]
-        out["msg.csm.became_devil." + i] = d.get("became", "You are the %s now. Press V for the ability wheel, G to "
-                                                           "manifest your true form." % d["form"])
-        out["msg.csm.revived." + i] = "Devils don't die that easily."
-        out["msg.csm.trigger_failed." + i] = "Not enough blood to let the devil out."
+        if "contract" not in d:
+            out["item.csm." + essence_item(d)] = d["essence"]
+            out["tooltip.csm.essence." + i] = d["tooltip"]
+            out["msg.csm.became_devil." + i] = d.get("became", "You are the %s now. Press V for the ability wheel, G to "
+                                                               "manifest your true form." % d["form"])
+            out["msg.csm.revived." + i] = "Devils don't die that easily."
+            out["msg.csm.trigger_failed." + i] = "Not enough blood to let the devil out."
         if "trigger" in d:
             tid, tname, tdesc = d["trigger"]
             out["ability.csm." + tid] = tname
@@ -214,13 +283,55 @@ def lang():
         for aid, (name, desc) in d["moves"].items():
             out["ability.csm." + aid] = name
             out["ability.csm." + aid + ".desc"] = desc
+    for c in CONTRACTS:
+        i = c["id"]
+        out["contract.csm." + i] = c["name"]
+        out["item.csm." + c["item"]] = c["item_name"]
+        out["tooltip.csm.contract." + i] = c["tooltip"]
+        out["tooltip.csm.contract_price." + i] = c["price"]
+        out["msg.csm.contract_signed." + i] = c["signed"]
+        for aid, (name, desc, price) in c["moves"].items():
+            out["ability.csm." + aid] = name
+            out["ability.csm." + aid + ".desc"] = desc
+            out["price.csm." + aid] = price
+    out.update({
+        "tooltip.csm.contract_use": "Hold Use to bite your thumb and seal the contract in blood",
+        "msg.csm.contract_already": "You already have this contract.",
+        "msg.csm.contract_missing": "You no longer have that contract.",
+        "msg.csm.curse_count": "The mouth on it counts: \"%s...\"",
+        "msg.csm.curse_toll": "The Curse Devil takes its price. Hearts of lifespan gone: %s",
+        "msg.csm.future_sight": "You can see a few seconds ahead.",
+        "msg.csm.ghost_nothing": "The ghost's hand closes on nothing. Look at what you want it to take.",
+        "screen.csm.contractor": "Devil Hunter",
+        "screen.csm.contracts": "Contracts: %s",
+        "commands.csm.not_playable": "Nobody becomes the %s: make a contract with it instead (/csm contract).",
+        "commands.csm.contract_unknown": "Unknown contract: %s",
+        "commands.csm.contract_add": "%s made a contract with the %s",
+        "commands.csm.contract_remove": "%s's contract with the %s is broken",
+        "commands.csm.contract_has": "%s already has a contract with the %s",
+        "commands.csm.contract_hasnt": "%s has no contract with the %s",
+        "commands.csm.contract_list": "%s's contracts: %s (hearts of lifespan the Curse has taken: %s)",
+        "entity.csm.contract_summon": "Contract Devil",
+    })
     return out
 
 
 def loot_table(d):
-    """A boss always leaves its essence when a player kills it; lesser devils sometimes do. All of them bleed."""
-    essence = {"type": "minecraft:item", "name": "csm:" + essence_item(d)}
+    """A boss always leaves its essence when a player kills it; lesser devils sometimes do. All of them bleed.
+    A contract devil leaves no essence: beaten, it offers a contract (the Fox its paw far more often than its head)."""
     pools = []
+    if "contract" in d:
+        for item, chance in d["contract"]:
+            conds = [{"condition": "minecraft:killed_by_player"}]
+            if chance < 1:
+                conds.append({"condition": "minecraft:random_chance_with_looting", "chance": chance,
+                              "looting_multiplier": 0.03})
+            pools.append({"rolls": 1, "entries": [{"type": "minecraft:item", "name": "csm:" + item}],
+                          "conditions": conds})
+        pools.append({"rolls": {"type": "minecraft:uniform", "min": 0, "max": 2},
+                      "entries": [{"type": "minecraft:item", "name": "csm:blood_vial"}]})
+        return {"type": "minecraft:entity", "pools": pools}
+    essence = {"type": "minecraft:item", "name": "csm:" + essence_item(d)}
     if d["boss"]:
         pools.append({"rolls": 1, "entries": [essence], "conditions": [{"condition": "minecraft:killed_by_player"}]})
     else:

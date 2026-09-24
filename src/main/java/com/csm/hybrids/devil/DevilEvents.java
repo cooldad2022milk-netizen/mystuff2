@@ -264,7 +264,8 @@ public final class DevilEvents {
 
     /**
      * Seeing the future: while the Future Devil's foresight lasts, blows simply miss (it steps aside). The Future
-     * Devil as a mob always half-sees them coming. A Ghost that has gone intangible can't be touched at all.
+     * Devil as a mob always half-sees them coming, and so, now and then, does a contractor with it in their eye. A
+     * Ghost that has gone intangible can't be touched at all.
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void untouchable(LivingAttackEvent event) {
@@ -283,8 +284,8 @@ public final class DevilEvents {
         }
         boolean foresight = tag.getLong(ContractMoves.FORESIGHT_UNTIL) > level.getGameTime()
                 && tag.getInt(ContractMoves.FORESIGHT_CHARGES) > 0;
-        boolean instinct = victim instanceof DevilEntity d && d.devilType() == HybridType.FUTURE
-                && level.random.nextFloat() < 0.25f;
+        boolean instinct = (victim instanceof DevilEntity d && d.devilType() == HybridType.FUTURE
+                && level.random.nextFloat() < 0.25f) || futureEye(victim, level);
         if (!foresight && !instinct) {
             return;
         }
@@ -306,6 +307,15 @@ public final class DevilEvents {
         Fx.speedLine(level, victim.getBoundingBox().getCenter(), victim.getBoundingBox().getCenter().add(side));
         Fx.stars(level, victim.getEyePosition(), 3, 0.3);
         AbilityUtil.soundAt(level, victim.position(), com.csm.hybrids.registry.ModSounds.FLASH_STEP.get(), 0.6f, 1.6f);
+    }
+
+    /** The Future Devil living in a contractor's right eye sometimes shows them the blow coming. */
+    private static boolean futureEye(LivingEntity victim, ServerLevel level) {
+        if (!(victim instanceof Player p)) {
+            return false;
+        }
+        HybridData d = HybridCapability.get(p);
+        return d != null && d.hasContract(com.csm.hybrids.contract.Contract.FUTURE) && level.random.nextFloat() < 0.08f;
     }
 
     /** The death the Future Devil showed comes true. */

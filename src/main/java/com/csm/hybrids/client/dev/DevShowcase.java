@@ -259,7 +259,12 @@ public final class DevShowcase {
         }
         at(4, () -> cmd("kill @e[type=minecraft:husk]"));
         // ability wheel
-        at(6, () -> Minecraft.getInstance().setScreen(new AbilityWheelScreen(type, false)));
+        at(6, () -> {
+            com.csm.hybrids.hybrid.HybridData wheel = com.csm.hybrids.hybrid.HybridCapability.get(Minecraft.getInstance().player);
+            if (wheel != null && wheel.hasAbilities()) {
+                Minecraft.getInstance().setScreen(new AbilityWheelScreen(wheel, false));
+            }
+        });
         at(8, () -> shot(id + "_06_wheel"));
         at(2, () -> Minecraft.getInstance().setScreen(null));
         firstPersonMoves(type, 1, 2);
@@ -367,6 +372,9 @@ public final class DevShowcase {
             }
         }));
         at(8, () -> shot(id + "_02_mob_death"));
+        if (type.contract) {
+            return; // nobody becomes a contract devil (its contract's moves are toured on their own)
+        }
         // the player swallows its essence
         at(30, () -> {
             cmd("kill @e[type=minecraft:item]");

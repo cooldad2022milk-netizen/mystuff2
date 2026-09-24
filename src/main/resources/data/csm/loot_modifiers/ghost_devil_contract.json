@@ -1,0 +1,11 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:ghost_devil_contract",
+  "tables": [
+    "minecraft:chests/simple_dungeon",
+    "minecraft:chests/abandoned_mineshaft",
+    "minecraft:chests/ancient_city"
+  ],
+  "chance": 0.03
+}

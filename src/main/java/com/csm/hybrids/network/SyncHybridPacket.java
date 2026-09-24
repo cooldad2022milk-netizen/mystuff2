@@ -26,6 +26,7 @@ public record SyncHybridPacket(int entityId, HybridData.SyncState state) {
         buf.writeBoolean(s.transformed);
         buf.writeFloat(s.blood);
         buf.writeByte(s.selected);
+        buf.writeVarInt(s.contracts);
         buf.writeBoolean(s.full);
         if (s.full) {
             for (int i = 0; i < HybridData.MAX_ABILITIES; i++) {

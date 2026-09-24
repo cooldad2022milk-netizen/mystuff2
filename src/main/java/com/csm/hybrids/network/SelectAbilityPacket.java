@@ -23,7 +23,7 @@ public record SelectAbilityPacket(int index) {
         ServerPlayer player = ctx.get().getSender();
         if (player != null) {
             HybridData data = HybridCapability.get(player);
-            if (data != null && data.isHybrid()) {
+            if (data != null && data.hasAbilities()) {
                 data.setSelected(msg.index);
                 HybridLogic.sync(player, data);
             }

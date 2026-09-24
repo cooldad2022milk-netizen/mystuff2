@@ -111,6 +111,16 @@ public abstract class Ability {
         return CsmMod.id("textures/gui/ability/" + id + ".png");
     }
 
+    /** What the move costs besides blood (a contract's price), shown on the wheel; null for none. */
+    public Component price() {
+        return null;
+    }
+
+    /** Colour of this move's slice on the wheel. */
+    public int wheelColor() {
+        return type.color;
+    }
+
     public boolean consumesBloodOnStart() {
         return true;
     }

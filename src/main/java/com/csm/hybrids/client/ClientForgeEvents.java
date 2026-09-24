@@ -47,16 +47,16 @@ public final class ClientForgeEvents {
         }
         HybridData data = HybridCapability.get(mc.player);
         while (Keybinds.WHEEL.consumeClick()) {
-            if (data != null && data.isHybrid()) {
+            if (data != null && data.hasAbilities()) {
                 if (mc.screen == null) {
-                    mc.setScreen(new AbilityWheelScreen(data.type()));
+                    mc.setScreen(new AbilityWheelScreen(data));
                 }
             } else {
                 mc.player.displayClientMessage(Component.translatable("msg.csm.not_hybrid").withStyle(ChatFormatting.GRAY), true);
             }
         }
         while (Keybinds.USE.consumeClick()) {
-            if (data != null && data.isHybrid()) {
+            if (data != null && data.hasAbilities()) {
                 CsmNetwork.toServer(new UseAbilityPacket(data.selected()));
             }
         }

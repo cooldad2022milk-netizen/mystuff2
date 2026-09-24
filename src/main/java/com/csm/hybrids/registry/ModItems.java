@@ -4,7 +4,9 @@ import com.csm.hybrids.CsmMod;
 import com.csm.hybrids.hybrid.HybridType;
 import com.csm.hybrids.devil.DevilSpec;
 import com.csm.hybrids.devil.DevilSpecs;
+import com.csm.hybrids.contract.Contract;
 import com.csm.hybrids.item.BloodVialItem;
+import com.csm.hybrids.item.ContractItem;
 import com.csm.hybrids.item.DevilEssenceItem;
 import com.csm.hybrids.item.DevilHeartItem;
 import com.csm.hybrids.item.FiendRemainsItem;
@@ -60,6 +62,8 @@ public final class ModItems {
     // ------------------------------------------------------------------ full devils: essences and spawn eggs
     public static final Map<HybridType, RegistryObject<Item>> ESSENCES = new EnumMap<>(HybridType.class);
     public static final Map<HybridType, RegistryObject<Item>> SPAWN_EGGS = new EnumMap<>(HybridType.class);
+    /** Contract devils leave no essence (nobody becomes them): you make a contract with them instead. */
+    public static final Map<Contract, RegistryObject<Item>> CONTRACTS = new EnumMap<>(Contract.class);
 
     static {
         for (HybridType type : HybridType.values()) {
@@ -68,10 +72,17 @@ public final class ModItems {
             }
             DevilSpec spec = DevilSpecs.of(type);
             Rarity rarity = spec.boss ? Rarity.EPIC : Rarity.RARE;
-            ESSENCES.put(type, ITEMS.register(essenceName(type),
-                    () -> new DevilEssenceItem(type, new Item.Properties().stacksTo(1).rarity(rarity).fireResistant())));
+            if (type.playable()) {
+                ESSENCES.put(type, ITEMS.register(essenceName(type),
+                        () -> new DevilEssenceItem(type, new Item.Properties().stacksTo(1).rarity(rarity).fireResistant())));
+            }
             SPAWN_EGGS.put(type, ITEMS.register(ModEntities.devilName(type) + "_spawn_egg",
                     () -> new ForgeSpawnEggItem(ModEntities.DEVILS.get(type), spec.eggBg, spec.eggFg, new Item.Properties())));
+        }
+        for (Contract c : Contract.values()) {
+            Rarity rarity = c == Contract.FOX_PAW || c == Contract.GHOST ? Rarity.RARE : Rarity.EPIC;
+            CONTRACTS.put(c, ITEMS.register(c.itemName(),
+                    () -> new ContractItem(c, new Item.Properties().stacksTo(1).rarity(rarity))));
         }
     }
 
@@ -95,7 +106,7 @@ public final class ModItems {
             case COSMOS -> COSMOS_DEVIL_REMAINS.get();
             case GUN -> GUN_DEVIL_FLESH.get();
             case NONE -> HUMAN_HEART.get();
-            default -> ESSENCES.get(type).get();
+            default -> ESSENCES.containsKey(type) ? ESSENCES.get(type).get() : HUMAN_HEART.get();
         };
     }
 

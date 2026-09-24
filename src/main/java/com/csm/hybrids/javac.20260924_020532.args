@@ -1,0 +1,11 @@
+-proc:none
+-XDshould-stop.ifError=FLOW
+-XDshould-stop.at=FLOW
+-Xmaxerrs
+1000000
+-Xmaxwarns
+0
+-nowarn
+-d
+/tmp/tmp.B5EulZRLRS/cls
+@/tmp/tmp.B5EulZRLRS/files

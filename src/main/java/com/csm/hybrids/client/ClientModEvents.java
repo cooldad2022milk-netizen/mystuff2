@@ -45,6 +45,8 @@ public final class ClientModEvents {
         event.registerEntityRenderer(ModEntities.SPEAR.get(), SpearRenderer::new);
         event.registerEntityRenderer(ModEntities.HEAD_BOMB.get(), HeadBombRenderer::new);
         event.registerEntityRenderer(ModEntities.SPARK_BOMB.get(), NoRenderer::new);
+        event.registerEntityRenderer(ModEntities.CONTRACT_SUMMON.get(),
+                com.csm.hybrids.client.render.ContractSummonRenderer::new);
         ModEntities.DEVILS.values().forEach(t -> event.registerEntityRenderer(t.get(), com.csm.hybrids.client.render.DevilRenderer::new));
     }
 

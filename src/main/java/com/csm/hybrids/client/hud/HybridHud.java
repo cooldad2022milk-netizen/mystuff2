@@ -22,10 +22,10 @@ public final class HybridHud {
             return;
         }
         HybridData data = HybridCapability.get(mc.player);
-        if (data == null || !data.isHybrid()) {
+        if (data == null || !data.hasAbilities()) {
             return;
         }
-        List<Ability> abilities = data.type().abilities();
+        List<Ability> abilities = data.abilities();
         if (abilities.isEmpty()) {
             return;
         }
@@ -42,17 +42,20 @@ public final class HybridHud {
         int tx = x + 30;
         int barW = 90;
 
-        // blood gauge
-        float blood = data.blood() / HybridData.MAX_BLOOD;
-        g.fill(tx - 1, iy + 19, tx + barW + 1, iy + 26, 0xFF000000);
-        g.fill(tx, iy + 20, tx + barW, iy + 25, 0xFF2A0606);
-        g.fillGradient(tx, iy + 20, tx + Math.round(barW * blood), iy + 25, 0xFFE02020, 0xFF7A0808);
-        g.drawString(font, Component.translatable("hud.csm.blood", (int) data.blood()), tx, iy + 28, 0xFFD83030, true);
+        // blood gauge (a human contractor has no devil blood to burn)
+        if (data.isHybrid()) {
+            float blood = data.blood() / HybridData.MAX_BLOOD;
+            g.fill(tx - 1, iy + 19, tx + barW + 1, iy + 26, 0xFF000000);
+            g.fill(tx, iy + 20, tx + barW, iy + 25, 0xFF2A0606);
+            g.fillGradient(tx, iy + 20, tx + Math.round(barW * blood), iy + 25, 0xFFE02020, 0xFF7A0808);
+            g.drawString(font, Component.translatable("hud.csm.blood", (int) data.blood()), tx, iy + 28, 0xFFD83030, true);
+        }
 
         // selected ability
         int sel = Math.min(data.selected(), abilities.size() - 1);
         Ability ab = abilities.get(sel);
-        g.fill(ix - 1, iy - 1, ix + 25, iy + 25, data.isTransformed() ? 0xFF000000 | data.type().color : 0xFF444444);
+        boolean lit = data.isTransformed() || ab.price() != null; // contract moves are always ready
+        g.fill(ix - 1, iy - 1, ix + 25, iy + 25, lit ? 0xFF000000 | ab.wheelColor() : 0xFF444444);
         g.fill(ix, iy, ix + 24, iy + 24, 0xFF140404);
         g.blit(ab.icon(), ix, iy, 24, 24, 0, 0, 32, 32, 32, 32);
         int cd = data.cooldown(sel);

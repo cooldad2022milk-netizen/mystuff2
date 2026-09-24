@@ -13,6 +13,11 @@
     "csm:shark_devil_remains",
     "csm:violence_devil_remains",
     "csm:cosmos_devil_remains",
-    "csm:gun_devil_flesh"
+    "csm:gun_devil_flesh",
+    "csm:fox_devil_contract_paw",
+    "csm:fox_devil_contract_head",
+    "csm:curse_devil_contract",
+    "csm:future_devil_contract",
+    "csm:ghost_devil_contract"
   ]
 }

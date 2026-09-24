@@ -18,7 +18,10 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-/** The devils Public Safety's hunters make contracts with: the Fox, the Curse, the Future and the Ghost. */
+/**
+ * The devils Public Safety's hunters make contracts with - the Fox, the Curse, the Future and the Ghost - fighting as
+ * the mobs they are. Players never become them: what a contractor gets is in {@link com.csm.hybrids.contract}.
+ */
 public final class ContractMoves {
     public static final String CURSE_STACKS = "csm_curse_stacks";
     public static final String CURSE_UNTIL = "csm_curse_until";
@@ -53,7 +56,7 @@ public final class ContractMoves {
     }
 
     // ================================================================== Fox Devil
-    /** "Kon!" - the fox's head lunges from nowhere and bites whatever the hand sign points at clean through. */
+    /** The Fox Devil's whole body in a fight: it lunges and bites clean through whatever it catches. */
     public static class Kon extends DevilAbility {
         public Kon() {
             super(HybridType.FOX, "fox_kon");

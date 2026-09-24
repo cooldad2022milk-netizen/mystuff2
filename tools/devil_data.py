@@ -162,11 +162,38 @@ DEVILS = [
          },
          lore="The Ghost Devil can be seen only by its contractor."),
     dict(id="angel", entity="angel_devil", name="Angel Devil", form="Angel Devil", color=(240, 224, 176), boss=False,
-         essence="Angel Devil's Essence", tooltip="A feather and a halo. Touching it makes you tired.", moves={}),
+         essence="Angel Devil's Essence", tooltip="A feather and a halo. Touching it makes you tired.",
+         trigger=("angel_wings", "Angel Wings", "Let the Angel out: halo alight, white wings spread. You can fly."),
+         moves={
+             "angel_touch": ("Lifespan Drain", "Touch a living thing and take years of its life. You keep them."),
+             "angel_sword": ("Lifespan Sword", "Forge the years you have taken into a golden sword and cut."),
+             "angel_spears": ("Lifespan Spears", "Raise a hand: the years you have taken rain down as spears."),
+             "angel_gust": ("Wing Beat", "One hard beat of the wings blows everything in front of you away."),
+         }),
     dict(id="war", entity="yoru", name="Yoru", form="War Devil", color=(176, 40, 40), boss=True,
-         essence="War Devil's Essence", tooltip="Everything you own looks like a weapon now.", moves={}),
+         essence="War Devil's Essence", tooltip="Everything you own looks like a weapon now.",
+         trigger=("yoru_takes_over", "Yoru Takes Over", "Let Yoru take the body: the scars open on your face and your "
+                                                        "eyes ring red."),
+         moves={
+             "war_weaponize": ("Weaponize", "\"I'll make you into a weapon.\" Something weak enough becomes one, and "
+                                            "your next blows land harder."),
+             "war_sword": ("School Uniform Sword", "A crude blade made out of a school uniform: one heavy cut."),
+             "war_spear": ("War Spear", "Hurl a spear with everything you have: it runs through everything in a "
+                                        "line."),
+             "war_arsenal": ("Arsenal", "Everything that has ever been a weapon, all at once: a barrage falls round "
+                                        "your target."),
+         }),
     dict(id="famine", entity="fami", name="Fami", form="Famine Devil", color=(232, 144, 176), boss=True,
-         essence="Famine Devil's Essence", tooltip="You are starving just holding it.", moves={}),
+         essence="Famine Devil's Essence", tooltip="You are starving just holding it.",
+         trigger=("famine_hunger", "Hunger", "Let the Famine Devil show: your ringed eyes light up, and everything "
+                                              "around you feels it in its stomach."),
+         moves={
+             "famine_starve": ("Starve", "Whatever you look at is suddenly, desperately hungry."),
+             "famine_enthrall": ("Enthrall", "The starving will do anything for you: they turn on whatever you are "
+                                             "fighting."),
+             "famine_vanish": ("Vanish", "You are simply somewhere else - usually right behind them."),
+             "famine_bite": ("Feast", "Eat. It heals you, and fills a stomach that is never full."),
+         }),
     dict(id="falling", entity="falling_devil", name="Falling Devil", form="Falling Devil", color=(240, 240, 240),
          boss=True, essence="Falling Devil's Essence", tooltip="It pulls upward. It smells of cooking.",
          moves={
@@ -310,6 +337,8 @@ def lang():
             out["price.csm." + aid] = price
     out.update({
         "tooltip.csm.contract_use": "Hold Use to bite your thumb and seal the contract in blood",
+        "msg.csm.lifespan": "Years of life taken: %s",
+        "msg.csm.weaponized": "\"I'll make you into a weapon.\" Your next blows land harder.",
         "msg.csm.contract_already": "You already have this contract.",
         "msg.csm.contract_missing": "You no longer have that contract.",
         "msg.csm.curse_count": "The mouth on it counts: \"%s...\"",

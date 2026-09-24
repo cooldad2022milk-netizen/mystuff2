@@ -610,6 +610,103 @@ def icons_contract():
     finish(img, "ghost_fear")
 
 
+def icons_humanoid():
+    """Moves (and triggers) of the devils in human shape: the Angel Devil, Yoru and Fami."""
+    AN = ((250, 240, 200), (90, 70, 40))
+    WA = ((200, 70, 60), (40, 10, 12))
+    FA = ((236, 160, 190), (60, 20, 40))
+    GOLD = (255, 214, 110, 255)
+
+    def halo(d, cx, cy, r):
+        d.ellipse([cx - r, cy - r * 0.35, cx + r, cy + r * 0.35], outline=GOLD, width=5)
+
+    def wing(d, x, y, s):
+        for k in range(5):
+            d.line([(x, y), (x + s * (20 + k * 8), y - 30 + k * 12)], fill=(250, 250, 246, 255), width=7)
+
+    img, d = icon_canvas(*AN)  # angel wings
+    halo(d, 64, 26, 20)
+    wing(d, 58, 74, -1)
+    wing(d, 70, 74, 1)
+    finish(img, "angel_wings")
+    img, d = icon_canvas(*AN)  # lifespan drain: a hand, years flowing out
+    d.ellipse([40, 54, 76, 94], fill=SKIN)
+    for k in range(4):
+        d.text((78 + k * 6, 30 + k * 14), "|||", fill=GOLD)
+    finish(img, "angel_touch")
+    img, d = icon_canvas(*AN)  # lifespan sword
+    poly(d, [(30, 104), (96, 26), (104, 34), (38, 112)], GOLD)
+    d.line([(26, 88), (52, 114)], fill=(150, 110, 40, 255), width=6)
+    finish(img, "angel_sword")
+    img, d = icon_canvas(*AN)  # lifespan spears raining
+    for k in range(5):
+        x = 24 + k * 20
+        poly(d, [(x - 3, 20 + (k % 2) * 10), (x + 3, 20 + (k % 2) * 10), (x, 100 + (k % 2) * 10)], GOLD)
+    finish(img, "angel_spears")
+    img, d = icon_canvas(*AN)  # wing beat
+    wing(d, 34, 70, 1)
+    for k in range(3):
+        d.arc([50 + k * 10, 30, 110 + k * 6, 100], -60, 60, fill=(255, 255, 255, 200), width=3)
+    finish(img, "angel_gust")
+
+    img, d = icon_canvas(*WA)  # yoru takes over: ringed eye and the scars
+    d.ellipse([28, 40, 100, 88], fill=(240, 234, 226, 255), outline=(40, 20, 20, 255), width=3)
+    for k in range(3):
+        r = 20 - k * 6
+        d.ellipse([64 - r, 64 - r, 64 + r, 64 + r], outline=(170, 30, 36, 255), width=4)
+    d.line([(20, 100), (108, 96)], fill=(150, 60, 60, 255), width=4)
+    d.line([(44, 90), (36, 120)], fill=(150, 60, 60, 255), width=4)
+    finish(img, "yoru_takes_over")
+    img, d = icon_canvas(*WA)  # weaponize
+    d.ellipse([30, 30, 70, 70], fill=(120, 180, 90, 255))
+    poly(d, [(70, 64), (110, 30), (114, 36), (76, 70)], (190, 196, 210, 255))
+    finish(img, "war_weaponize")
+    img, d = icon_canvas(*WA)  # uniform sword: navy cloth with white stripes, steel edge
+    poly(d, [(30, 100), (96, 30), (104, 38), (38, 108)], (36, 40, 62, 255))
+    for k in range(4):
+        d.line([(42 + k * 14, 88 - k * 15), (50 + k * 14, 96 - k * 15)], fill=(236, 236, 236, 255), width=3)
+    finish(img, "war_sword")
+    img, d = icon_canvas(*WA)  # war spear
+    d.line([(16, 110), (104, 22)], fill=(60, 48, 40, 255), width=6)
+    poly(d, [(96, 18), (116, 12), (110, 32)], (190, 196, 210, 255))
+    finish(img, "war_spear")
+    img, d = icon_canvas(*WA)  # arsenal: weapons falling
+    for k in range(6):
+        x = 20 + k * 17
+        d.line([(x, 14 + (k % 3) * 8), (x + 6, 70 + (k % 3) * 12)], fill=(190, 196, 210, 255), width=5)
+    d.line([(14, 110), (114, 110)], fill=(60, 40, 30, 255), width=6)
+    finish(img, "war_arsenal")
+
+    img, d = icon_canvas(*FA)  # hunger: a ringed eye over an empty stomach
+    d.ellipse([34, 30, 94, 70], fill=(246, 240, 236, 255), outline=(60, 30, 40, 255), width=3)
+    for k in range(3):
+        r = 16 - k * 5
+        d.ellipse([64 - r, 50 - r, 64 + r, 50 + r], outline=(200, 40, 100, 255), width=3)
+    d.arc([36, 72, 92, 116], 200, 340, fill=(80, 30, 40, 255), width=5)
+    finish(img, "famine_hunger")
+    img, d = icon_canvas(*FA)  # starve: a hollow stomach
+    d.ellipse([34, 34, 94, 102], outline=(120, 40, 60, 255), width=6)
+    d.arc([44, 50, 84, 90], 20, 160, fill=(120, 40, 60, 255), width=5)
+    finish(img, "famine_starve")
+    img, d = icon_canvas(*FA)  # enthrall: arms wide, the starving crowd in
+    for k, x in enumerate((24, 44, 84, 104)):
+        d.ellipse([x - 7, 76, x + 7, 90], fill=SKIN)
+        d.line([(x, 90), (x, 110)], fill=SKIN, width=5)
+    d.line([(34, 44), (64, 60), (94, 44)], fill=SKIN, width=6)
+    d.ellipse([56, 20, 72, 38], fill=(238, 216, 150, 255))
+    finish(img, "famine_enthrall")
+    img, d = icon_canvas(*FA)  # vanish
+    d.ellipse([40, 24, 64, 48], fill=(238, 216, 150, 120))
+    d.rectangle([44, 48, 60, 100], fill=(36, 40, 62, 120))
+    d.arc([60, 30, 110, 100], 180, 360, fill=(255, 255, 255, 200), width=3)
+    finish(img, "famine_vanish")
+    img, d = icon_canvas(*FA)  # feast: a bite
+    d.ellipse([28, 28, 100, 100], fill=(170, 40, 50, 255))
+    for k in range(5):
+        poly(d, [(36 + k * 13, 28), (44 + k * 13, 28), (40 + k * 13, 46)], (240, 234, 220, 255))
+    finish(img, "famine_bite")
+
+
 def icons_part_two():
     """The Falling Devil's and the Justice Devil's moves."""
     FA = ((230, 230, 236), (40, 40, 56))
@@ -802,5 +899,6 @@ if __name__ == "__main__":
     icons_contract()
     icons_contract_moves()
     icons_part_two()
+    icons_humanoid()
     particles()
     print("devil assets generated")

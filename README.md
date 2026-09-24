@@ -220,6 +220,42 @@ The barrel of an M1911 juts out from between your eyes, its hammer poking out of
 | Massacre | A hail of aimed shots at every living thing in sight within 40 blocks (Gun Devil only) |
 | Drink Blood | Heal by drinking |
 
+## Devil contracts
+Public Safety's hunters don't become devils: they make **contracts** with them, pay the devil's price, and borrow a part of it. Contract papers turn up in structure chests. The contract devils also leave one behind when you beat them (the Fox gives its paw far more often than its head). **Hold Use** on one to bite your thumb and seal it in blood. Its moves join your ability wheel (**V**, use with **R**), so a plain human gets a wheel too. You can hold several contracts at once, and on top of being a hybrid.
+
+| Contract | Found in (per chest) | Price | What you get |
+|---|---|---|---|
+| **Fox Devil (Head)** | woodland mansions, ancient cities, stronghold libraries (3%) | a bite of flesh each time (1 heart) | **Kon!**: make the fox with your hand and say it. Only the Fox Devil's **head** comes: it appears round your prey, jaws open, and bites down, swallowing small prey whole. The fox only lends its head to hunters it finds handsome (Aki). |
+| **Fox Devil (Paw)** | village temples, pillager outposts, mansions, dungeons (5%) | a bite of flesh each time (half a heart) | A separate contract with the same devil, for everyone it won't lend its head to. **Fox Paw**: its eyed, clawed paw drops out of the sky onto your prey. **Paw Swipe**: the paw sweeps across in front of you. |
+| **Curse Devil** | ancient cities, stronghold libraries, desert pyramids (3%) | a heart of lifespan, for good, each time it comes (up to 7) | **Curse Nail**: stab the same thing three times within 30 s and a mouth on it counts down. The two-headed Curse then rises behind it, pins it by both arms and bites. |
+| **Future Devil** | stronghold libraries, end cities (4%) | it lives in your right eye | **Future Sight**: for 15 s the next four blows aimed at you miss. Now and then it also shows you a blow coming unasked. |
+| **Ghost Devil** | dungeons, mineshafts, ancient cities (3%) | your right eye | **Ghost Hand**: its invisible right arm closes round a throat and lifts. **Ghost Fling**: it snatches something and hurls it aside. Only you see the arm clearly; others see a shimmer. |
+
+## The full devils
+The devils are mobs you fight. They don't spawn on their own: call them up with their spawn eggs (in the creative tab) or `/summon csm:<name>`. The bosses have a boss bar. When a player kills one it may leave its **essence**: swallow it (**Hold Use**) and you become that devil. Monster devils manifest their true form with slot 0; the devils in human shape (Makima, the Angel Devil, Yoru and Fami) let the devil take over instead. The contract devils (Fox, Curse, Future, Ghost) leave a contract instead: nobody becomes them.
+
+| Devil | What it looks like |
+|---|---|
+| Makima (Control) | light-red braid, yellow ringed eyes, white shirt, black tie and trousers, brown shoes |
+| Angel Devil | androgynous, shoulder-length red hair, halo, white wings, Public Safety suit |
+| Yoru (War) | Asa's body, the uniform and loose black hair, red ringed eyes, scars crossing her nose and left cheek |
+| Fami (Famine) | long unkempt blonde hair, black cap, ringed eyes, four green earrings, school uniform |
+| Bat Devil | a huge, muscular humanoid bat with large round eyes and a grin of sharp teeth, its arms joined to its body by wing flaps |
+| Leech Devil | a wrinkled, segmented bulk on four legs; a long neck ending in nothing but a human mouth, and greasy black hair |
+| Zombie Devil | a limbless torso with its face in its chest, its brain bared on top, standing on the tentacles tied to its zombies |
+| Tomato Devil | a shiny tomato covered in tomato-leafed eyeballs, a vertical mouth of human teeth, walking on eight human arms |
+| Sea Cucumber Devil | a magenta and blue cylinder bristling with blue fingers, a skull under the orifice on top |
+| Eternity Devil | a figure-8 of flesh: an eye and a mouth on each loop, two more mouths in the middle, arms and heads fused into it |
+| Darkness Devil | built out of human bodies (two for legs, three for the torso), a pterodactyl head with curved horns, a cape held open |
+| Gun Devil | a flying skeleton crammed with screaming heads, rifles for arms, ammo belts for legs, and a pistol for a head |
+| Typhoon Devil | a giant with a wailing baby's face and its brain bared, inside a storm of brain matter and gut |
+| Falling Devil | its chef form: toque, ponytail, bleeding face, a chef's dress over a body of corpses, hands for feet |
+| Justice Devil | a blind, rearing caterpillar in a judge's bib, with a gavel for an arm, tentacles and a jaw in its belly |
+| Fox Devil | a huge white arctic fox covered in glowing ringed eyes, with eyed forepaws and black claws |
+| Curse Devil | a towering nailed skeleton with two horned heads (one human, one with three eye slits and tusks) |
+| Future Devil | a tree rooted in the floor, rising into a horned body with six eyes on its head and one in a hole in its chest |
+| Ghost Devil | a flower-covered pillar that walks on arms, with a withered face, long dark hair, eyes and mouth sewn shut |
+
 ## Effects
 Every particle is the mod's own, and no vanilla particles are used:
 - glossy blood drops that splat on the ground, blood mist, and tumbling gore
@@ -233,7 +269,8 @@ Every particle is the mod's own, and no vanilla particles are used:
 - bullet tracers, twinkling cosmos stars, drifting "Halloween" words and clods of earth
 
 ## Commands (op)
-- `/csm hybrid <player> <none|chainsaw|crossbow|flamethrower|whip|bomb|spear|katana|longsword|blood|shark|violence|cosmos|gun>`
+- `/csm hybrid <player> <none|any hybrid, fiend or full devil id>` (not the contract devils)
+- `/csm contract <player> <add|remove> <fox_head|fox_paw|curse|future|ghost>` and `/csm contract <player> list`
 - `/csm blood <player> <amount>`
 - `/csm transform <player>`
 
@@ -254,6 +291,8 @@ Everything visual is generated by the Python scripts in `tools/` (numpy + Pillow
 | Script | Output |
 |---|---|
 | `tools/models/chainsaw.py`, `crossbow.py`, `flamethrower.py`, `whip.py`, `bomb.py`, `spear.py`, `katana.py`, `longsword.py`, `blood.py`, `shark.py`, `violence.py`, `cosmos.py`, `gun.py` | High-detail GeckoLib models (roughly 600-1300 cubes each), texture atlases, glow masks, GeckoLib animations, and software-rendered previews; `bomb.py` and `spear.py` also build the thrown bomb-head and spear entities |
+| `tools/models/control.py`, `angel.py`, `war.py`, `famine.py`, `bat.py`, `leech.py`, `zombie.py`, `tomato.py`, `sea_cucumber.py`, `eternity.py`, `darkness.py`, `gun_devil.py`, `typhoon.py`, `falling.py`, `justice.py` | The full devils (entity/devil/*); the humanoid ones also build the parts a player wears in their form |
+| `tools/models/fox.py`, `curse.py`, `future.py`, `ghost.py` | The contract devils as mobs, plus what their contracts summon (entity/contract/*: the fox's head for Kon, its paw, the Curse, the ghost's arm) |
 | `tools/models/poses.py` | IK for the trigger poses, so the hand really meets the cord handle, the arrow in the eye, the grenade pin and the spear in the nape |
 | `tools/player_anims.py` | The 88 PlayerAnimator body animations |
 | `tools/gen_assets.py` | Ability icons, item sprites, the bolt model |

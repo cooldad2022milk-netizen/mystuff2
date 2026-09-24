@@ -2,8 +2,10 @@
 The Darkness Devil - entity model (entity/devil/darkness), texture atlas and GeckoLib animations.
 
 Reference points:
-  * a tall column of withered human bodies: two form its legs, four more stacked into its torso, each with a ruined face
-  * a pteranodon-like head with curved horns, long withered arms, a mantle of darkness
+  * made of human bodies: two form its legs, three more are stacked into its torso
+  * a head like a pterodactyl's with curvy, pointed horns; long withered arms
+  * one of the bodies holds a dark cape out with its arms spread
+  * it walks out of the dark past astronauts praying, cut in half, their legs pointing up
   * with a gesture it shears off the arms of everyone around it; it drowns an area in darkness; its wounds won't heal
   * a Primal Fear, but weak to light and fire
 """
@@ -52,13 +54,19 @@ def withered_body(bone, top, bottom, width, face_side=-1, rng=None, curl=0.0):
     for k in range(3):
         p, n, du, dv = shapes.surface_frame(f, 0.0, 0.32 + k * 0.08)
         bone.obox(p + n * 0.1, du, (0.4, width * 1.2, 0.35), "rib", up=n)
-    # the ruined face at the head end
-    p, n, du, dv = shapes.surface_frame(f, 0.0, 0.08)
-    c = p + n * 0.2
-    bone.decal(c, n, width * 0.9, width * 0.9, "face", up=norm(axis) * -1)
+    # a head at the top end with a ruined face, and the legs folded up at the other end
+    ax = norm(axis)
+    hc = top - ax * width * 0.55
+    shapes.shell(bone, shapes.ellipsoid(hc, (width * 0.5, width * 0.5, width * 0.5)), 8, 6, "face", thick=0.3)
+    fwd = np.array([0, 0, -1.0])
+    side = norm(np.cross(ax, fwd))
     for s in (-1, 1):
-        bone.cbox(c + n * 0.15 + du * s * width * 0.2 + norm(-axis) * width * 0.12, (0.6, 0.6, 0.2), "hollow")
-    bone.cbox(c + n * 0.15 - norm(-axis) * width * 0.2, (width * 0.35, 0.4, 0.2), "mouth")
+        bone.cbox(hc + fwd * width * 0.48 + side * s * width * 0.18 - ax * width * 0.1, (0.7, 0.7, 0.2), "hollow")
+    bone.cbox(hc + fwd * width * 0.48 + ax * width * 0.2, (width * 0.35, 0.45, 0.2), "mouth")
+    for s in (-1, 1):
+        hip = bottom + side * s * width * 0.3
+        shapes.horn(bone, hip, norm(ax * 0.3 + fwd * 1.0), width * 1.4, width * 0.26, mat="body", sections=3,
+                    around=5, r1=width * 0.12, bend_axis=side, bend=150)
     return f
 
 
@@ -74,26 +82,34 @@ def build():
         shapes.shell(leg, shapes.ellipsoid((side * 4.2, 1.5, -1.5), (3.0, 1.6, 4.0)), 8, 5, "body_dk", thick=0.4)
     waist = m.bone("waist", parent="root", pivot=(0, 42, 0))
     body = m.bone("body", parent="waist", pivot=(0, 42, 0))
-    # torso: four more stacked, curled over one another
-    for k in range(4):
-        y0 = 42.0 + k * 8.0
+    # torso: three more stacked, curled over one another
+    for k in range(3):
+        y0 = 42.0 + k * 11.0
         side = -1 if k % 2 else 1
-        withered_body(body, (side * 8.5, y0 + 3.0, -1.0 + 0.3 * k), (-side * 8.5, y0 + 7.5, 0.5), 6.0, curl=-2.5)
+        withered_body(body, (side * 8.0, y0 + 3.5, -1.0 + 0.3 * k), (-side * 8.0, y0 + 9.5, 0.5), 6.4, curl=-2.5)
     # sinew binding the stacked bodies into one column
     shapes.shell(body, shapes.loft(shapes.polyline([(0, 42.0, 1.0), (0, 60.0, 1.5), (0, 76.0, 1.0)]),
                                    shapes.profile((0, 4.5), (0.5, 6.0), (1, 5.5)), 3.5, up=(0, 0, -1)), 12, 8,
                  "body_dk", thick=0.4)
     # the mantle of darkness hanging from the shoulders
     mantle = m.bone("mantle", parent="body", pivot=(0, 78, 3))
-    cloak = shapes.loft(shapes.polyline([(0, 80.0, 3.5), (0, 55.0, 7.0), (0, 30.0, 10.0), (0, 8.0, 12.0)]),
-                        shapes.profile((0, 9.0), (0.4, 14.0), (1, 18.0)),
-                        shapes.profile((0, 5.0), (0.4, 7.0), (1, 9.0)), up=(0, 0, -1))
-    shapes.shell(mantle, cloak, 14, 14, "mantle", u0=0.3, u1=0.7, thick=0.4,
-                 mat_fn=lambda u, v: "mantle_edge" if v > 0.92 else "mantle")
+    # the top body's own arms reach out sideways and hold the dark cape open behind it
+    hands = []
+    for s in (-1, 1):
+        shp = np.array([s * 6.0, 72.0, 2.0])
+        elb = np.array([s * 13.0, 75.0, 5.0])
+        hnd = np.array([s * 20.0, 76.0, 8.0])
+        shapes.shell(mantle, shapes.loft(shapes.polyline([shp, elb, hnd]), shapes.profile((0, 1.6), (1, 1.1)), 1.3),
+                     7, 8, "body", thick=0.3)
+        shapes.shell(mantle, shapes.ellipsoid(hnd, (1.4, 1.4, 1.4)), 6, 4, "body_dk", thick=0.3)
+        hands.append(hnd)
+    shapes.membrane(mantle, [hands[0], (-22.0, 44.0, 12.0), (-20.0, 8.0, 14.0)],
+                    [hands[1], (22.0, 44.0, 12.0), (20.0, 8.0, 14.0)], 14, 12, "mantle", thick=0.4, sag=5.0,
+                    sag_dir=(0, 0, 1), mat_fn=lambda u, v: "mantle_edge" if v > 0.93 else "mantle")
     for k in range(9):
         x = -16 + k * 4.0
-        shapes.horn(mantle, (x, 9.0, 11.5 + abs(x) * 0.1), (0, -1, 0.2), 5.0 + (k % 3) * 2.5, 1.6, mat="mantle",
-                    flat=0.25, up=(0, 0, 1), sections=3, around=6, r1=0.1)
+        shapes.horn(mantle, (x, 9.0, 14.0 + 5.0 * math.sin(math.pi * (k + 0.5) / 9)), (0, -1, 0.2),
+                    5.0 + (k % 3) * 2.5, 1.6, mat="mantle", flat=0.25, up=(0, 0, 1), sections=3, around=6, r1=0.1)
     # long withered arms with clawed fingers
     for side, name in ((-1, "right_arm"), (1, "left_arm")):
         sh = np.array([side * 10.0, 76.0, 0.0])

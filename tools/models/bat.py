@@ -2,10 +2,11 @@
 The Bat Devil - entity model (entity/devil/bat), texture atlas and GeckoLib animations. A player who becomes the Bat
 Devil wears this same model (scaled down).
 
-Reference points:
-  * a hulking, man-shaped bat: broad furry body on short clawed legs, arms that are membrane wings
-  * a big head with huge pointed ears, bulging eyes and a squashed snout; rows of fangs
-  * purple in the coloured manga (grey in the anime)
+Reference points (manga ch. 3-4 / anime ep. 2):
+  * an enormous HUMANOID bat, about three times Denji's height, with a MUSCULAR body
+  * its arms are joined to its torso by flaps of skin that are its wings
+  * a grotesque face: LARGE ROUND EYES and a wide mouth full of sharp teeth; huge pointed ears
+  * dark purple in the coloured manga (a plain dark grey in the anime)
   * drinks blood to heal, flies, and reshapes its maw into a gun barrel to fire a blast of compressed air
 """
 import math
@@ -21,14 +22,15 @@ import devilkit as dk
 
 def materials():
     a = Atlas(512, 64)
-    a.add("fur", kind="fiber", color=(112, 80, 142))
-    a.add("fur_dk", kind="fiber", color=(78, 54, 102))
-    a.add("belly", kind="fiber", color=(146, 112, 170))
-    a.add("skin", kind="skin", color=(96, 66, 112))
-    a.add("wing", kind="skin", color=(72, 46, 90))
-    a.add("wing_vein", kind="skin", color=(54, 32, 70))
-    a.add("ear_in", kind="flesh", color=(176, 110, 150))
-    a.add("eye", kind="gloss", color=(40, 8, 12))
+    a.add("fur", kind="fiber", color=(80, 64, 94))
+    a.add("fur_dk", kind="fiber", color=(56, 44, 68))
+    a.add("belly", kind="skin", color=(98, 82, 110))
+    a.add("skin", kind="skin", color=(74, 60, 86))
+    a.add("wing", kind="skin", color=(58, 44, 72))
+    a.add("wing_vein", kind="skin", color=(42, 32, 54))
+    a.add("ear_in", kind="flesh", color=(140, 96, 124))
+    a.add("eye", kind="gloss", color=(236, 230, 214))
+    a.add("pupil", kind="void", color=(14, 8, 10))
     a.add("eye_glow", kind="glow", color=(220, 30, 40), color2=(255, 170, 120), emissive=True)
     a.add("teeth", kind="teeth", color=(240, 236, 224))
     a.add("mouth", kind="void", color=(60, 12, 24))
@@ -45,11 +47,18 @@ def body(m):
     root = m.bone("root", pivot=(0, 0, 0))
     b = m.bone("body", parent="root", pivot=(0, 17, 1))
     # a broad furry trunk, hunched forward, pale belly
+    # a muscular, man-shaped trunk: narrow waist, broad chest and shoulders
     trunk = shapes.loft(shapes.polyline([(0, 14.5, 1.8), (0, 21.0, 0.8), (0, 27.0, -0.2), (0, 31.5, 1.0)]),
-                        shapes.profile((0, 4.6), (0.3, 5.8), (0.62, 6.6), (0.85, 6.0), (1, 4.2)),
-                        shapes.profile((0, 3.4), (0.3, 4.0), (0.62, 4.4), (0.85, 4.0), (1, 3.0)), up=(0, 0, -1))
+                        shapes.profile((0, 4.4), (0.3, 4.6), (0.62, 6.8), (0.85, 7.2), (1, 4.6)),
+                        shapes.profile((0, 3.2), (0.3, 3.4), (0.62, 4.4), (0.85, 4.2), (1, 3.0)), up=(0, 0, -1))
     shapes.shell(b, trunk, 16, 12, "fur", thick=0.45,
                  mat_fn=lambda u, v: "belly" if (u < 0.17 or u > 0.83) and 0.15 < v < 0.8 else "fur")
+    # pectorals and a belly of hard muscle
+    for sd in (-1, 1):
+        shapes.shell(b, shapes.ellipsoid((sd * 2.9, 27.2, -3.3), (2.8, 2.2, 1.4)), 8, 5, "belly", thick=0.3)
+        for k in range(3):
+            shapes.shell(b, shapes.ellipsoid((sd * 1.3, 22.8 - k * 2.2, -2.9 + k * 0.1), (1.1, 0.9, 0.8)), 6, 4,
+                         "belly", thick=0.25)
     # a ruff of fur round the shoulders
     for k in range(18):
         a = math.radians(-120 + k * 240 / 17)
@@ -64,18 +73,17 @@ def head(m):
     look = m.bone("look", parent="head", pivot=(0, 32, 0))
     skull = shapes.ellipsoid((0, 35.2, -1.8), (4.7, 4.3, 4.4), e_lat=0.85, e_lon=0.85)
     shapes.shell(look, skull, 16, 10, "fur", thick=0.45)
-    # squashed snout with a nose leaf and nostrils
-    snout = shapes.ellipsoid((0, 33.6, -5.6), (2.6, 1.9, 2.0), e_lat=0.8, e_lon=0.8)
+    # a flat, grotesquely human face: a short muzzle and two little nostrils
+    snout = shapes.ellipsoid((0, 33.4, -5.2), (3.4, 2.0, 1.8), e_lat=0.8, e_lon=0.8)
     shapes.shell(look, snout, 12, 8, "skin", thick=0.4)
-    shapes.horn(look, (0, 34.6, -7.2), (0, 1, -0.35), 2.4, 1.1, mat="nose", flat=0.3, up=(0, 0, -1), sections=4,
-                around=6, r1=0.2)
     for s in (-1, 1):
-        look.cylinder((s * 0.75, 34.0, -7.5), (0, -0.2, -1), 0.35, 0.3, "mouth", segments=6)
-    # bulging eyes
+        look.cylinder((s * 0.7, 34.4, -6.9), (0, -0.2, -1), 0.4, 0.3, "mouth", segments=6)
+    # large, round, staring eyes
     for s in (-1, 1):
-        c = np.array([s * 2.3, 36.6, -5.2])
-        shapes.shell(look, shapes.ellipsoid(c, (1.35, 1.3, 1.2)), 10, 6, "eye", thick=0.3)
-        look.cbox(c + np.array([s * 0.1, 0.35, -1.15]), (0.55, 0.55, 0.2), "eye_glow")
+        c = np.array([s * 2.5, 36.8, -5.0])
+        shapes.shell(look, shapes.ellipsoid(c, (1.9, 1.9, 1.3)), 10, 6, "eye", thick=0.3)
+        look.cylinder(c + np.array([s * 0.15, 0.1, -1.25]), (0, 0, -1), 0.55, 0.2, "pupil", segments=8)
+        look.cbox(c + np.array([s * 0.15, 0.1, -1.4]), (0.3, 0.3, 0.1), "eye_glow")
     # huge pointed ears (pink inside)
     for s in (-1, 1):
         root = np.array([s * 3.0, 38.4, -0.6])
@@ -84,25 +92,25 @@ def head(m):
                     bend_axis=(0, 0, 1), bend=-s * 12)
         shapes.horn(look, root + np.array([0, 0.3, -0.35]), d, 6.8, 2.0, mat="ear_in", flat=0.2, up=(0, 0, 1),
                     sections=5, around=8, r1=0.2, bend_axis=(0, 0, 1), bend=-s * 12)
-    # upper fangs along the lip line
-    for k in range(9):
-        ph = math.radians(-70 + 140 * (k + 0.5) / 9)
-        p = np.array([2.2 * math.sin(ph), 32.2, -5.0 - 2.0 * math.cos(ph)])
+    # a wide mouth, ear to ear, crammed with sharp teeth
+    for k in range(15):
+        ph = math.radians(-80 + 160 * (k + 0.5) / 15)
+        p = np.array([3.3 * math.sin(ph), 32.2, -4.6 - 2.1 * math.cos(ph)])
         o = np.array([math.sin(ph), 0, -math.cos(ph)])
-        look.spike(p, norm(np.array([0, -1, 0]) + o * 0.15), 1.4 if k in (1, 7) else 0.9, 0.45, 0.28, "teeth", steps=3,
+        look.spike(p, norm(np.array([0, -1, 0]) + o * 0.15), 1.5 if k % 3 == 1 else 1.0, 0.5, 0.28, "teeth", steps=3,
                    up=o)
-    look.box((-2.1, 31.6, -6.6), (2.1, 32.4, -4.0), "mouth")
+    look.box((-3.2, 31.6, -6.6), (3.2, 32.4, -3.4), "mouth")
     # the lower jaw
     jaw = m.bone("jaw", parent="look", pivot=(0, 32.0, -2.0))
     jl = shapes.loft(shapes.polyline([(0, 31.4, -1.6), (0, 31.0, -4.4), (0, 31.3, -6.4)]),
-                     shapes.profile((0, 3.2), (0.6, 2.6), (1, 1.2)), shapes.profile((0, 1.0), (1, 0.6)), up=(0, 1, 0))
+                     shapes.profile((0, 4.0), (0.6, 3.6), (1, 2.0)), shapes.profile((0, 1.0), (1, 0.6)), up=(0, 1, 0))
     shapes.shell(jaw, jl, 12, 6, "fur_dk", thick=0.35)
-    jaw.box((-1.9, 31.7, -6.2), (1.9, 32.0, -2.4), "gum")
-    for k in range(8):
-        ph = math.radians(-66 + 132 * (k + 0.5) / 8)
-        p = np.array([1.9 * math.sin(ph), 31.9, -4.4 - 1.9 * math.cos(ph)])
+    jaw.box((-3.0, 31.7, -6.2), (3.0, 32.0, -2.4), "gum")
+    for k in range(13):
+        ph = math.radians(-76 + 152 * (k + 0.5) / 13)
+        p = np.array([3.0 * math.sin(ph), 31.9, -4.2 - 2.0 * math.cos(ph)])
         o = np.array([math.sin(ph), 0, -math.cos(ph)])
-        jaw.spike(p, norm(np.array([0, 1, 0]) + o * 0.15), 1.2 if k in (0, 7) else 0.8, 0.42, 0.26, "teeth", steps=3,
+        jaw.spike(p, norm(np.array([0, 1, 0]) + o * 0.15), 1.2 if k % 3 == 0 else 0.8, 0.42, 0.26, "teeth", steps=3,
                   up=o)
     # the maw reshaped into a gun barrel (air cannon)
     bl = m.bone("fx_blast_barrel", parent="look", pivot=(0, 32.2, -5.5))
@@ -187,6 +195,9 @@ def build():
     neck = (0, 31.5, 0)
     for name in ("look", "jaw", "fx_blast_barrel"):
         m.by_name[name].scale_about(neck, 1.2)
+    # about three times a man's height standing up
+    for bone in m.bones:
+        bone.scale_about((0, 0, 0), 1.45)
     geo, tex, glow, anim_path = dk.devil_paths("bat")
     m.save(geo)
     paint_atlas(atlas, tex, glow, seed=157)

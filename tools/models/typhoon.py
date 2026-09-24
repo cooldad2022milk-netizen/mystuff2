@@ -1,10 +1,10 @@
 """
 The Typhoon Devil - entity model (entity/devil/typhoon) and animations.
 
-Reference points:
-  * a colossal humanoid wrapped in a gale that whirls with chunks of brain tissue
-  * the top of its skull is gone, the brain bared like a crown; reborn, it has an infant's face (and carries a
-    severed baby's leg)
+Reference points (manga ch. 60s):
+  * a gigantic humanoid inside a swirling storm of BRAIN MATTER and entrails - not clean wind
+  * the top part of its head is gone, the brain bared, and the brain is joined to the storm around it
+  * its head is a BABY'S, mouth wide open, with no upper part to the face (and it carries a severed baby's leg)
   * it levels buildings by charging through them and flings cars with its wind
 """
 import math
@@ -27,8 +27,8 @@ def materials():
     a.add("mouth", kind="void", color=(60, 20, 26))
     a.add("brain", kind="flesh", color=(214, 150, 160))
     a.add("brain_dk", kind="flesh", color=(170, 100, 116))
-    a.add("wind", kind="glow", color=(190, 210, 230), color2=(245, 250, 255))
-    a.add("wind_dk", kind="skin", color=(150, 170, 190))
+    a.add("wind", kind="flesh", color=(206, 120, 132))
+    a.add("wind_dk", kind="flesh", color=(150, 66, 84))
     a.add("leg", kind="skin", color=(226, 190, 176))
     a.add("blood", kind="blood", color=(126, 8, 12))
     return a
@@ -61,7 +61,10 @@ def build():
         shapes.shell(look, shapes.ellipsoid(c, (2.4, 2.9, 1.2)), 8, 6, "eye", thick=0.3)
         look.cbox(c + np.array([s * 0.4, 0.6, -0.8]), (0.5, 0.5, 0.2), "wind")
         shapes.shell(look, shapes.ellipsoid((s * 4.4, 93.0, -5.2), (2.0, 1.8, 1.6)), 6, 4, "infant", thick=0.3)
-    shapes.shell(look, shapes.ellipsoid((0, 91.2, -6.4), (3.2, 2.0, 1.0)), 8, 4, "mouth", thick=0.3)
+    # a baby's mouth, wide open in a wail
+    shapes.shell(look, shapes.ellipsoid((0, 90.6, -6.0), (4.2, 3.4, 1.6)), 10, 6, "mouth", thick=0.3)
+    look.curve([np.array([4.4 * math.cos(a), 90.6 + 3.6 * math.sin(a), -6.8]) for a in np.linspace(0, 2 * math.pi, 13)],
+               0.9, 0.9, 0.8, 0.8, "skin_dk")
     brain = m.bone("brain", parent="look", pivot=(0, 100, 0))
     rng = np.random.default_rng(51)
     for k in range(20):
@@ -116,12 +119,23 @@ def build():
                     continue
                 p = np.array([math.cos(a0) * rr, y + 3.0 * math.sin(a0 * 2 + k), math.sin(a0) * rr])
                 tan = np.array([-math.sin(a0), 0.15, math.cos(a0)])
-                g.obox(p, tan, (0.6, rr * 0.25, 4.0 - layer), "wind" if (j + layer) % 2 else "wind_dk", up=(0, 1, 0))
+                # ropes of brain matter and gut, not clean air
+                g.obox(p, tan, (1.8 - layer * 0.4, rr * 0.25, 1.9 - layer * 0.4), "wind" if (j + layer) % 2 else
+                       "wind_dk", up=(0, 1, 0))
         for j in range(6):
             a0 = j / 6 * 2 * math.pi + k
             p = np.array([math.cos(a0) * (r + 2.0), y + 1.5 * math.sin(j), math.sin(a0) * (r + 2.0)])
             shapes.shell(g, shapes.ellipsoid(p, (2.0, 1.6, 1.8)), 6, 4, "brain" if j % 2 else "brain_dk", thick=0.3)
         gales.append(name)
+    # cords of brain running from the bared brain out into the storm
+    for j in range(6):
+        a0 = j / 6 * 2 * math.pi + 0.3
+        top = np.array([math.cos(a0) * 4.0, 103.0, -1.0 + math.sin(a0) * 4.0])
+        mid = np.array([math.cos(a0) * 14.0, 108.0, math.sin(a0) * 14.0])
+        end = np.array([math.cos(a0) * 26.0, 94.0, math.sin(a0) * 26.0])
+        shapes.shell(brain, shapes.loft(shapes.polyline([top, mid, end]), shapes.profile((0, 1.4), (1, 0.6)),
+                                        shapes.profile((0, 1.2), (1, 0.5))), 5, 8, "brain" if j % 2 else "brain_dk",
+                     thick=0.3)
     geo, tex, glow, anim_path = dk.devil_paths("typhoon")
     m.save(geo)
     paint_atlas(atlas, tex, glow, seed=233)

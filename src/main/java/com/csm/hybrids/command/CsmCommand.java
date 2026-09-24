@@ -19,7 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * /csm hybrid <player> <none|any hybrid, fiend or devil id>
@@ -98,7 +97,14 @@ public final class CsmCommand {
         if (data == null) {
             return 0;
         }
-        String list = data.contracts().stream().map(c -> c.displayName().getString()).collect(Collectors.joining(", "));
+        StringBuilder names = new StringBuilder();
+        for (Contract c : data.contracts()) {
+            if (names.length() > 0) {
+                names.append(", ");
+            }
+            names.append(c.displayName().getString());
+        }
+        String list = names.toString();
         ctx.getSource().sendSuccess(() -> Component.translatable("commands.csm.contract_list", player.getDisplayName(),
                 list.isEmpty() ? "-" : list, data.curseToll()), false);
         return data.contracts().size();

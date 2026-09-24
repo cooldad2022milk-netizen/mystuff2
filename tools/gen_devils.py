@@ -610,6 +610,55 @@ def icons_contract():
     finish(img, "ghost_fear")
 
 
+def icons_part_two():
+    """The Falling Devil's and the Justice Devil's moves."""
+    FA = ((230, 230, 236), (40, 40, 56))
+    JU = ((176, 190, 130), (36, 44, 24))
+    img, d = icon_canvas(*FA)  # fall: figures rising into the sky
+    for k, (x, y) in enumerate(((34, 90), (64, 60), (94, 84))):
+        d.ellipse([x - 6, y - 20, x + 6, y - 8], fill=SKIN)
+        d.line([(x, y - 8), (x, y + 10)], fill=SKIN, width=5)
+        d.line([(x - 8, y - 16), (x + 8, y - 16)], fill=SKIN, width=4)
+        for j in range(3):
+            d.line([(x - 8 + j * 8, y + 16), (x - 8 + j * 8, y + 28)], fill=(255, 255, 255, 170), width=2)
+    finish(img, "falling_fall")
+    img, d = icon_canvas(*FA)  # the first course: a chef's hat over a covered dish
+    d.rectangle([48, 14, 80, 40], fill=(250, 250, 250, 255), outline=(60, 60, 70, 255), width=2)
+    for x in (48, 64, 80):
+        d.ellipse([x - 12, 4, x + 12, 24], fill=(250, 250, 250, 255))
+    d.chord([24, 60, 104, 124], 180, 360, fill=(200, 200, 210, 255), outline=(60, 60, 70, 255), width=3)
+    d.line([(18, 92), (110, 92)], fill=(60, 60, 70, 255), width=5)
+    blood_drops(d, [(60, 108, 5), (76, 110, 4)])
+    finish(img, "falling_course")
+    img, d = icon_canvas(*FA)  # plunge: head first, down
+    d.line([(64, 14), (64, 90)], fill=(250, 250, 250, 255), width=12)
+    d.ellipse([52, 88, 76, 112], fill=SKIN)
+    for k in range(3):
+        d.line([(40 + k * 24, 118), (52 + k * 12, 100)], fill=(255, 255, 255, 180), width=3)
+    finish(img, "falling_plunge")
+    img, d = icon_canvas(*JU)  # gavel
+    d.line([(34, 100), (80, 50)], fill=(106, 64, 36, 255), width=9)
+    poly(d, [(62, 22), (104, 64), (88, 80), (46, 38)], (70, 40, 24, 255))
+    d.line([(58, 30), (96, 70)], fill=(200, 170, 90, 255), width=4)
+    d.rectangle([20, 104, 108, 114], fill=(70, 40, 24, 255))
+    finish(img, "justice_gavel")
+    img, d = icon_canvas(*JU)  # tentacle lash
+    for k in range(5):
+        a = math.radians(-160 + k * 35)
+        d.line([(64, 70), (64 + math.cos(a) * 30, 70 + math.sin(a) * 30), (64 + math.cos(a + 0.5) * 52,
+                                                                          70 + math.sin(a + 0.5) * 52)],
+               fill=(176, 150, 150, 255), width=6, joint="curve")
+    finish(img, "justice_lash")
+    img, d = icon_canvas(*JU)  # belly jaw
+    d.ellipse([34, 18, 94, 112], fill=(150, 160, 112, 255), outline=(40, 44, 30, 255), width=3)
+    d.ellipse([50, 30, 78, 100], fill=(50, 10, 16, 255))
+    for k in range(6):
+        y = 36 + k * 11
+        poly(d, [(50, y), (60, y + 4), (50, y + 8)], (236, 230, 212, 255), outline=(60, 40, 40, 255), width=1)
+        poly(d, [(78, y + 4), (68, y + 8), (78, y + 12)], (236, 230, 212, 255), outline=(60, 40, 40, 255), width=1)
+    finish(img, "justice_jaw")
+
+
 def icons_contract_moves():
     """The moves a contractor borrows (contract.ContractAbilities)."""
     FX = ((226, 120, 90), (60, 20, 14))
@@ -752,5 +801,6 @@ if __name__ == "__main__":
     icons_big()
     icons_contract()
     icons_contract_moves()
+    icons_part_two()
     particles()
     print("devil assets generated")

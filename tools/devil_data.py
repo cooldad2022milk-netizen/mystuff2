@@ -168,9 +168,23 @@ DEVILS = [
     dict(id="famine", entity="fami", name="Fami", form="Famine Devil", color=(232, 144, 176), boss=True,
          essence="Famine Devil's Essence", tooltip="You are starving just holding it.", moves={}),
     dict(id="falling", entity="falling_devil", name="Falling Devil", form="Falling Devil", color=(240, 240, 240),
-         boss=True, essence="Falling Devil's Essence", tooltip="It pulls upward.", moves={}),
+         boss=True, essence="Falling Devil's Essence", tooltip="It pulls upward. It smells of cooking.",
+         moves={
+             "falling_fall": ("Fall", "Everything around you falls - up, into the sky - and comes back down."),
+             "falling_course": ("The First Course", "Serve your prey the fall it fears most. It relives it: sick, "
+                                                    "slow, weak and half blind."),
+             "falling_plunge": ("Plunge", "Tip over and drop on your prey head first."),
+         },
+         lore="The Falling Devil wears a chef's dress over a body made of corpses, and walks on hands."),
     dict(id="justice", entity="justice_devil", name="Justice Devil", form="Justice Devil", color=(138, 154, 90),
-         boss=True, essence="Justice Devil's Essence", tooltip="It squirms like a caterpillar.", moves={}),
+         boss=True, essence="Justice Devil's Essence", tooltip="It squirms like a caterpillar.",
+         moves={
+             "justice_gavel": ("Gavel", "Your arm is a judge's gavel. Bring it down: the sentence is carried out."),
+             "justice_lash": ("Tentacle Lash", "The tentacles you can't control whip out all round you."),
+             "justice_jaw": ("Belly Jaw", "Your belly splits open into an enormous jaw and bites whatever is in "
+                                          "front of you. It heals you."),
+         },
+         lore="The Justice Devil is blind, like Justice herself, and wears a judge's bib."),
 ]
 
 # Contracts (contract.Contract): what a hunter gets from the Fox, Curse, Future and Ghost devils. The Fox Devil only

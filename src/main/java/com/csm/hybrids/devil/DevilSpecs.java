@@ -22,7 +22,7 @@ public final class DevilSpecs {
                 .egg(0x2A2A38, 0xE890B0).humanForm(12, 4, 0.12, 5);
 
         // ---------------------------------------------------------------- early part 1
-        put(HybridType.BAT).stats(60, 7, 0.28, 4).size(1.6f, 2.6f).fight(0.35f, 3, 20).flying(0.6)
+        put(HybridType.BAT).stats(60, 7, 0.28, 4).size(2.2f, 4.0f).fight(0.35f, 3, 20).flying(0.6)
                 .egg(0x3A2A44, 0x9A6AB0).form(2.3f, 10, 5, 0.1, 4);
         put(HybridType.LEECH).stats(80, 8, 0.24, 6).size(2.2f, 2.8f).fight(0.35f, 4, 25)
                 .egg(0x2A2226, 0x8A5A66).form(2.3f, 14, 5, 0.05, 5);
@@ -58,7 +58,7 @@ public final class DevilSpecs {
         // ---------------------------------------------------------------- part 2
         put(HybridType.FALLING).stats(720, 14, 0.26, 12).size(2.4f, 5.0f).fight(0.5f, 8, 350).boss(BossBarColor.WHITE)
                 .egg(0xF0F0F0, 0x1A1A1A).form(3.2f, 36, 8, 0.05, 10);
-        put(HybridType.JUSTICE).stats(520, 14, 0.36, 10).size(3.0f, 3.0f).fight(0.45f, 4, 250)
+        put(HybridType.JUSTICE).stats(520, 14, 0.36, 10).size(3.0f, 3.6f).fight(0.45f, 4, 250)
                 .boss(BossBarColor.GREEN).egg(0x5A6A3A, 0xC8C0A0).form(2.4f, 30, 9, 0.2, 10);
     }
 

@@ -1,10 +1,11 @@
 """
 The Zombie Devil - entity model (entity/devil/zombie), texture atlas and GeckoLib animations.
 
-Reference points:
-  * a huge, limbless torso that floats, its organs bared through a torn-open front
-  * a brain on top sprouting tentacles - the cords that tether its zombies
-  * a big severed human face stuck onto its right side
+Reference points (manga ch. 1 / anime ep. 1):
+  * a massive LIMBLESS TORSO with an EXPOSED BRAIN where its neck should be
+  * its FACE is in its torso (eyes and a huge mouth)
+  * its lower half is mainly TENTACLES it stands on - they connect it to the zombies around it
+  * a large human-like face emerges from the RIGHT side of the torso
   * bites people into zombies, controls them, raises corpses, heals on blood
 """
 import math
@@ -51,29 +52,24 @@ def build_body(m):
     torso = shapes.loft(shapes.polyline([(0, 12.0, 1.0), (0, 22.0, 0.5), (0, 36.0, 0.0), (0, 50.0, 0.5), (0, 56.0, 1.0)]),
                         shapes.profile((0, 3.0), (0.18, 9.0), (0.45, 16.0), (0.8, 15.0), (1, 9.0)),
                         shapes.profile((0, 3.0), (0.18, 7.5), (0.45, 12.5), (0.8, 12.0), (1, 7.0)), up=(0, 0, -1))
-    opening = lambda u, v: (u < 0.14 or u > 0.86) and 0.32 < v < 0.74
-    shapes.shell(b, torso, 20, 16, "rot", skip=opening, thick=0.55,
-                 mat_fn=lambda u, v: "rot_dk" if v < 0.22 else ("flesh" if (u < 0.2 or u > 0.8) else "rot"))
-    # the torn-open front: a raw cavity, exposed ribs and organs
-    cav = shapes.ellipsoid((0, 34.0, -6.0), (10.0, 11.0, 6.5))
-    shapes.shell(b, cav, 12, 10, "organ_dk", u0=-0.25, u1=0.25, thick=0.5)
-    for k in range(6):
-        y = 27.0 + k * 3.0
-        for s in (-1, 1):
-            pts = [np.array([s * (1.5 + 10.5 * t), y + 1.5 * math.sin(t * math.pi), -12.2 + 5.0 * t * t]) for t in
-                   np.linspace(0, 1, 5)]
-            b.curve(pts, 1.1, 0.8, 1.0, 0.7, "rib")
-    b.curve([np.array([0, 25.0, -12.0]), np.array([0, 33.0, -13.0]), np.array([0, 43.0, -12.5])], 1.4, 1.4, 1.2, 1.2,
-            "rib")
-    # a heart, lungs and coils of gut spilling in the cavity
-    shapes.shell(b, shapes.ellipsoid((3.0, 38.0, -9.0), (3.2, 3.8, 2.8)), 10, 6, "organ", thick=0.35)
-    for s in (-1, 1):
-        shapes.shell(b, shapes.ellipsoid((s * 6.5, 37.0, -8.0), (3.5, 5.5, 3.0)), 10, 6, "organ_dk", thick=0.35)
-    gut = [np.array([math.sin(t * 5.2) * 5.0, 28.0 - t * 5.0 + math.cos(t * 7) * 1.5, -9.5 - math.cos(t * 5.2) * 1.5])
-           for t in np.linspace(0, 1, 12)]
-    shapes.shell(b, shapes.loft(shapes.polyline(gut), 1.3, 1.2), 8, 16, "gut", thick=0.3)
-    hang = [np.array([-3.0, 23.0, -12.0]), np.array([-4.0, 18.0, -13.0]), np.array([-2.5, 13.0, -12.0])]
-    shapes.shell(b, shapes.loft(shapes.polyline(hang), shapes.profile((0, 1.3), (1, 0.8)), 1.1), 8, 8, "gut", thick=0.3)
+    shapes.shell(b, torso, 20, 16, "rot", thick=0.55,
+                 mat_fn=lambda u, v: "rot_dk" if v < 0.22 or int(u * 20 + v * 7) % 6 == 0 else "rot")
+    # its face is in its torso: two big staring eyes over a huge gaping mouth of human teeth
+    for sx in (-1, 1):
+        p, n, du, dv = shapes.surface_frame(torso, 0.09 if sx > 0 else 0.91, 0.66)
+        shapes.shell(look, shapes.ellipsoid(p + n * 0.6, (2.6, 2.2, 1.6)), 10, 6, "eye", thick=0.3)
+        look.cylinder(p + n * 2.0, n, 1.0, 0.3, "pupil", segments=8)
+        shapes.shell(look, shapes.ellipsoid(p + n * 0.8 + np.array([0, 2.3, 0]), (3.0, 0.8, 1.2)), 8, 4, "rot_dk",
+                     thick=0.3)
+    mp, mn, _, _ = shapes.surface_frame(torso, 0.0, 0.44)
+    shapes.shell(look, shapes.ellipsoid(mp + mn * 0.3, (7.0, 4.2, 1.6)), 12, 8, "mouth", thick=0.3)
+    for k in range(11):
+        x = -5.5 + k * 1.1
+        look.obox((x, mp[1] + 3.3, mp[2] - 1.0), (0, -1, 0), (0.95, 1.6, 0.6), "teeth", up=(0, 0, -1))
+        look.obox((x + 0.3, mp[1] - 3.2, mp[2] - 0.9), (0, 1, 0), (0.95, 1.4, 0.6), "teeth", up=(0, 0, -1))
+    for sx in (-1, 1):  # lips
+        look.curve([mp + np.array([x, sx * 4.2 - 0.02 * x * x * sx, -1.2]) for x in np.linspace(-7.0, 7.0, 7)], 1.0,
+                   1.0, 0.9, 0.9, "flesh")
     # the severed human face stuck onto its right side (her right = -x)
     face_c = np.array([-15.0, 38.0, -2.0])
     fb = m.bone("face", parent="look", pivot=tuple(face_c))
@@ -89,12 +85,6 @@ def build_body(m):
         fb.cbox(face_c + np.array([-2.7, -3.25, -2.0 + k * 0.8]), (0.3, 0.5, 0.55), "teeth")
     fb.obox(face_c + np.array([-2.9, 0.4, -0.2]), (0, 1, 0), (1.0, 2.0, 0.8), "face_dk", up=fn)   # nose
     fb.scale_about(face_c + np.array([-2.0, 0, 0]), 1.4)
-    # its own gaping maw at the top of the torso, under the brain
-    shapes.shell(look, shapes.ellipsoid((0, 50.5, -8.5), (5.5, 2.4, 2.0)), 10, 6, "mouth", thick=0.3)
-    for k in range(9):
-        x = -4.4 + k * 1.1
-        look.spike((x, 52.6, -9.6), (0, -1, -0.1), 1.6, 0.7, 0.35, "teeth", steps=3)
-        look.spike((x + 0.55, 48.4, -9.4), (0, 1, -0.1), 1.3, 0.6, 0.35, "teeth", steps=3)
     return root, b, look
 
 
@@ -110,18 +100,18 @@ def build_brain(m):
         shapes.shell(br, shapes.ellipsoid(p, (1.5, 2.6, 1.3), frame=frame), 6, 4, "brain" if k % 2 else "brain_dk",
                      thick=0.35)
     shapes.shell(br, shapes.ellipsoid((0, 58.5, 0), (6.8, 4.8, 5.8)), 12, 8, "brain_dk", v0=0.3, thick=0.4)
-    # tentacles: the cords that tether its zombies
+    # its lower half is tentacles: it stands on them, and they are the cords that tether its zombies
     names = []
-    for k in range(6):
-        a = math.radians(k * 60 + 20)
-        base = np.array([math.cos(a) * 5.5, 60.0, math.sin(a) * 4.5])
+    for k in range(8):
+        a = math.radians(k * 45 + 22.5)
+        base = np.array([math.cos(a) * 5.0, 15.0, math.sin(a) * 4.0])
         name = "tendril%d" % k
-        t = m.bone(name, parent="brain", pivot=tuple(base))
+        t = m.bone(name, parent="body", pivot=tuple(base))
         out_d = np.array([math.cos(a), 0, math.sin(a)])
-        pts = [base, base + out_d * 6 + np.array([0, 4, 0]), base + out_d * 12 + np.array([0, 1, 0]),
-               base + out_d * 16 + np.array([0, -8, 0]), base + out_d * 17 + np.array([0, -20, 0])]
-        shapes.shell(t, shapes.loft(shapes.polyline(pts), shapes.profile((0, 1.1), (0.5, 0.8), (1, 0.25)),
-                                    shapes.profile((0, 1.0), (1, 0.25))), 6, 14, "cord", thick=0.3)
+        pts = [base, base + out_d * 5 + np.array([0, -3, 0]), base + out_d * 10 + np.array([0, -9, 0]),
+               base + out_d * 14 + np.array([0, -14.2, 0]), base + out_d * 20 + np.array([0, -14.6, 0])]
+        shapes.shell(t, shapes.loft(shapes.polyline(pts), shapes.profile((0, 2.4), (0.5, 1.6), (1, 0.5)),
+                                    shapes.profile((0, 2.2), (1, 0.45))), 7, 12, "cord", thick=0.3)
         t.cbox(pts[-1], (0.8, 0.8, 0.8), "glow")
         names.append(name)
     return names

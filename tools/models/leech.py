@@ -1,9 +1,12 @@
 """
 The Leech Devil - entity model (entity/devil/leech), texture atlas and GeckoLib animations.
 
-Reference points:
-  * a faceless giant mouth full of squarish teeth set in a creased bulk that stands on four legs
-  * tentacle arms lined with suckers, long black hair, udder-like glands hanging underneath
+Reference points (manga ch. 5 / anime ep. 3):
+  * a large, wrinkled body of slimy, segmented, blackish-purple leech flesh standing on four legs
+  * a LONG NECK ending in a head that is nothing but a HUMAN MOUTH: plump lips, blocky teeth - and greasy long
+    black hair
+  * two boneless tentacle arms tipped with round sucking orifices like a leech's
+  * three pairs of udder-like glands
   * it drinks blood, and stabs with a long piercing tongue
 """
 import math
@@ -19,10 +22,12 @@ import devilkit as dk
 
 def materials():
     a = Atlas(512, 64)
-    a.add("flesh", kind="skin", color=(104, 84, 92))
-    a.add("flesh_dk", kind="skin", color=(72, 56, 64))
-    a.add("crease", kind="skin", color=(44, 32, 40))
-    a.add("pale", kind="skin", color=(170, 146, 150))
+    a.add("flesh", kind="gloss", color=(62, 44, 68))
+    a.add("flesh_dk", kind="gloss", color=(44, 30, 50))
+    a.add("crease", kind="skin", color=(26, 18, 30))
+    a.add("pale", kind="gloss", color=(70, 52, 76))
+    a.add("lip", kind="flesh", color=(196, 110, 120))
+    a.add("spit", kind="gloss", color=(220, 220, 230))
     a.add("teeth", kind="teeth", color=(236, 228, 206))
     a.add("mouth", kind="void", color=(40, 8, 16))
     a.add("gum", kind="flesh", color=(150, 60, 76))
@@ -34,68 +39,69 @@ def materials():
     return a
 
 
-BODY_C = np.array([0.0, 27.0, 1.5])
-BODY_R = (11.5, 11.0, 13.0)
+BODY_C = np.array([0.0, 26.0, 3.0])
+BODY_R = (11.0, 9.5, 13.0)
 
 
 def body(m):
     root = m.bone("root", pivot=(0, 0, 0))
     b = m.bone("body", parent="root", pivot=(0, 22, 2))
-    look = m.bone("look", parent="body", pivot=(0, 26, -8))
+    # a large, wrinkled, segmented bulk of leech flesh
     f = shapes.ellipsoid(BODY_C, BODY_R, e_lat=0.9, e_lon=0.85)
-    # the front of the bulk is one enormous mouth: leave the maw open
-    maw = lambda u, v: (u < 0.13 or u > 0.87) and 0.28 < v < 0.64
-    shapes.shell(b, f, 18, 14, "flesh", skip=maw, thick=0.5,
-                 mat_fn=lambda u, v: "flesh_dk" if v < 0.3 else "flesh")
-    # deep creases wrapping round the bulk
-    rng = np.random.default_rng(3)
-    for k in range(11):
-        u0 = rng.uniform(0.15, 0.85)
-        v0 = rng.uniform(0.35, 0.95)
-        pts = []
-        for i in range(6):
-            p, n, du, dv = shapes.surface_frame(f, (u0 + i * 0.03) % 1.0, min(0.98, v0 + 0.05 * math.sin(i + k)))
-            pts.append(p + n * 0.1)
-        b.curve(pts, 0.5, 0.25, 0.35, 0.2, "crease")
-    # the maw: dark cavity, gums, and rows of big squarish teeth
-    shapes.shell(look, shapes.ellipsoid(BODY_C + np.array([0, -0.5, -4.0]), (7.2, 5.8, 8.0)), 12, 8, "mouth",
-                 u0=-0.2, u1=0.2, thick=0.4)
-    cz = BODY_C[2] - BODY_R[2]
-    for k in range(10):
-        ph = math.radians(-66 + 132 * (k + 0.5) / 10)
-        x = 7.8 * math.sin(ph)
-        z = cz + 3.2 * (1 - math.cos(ph)) + 0.6
-        look.obox((x, 29.4, z), (0, -1, 0), (1.35, 2.2, 1.1), "teeth", up=(math.sin(ph), 0, -math.cos(ph)))
-    look.ring((0, 30.6, cz + 2.4), (0, 1, 0), 7.2, 0.9, 1.3, "gum", count=18)
-    jaw = m.bone("jaw", parent="look", pivot=(0, 25.0, 6.0))
-    for k in range(9):
-        ph = math.radians(-60 + 120 * (k + 0.5) / 9)
-        x = 7.0 * math.sin(ph)
-        z = cz + 3.0 * (1 - math.cos(ph)) + 0.8
-        jaw.obox((x, 23.4, z), (0, 1, 0), (1.3, 2.0, 1.05), "teeth", up=(math.sin(ph), 0, -math.cos(ph)))
-    lip = shapes.loft(shapes.polyline([(-7.8, 21.8, cz + 3.6), (0, 21.2, cz + 0.4), (7.8, 21.8, cz + 3.6)]), 1.5, 1.2,
-                      up=(0, 1, 0))
-    shapes.shell(jaw, lip, 8, 10, "flesh_dk", thick=0.4)
-    jaw.ring((0, 22.2, cz + 2.4), (0, 1, 0), 6.6, 0.8, 1.0, "gum", count=16)
-    # the piercing tongue, coiled in the mouth until it stabs out
-    t = m.bone("fx_tongue_mouth", parent="look", pivot=(0, 26.0, cz + 2.0))
-    tongue = shapes.loft(shapes.polyline([(0, 26.0, cz + 3.0), (0, 26.4, cz - 8.0), (0, 26.0, cz - 20.0)]),
-                         shapes.profile((0, 1.6), (0.7, 1.0), (1, 0.08)), shapes.profile((0, 0.9), (1, 0.08)),
+    shapes.shell(b, f, 18, 14, "flesh", thick=0.5,
+                 mat_fn=lambda u, v: "flesh_dk" if v < 0.3 or int(v * 14) % 3 == 0 else "flesh")
+    # segment rings and creases wrapping round it
+    for k in range(7):
+        v = 0.2 + k * 0.1
+        pts = [np.asarray(f(u, v)) * 1.0 for u in np.linspace(0, 1, 19)]
+        b.curve(pts, 0.55, 0.55, 0.4, 0.4, "crease")
+    # three pairs of udder-like glands hanging under it
+    for k, z in enumerate((-4.0, 2.0, 8.0)):
+        for sx in (-1, 1):
+            c = np.array([sx * 3.6, 16.6, z])
+            shapes.shell(b, shapes.ellipsoid(c, (2.1, 2.5, 2.1)), 8, 6, "udder", thick=0.35)
+            shapes.horn(b, c + np.array([0, -2.3, 0]), (0, -1, 0), 1.3, 0.6, mat="sucker", sections=2, around=5,
+                        r1=0.3)
+    # a long neck of the same segmented flesh, rising and reaching forward
+    look = m.bone("look", parent="body", pivot=(0, 33, -6))
+    neck_path = shapes.polyline([(0, 32.0, -5.0), (0, 38.0, -10.0), (0, 44.0, -14.0), (0, 46.5, -18.0)])
+    neck = shapes.loft(neck_path, shapes.profile((0, 5.2), (0.5, 3.8), (1, 3.6)),
+                       shapes.profile((0, 4.8), (0.5, 3.6), (1, 3.4)), up=(0, 1, 0))
+    shapes.shell(look, neck, 12, 12, "flesh", thick=0.4,
+                 mat_fn=lambda u, v: "crease" if int(v * 12) % 3 == 1 else "flesh")
+    # the head is nothing but a human mouth: plump lips round blocky teeth, a dark throat behind
+    mc = np.array([0, 46.5, -19.2])
+    shapes.shell(look, shapes.ellipsoid(mc + np.array([0, 0, 1.4]), (3.4, 3.0, 1.6)), 10, 6, "mouth", thick=0.3)
+    upper = shapes.loft(shapes.polyline([mc + [-4.2, 0.6, 0.6], mc + [0, 2.6, -0.6], mc + [4.2, 0.6, 0.6]]), 1.4, 1.2,
+                        up=(0, 1, 0))
+    shapes.shell(look, upper, 8, 10, "lip", thick=0.4)
+    for k in range(6):
+        x = -2.5 + k * 1.0
+        look.obox((x, mc[1] + 1.0, mc[2] - 0.2), (0, -1, 0), (0.9, 1.4, 0.7), "teeth", up=(0, 0, -1))
+    jaw = m.bone("jaw", parent="look", pivot=tuple(mc + np.array([0, -0.4, 2.2])))
+    lower = shapes.loft(shapes.polyline([mc + [-4.2, -0.6, 0.6], mc + [0, -2.8, -0.6], mc + [4.2, -0.6, 0.6]]), 1.5,
+                        1.3, up=(0, 1, 0))
+    shapes.shell(jaw, lower, 8, 10, "lip", thick=0.4)
+    for k in range(6):
+        x = -2.5 + k * 1.0
+        jaw.obox((x, mc[1] - 1.1, mc[2] - 0.1), (0, 1, 0), (0.9, 1.3, 0.7), "teeth", up=(0, 0, -1))
+    # drool
+    shapes.horn(jaw, mc + np.array([1.4, -2.6, -0.6]), (0, -1, 0), 3.0, 0.35, mat="spit", sections=2, around=4,
+                r1=0.12)
+    # greasy long black hair from the top and back of the head, hanging over the neck
+    for k in range(18):
+        a = math.radians(-100 + k * 200 / 17)
+        top = mc + np.array([math.sin(a) * 3.2, 2.6 + math.cos(a) * 0.4, 3.0 + math.cos(a) * 2.4])
+        end = top + np.array([math.sin(a) * 2.5, -16.0 - (k % 4) * 2.0, 6.0 + math.cos(a) * 1.5])
+        mid = top + np.array([math.sin(a) * 2.0, 0.5, 3.0])
+        shapes.shell(look, shapes.loft(shapes.polyline([top, mid, end]), shapes.profile((0, 1.1), (1, 0.3)), 0.35,
+                                       up=(math.sin(a), 0, math.cos(a))), 4, 7, "hair", thick=0.3)
+    # the piercing tongue, curled in the mouth until it stabs out
+    t = m.bone("fx_tongue_mouth", parent="look", pivot=tuple(mc))
+    tongue = shapes.loft(shapes.polyline([mc + [0, 0, 1.0], mc + [0, 0.3, -10.0], mc + [0, 0, -22.0]]),
+                         shapes.profile((0, 1.4), (0.7, 0.9), (1, 0.08)), shapes.profile((0, 0.8), (1, 0.08)),
                          up=(0, 1, 0))
     shapes.shell(t, tongue, 8, 12, "tongue", thick=0.35)
-    # long black hair falling from the top of the bulk down its back
-    for k in range(16):
-        a = math.radians(-70 + k * 140 / 15)
-        top = BODY_C + np.array([math.sin(a) * 6.5, BODY_R[1] - 1.2, 2.0 + math.cos(a) * 2.0])
-        end = top + np.array([math.sin(a) * 6.0, -24.0 + (k % 3) * 2.0, 10.0])
-        mid = top + np.array([math.sin(a) * 5.0, 1.0, 7.0])
-        shapes.shell(b, shapes.loft(shapes.polyline([top, mid, end]), shapes.profile((0, 1.2), (1, 0.3)), 0.4,
-                                    up=(0, 0, 1)), 4, 8, "hair", thick=0.3)
-    # udder-like glands under the belly
-    for k, (x, z) in enumerate(((-3.5, 2.0), (3.5, 2.0), (-2.0, 6.0), (2.0, 6.0))):
-        c = np.array([x, 16.6, z])
-        shapes.shell(b, shapes.ellipsoid(c, (2.2, 2.6, 2.2)), 8, 6, "udder", thick=0.35)
-        shapes.horn(b, c + np.array([0, -2.4, 0]), (0, -1, 0), 1.4, 0.6, mat="sucker", sections=2, around=6, r1=0.3)
     return root, b
 
 
@@ -119,6 +125,11 @@ def tentacle(m, side):
             q = pts[k] + (pts[k + 1] - pts[k]) * ((j + 0.5) / 3)
             inward = norm(np.array([-s * 1.0, -0.3, -0.5]))
             b.cylinder(q + inward * max(r0 * 0.9, 0.5), inward, max(r0 * 0.35, 0.3), 0.3, "sucker", segments=8)
+        if k == 3:
+            # the tip: a round sucking orifice like a leech's
+            d = norm(pts[4] - pts[3])
+            b.ring(pts[4], d, 1.0, 0.45, 0.5, "sucker", count=10)
+            b.cylinder(pts[4] - d * 0.1, d, 0.7, 0.3, "mouth", segments=8)
         names.append(name)
         parent = name
     return names

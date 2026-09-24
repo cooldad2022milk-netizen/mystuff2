@@ -60,6 +60,8 @@ public final class DevilMoves {
             case ANGEL -> HumanDevilMoves.angel();
             case WAR -> HumanDevilMoves.war();
             case FAMINE -> HumanDevilMoves.famine();
+            case FALLING -> PartTwoMoves.falling();
+            case JUSTICE -> PartTwoMoves.justice();
             default -> List.of();
         };
     }

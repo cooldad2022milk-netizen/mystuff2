@@ -325,6 +325,16 @@ Every particle is the mod's own, and no vanilla particles are used:
 ## Config (`config/csm-common.toml`)
 Damage multiplier, block griefing (Piercing Bolt holes, fire and Bomb Devil craters; `mobGriefing` must also be on), blood gain, revive cost, and starting blood.
 
+## Troubleshooting (missing textures, crashes)
+- **Install exactly:** Minecraft **1.20.1**, Forge **47.x**, **GeckoLib for Forge 1.20.1, 4.8 or newer** (the file is named `geckolib-forge-1.20.1-4.8.x.jar`), and **PlayerAnimator for Forge 1.20.1** (`player-animation-lib-forge-1.0.2-rc1+1.20.jar`). A Fabric or other-version GeckoLib/PlayerAnimator won't do.
+- **Use the built jar:** `build/libs/csm-<version>.jar` from `gradlew build`, or the `csm-mod-jar` artifact of a GitHub Actions run. Put only that jar in `mods` (not the source folder, and not an older build as well).
+- **Check that the mod's assets loaded.** Open `logs/latest.log` and search for `[csm] assets`:
+  - `[csm] assets: ... textures, ... models, ...` then `everything is there` means all is well.
+  - `the mod's textures/models did not load at all` means the game's resource loading failed and took the mod's textures with it: every icon and effect goes invisible, and every hybrid form then crashes when drawn. Search further up the log for `Caught error loading resourcepacks` or `GeckoLib` to see which mod or resource pack broke it.
+  - `N missing: [...]` lists exactly which files are missing.
+- **OptiFine** is known to break GeckoLib and PlayerAnimator models on Forge 1.20.1. Try without it (Embeddium works).
+- **If the game crashes**, the report is in `.minecraft/crash-reports/crash-<date>-client.txt`. Please share it, or `logs/latest.log`. If a move or model breaks, the mod now stops just that thing and logs `[csm] ... broke and was stopped` with the details, instead of crashing.
+
 ## Building
 ```bash
 gradlew build

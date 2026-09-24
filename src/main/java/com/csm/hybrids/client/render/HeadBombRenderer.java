@@ -18,6 +18,13 @@ public class HeadBombRenderer extends GeoEntityRenderer<HeadBombEntity> {
     }
 
     @Override
+    public void render(HeadBombEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
+                       net.minecraft.client.renderer.MultiBufferSource bufferSource, int packedLight) {
+        SafeRender.draw("head bomb model", poseStack,
+                () -> super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight));
+    }
+
+    @Override
     protected void applyRotations(HeadBombEntity bomb, PoseStack poseStack, float ageInTicks, float rotationYaw,
                                   float partialTick) {
         poseStack.translate(0, 0.3, 0);

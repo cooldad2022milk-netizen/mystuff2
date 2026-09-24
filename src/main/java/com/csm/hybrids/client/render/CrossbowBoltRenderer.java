@@ -22,6 +22,13 @@ public class CrossbowBoltRenderer extends GeoEntityRenderer<CrossbowBoltEntity> 
     }
 
     @Override
+    public void render(CrossbowBoltEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
+                       MultiBufferSource bufferSource, int packedLight) {
+        SafeRender.draw("crossbow bolt model", poseStack,
+                () -> super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight));
+    }
+
+    @Override
     protected void applyRotations(CrossbowBoltEntity bolt, PoseStack poseStack, float ageInTicks, float rotationYaw,
                                   float partialTick) {
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, bolt.yRotO, bolt.getYRot()) + 180f));

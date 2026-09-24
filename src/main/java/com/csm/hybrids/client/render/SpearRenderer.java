@@ -20,6 +20,13 @@ public class SpearRenderer extends GeoEntityRenderer<SpearEntity> {
     }
 
     @Override
+    public void render(SpearEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
+                       net.minecraft.client.renderer.MultiBufferSource bufferSource, int packedLight) {
+        SafeRender.draw("spear model", poseStack,
+                () -> super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight));
+    }
+
+    @Override
     protected void applyRotations(SpearEntity spear, PoseStack poseStack, float ageInTicks, float rotationYaw,
                                   float partialTick) {
         float s = spear.scale();

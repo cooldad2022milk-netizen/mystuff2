@@ -1,0 +1,210 @@
+package com.csm.hybrids.hybrid;
+
+import com.csm.hybrids.ability.AbilityRun;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.Mth;
+
+/**
+ * Per-player hybrid state (Forge capability). Saved with the player and synced to clients.
+ */
+public class HybridData {
+    public static final int MAX_ABILITIES = 8;
+    public static final float MAX_BLOOD = 100f;
+
+    private HybridType type = HybridType.NONE;
+    private boolean transformed;
+    private float blood;
+    private int selected;
+    private final int[] cooldowns = new int[MAX_ABILITIES];
+    private final int[] cooldownMax = new int[MAX_ABILITIES];
+
+    /** Server: the ability currently being performed (trigger animations included). */
+    public AbilityRun activeRun;
+    /** Server: blood value last sent to the client (only resync when it changes noticeably). */
+    public float lastSyncedBlood = -1;
+    private boolean dirty;
+
+    /** Client: render/animation state. Typed as Object so this class stays safe on dedicated servers. */
+    public Object clientState;
+
+    public HybridType type() {
+        return type;
+    }
+
+    public boolean isHybrid() {
+        return type != HybridType.NONE;
+    }
+
+    public void setType(HybridType type) {
+        if (this.type != type) {
+            this.type = type;
+            this.selected = 0;
+            this.transformed = false;
+            clearCooldowns();
+            markDirty();
+        }
+    }
+
+    public boolean isTransformed() {
+        return transformed;
+    }
+
+    public void setTransformed(boolean transformed) {
+        if (this.transformed != transformed) {
+            this.transformed = transformed;
+            markDirty();
+        }
+    }
+
+    public float blood() {
+        return blood;
+    }
+
+    public void setBlood(float blood) {
+        this.blood = Mth.clamp(blood, 0, MAX_BLOOD);
+    }
+
+    public void addBlood(float amount) {
+        setBlood(blood + amount);
+    }
+
+    public int selected() {
+        return selected;
+    }
+
+    public void setSelected(int selected) {
+        int count = type.abilities().size();
+        int s = count == 0 ? 0 : Mth.clamp(selected, 0, count - 1);
+        if (s != this.selected) {
+            this.selected = s;
+            markDirty();
+        }
+    }
+
+    public int cooldown(int index) {
+        return index >= 0 && index < MAX_ABILITIES ? cooldowns[index] : 0;
+    }
+
+    public int cooldownMax(int index) {
+        return index >= 0 && index < MAX_ABILITIES ? cooldownMax[index] : 0;
+    }
+
+    public void setCooldown(int index, int ticks) {
+        if (index >= 0 && index < MAX_ABILITIES) {
+            cooldowns[index] = ticks;
+            cooldownMax[index] = Math.max(ticks, 1);
+            markDirty();
+        }
+    }
+
+    public void clearCooldowns() {
+        for (int i = 0; i < MAX_ABILITIES; i++) {
+            cooldowns[i] = 0;
+            cooldownMax[i] = 0;
+        }
+    }
+
+    /** Counts cooldowns down by one tick (both sides, client just for the HUD). */
+    public void tickCooldowns() {
+        for (int i = 0; i < MAX_ABILITIES; i++) {
+            if (cooldowns[i] > 0) {
+                cooldowns[i]--;
+            }
+        }
+    }
+
+    public void markDirty() {
+        dirty = true;
+    }
+
+    public boolean consumeDirty() {
+        boolean d = dirty;
+        dirty = false;
+        return d;
+    }
+
+    // ------------------------------------------------------------------ persistence
+    public CompoundTag save() {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("type", type.id);
+        tag.putBoolean("transformed", transformed);
+        tag.putFloat("blood", blood);
+        tag.putInt("selected", selected);
+        tag.putIntArray("cooldowns", cooldowns.clone());
+        return tag;
+    }
+
+    public void load(CompoundTag tag) {
+        type = HybridType.byId(tag.getString("type"));
+        transformed = tag.getBoolean("transformed") && type != HybridType.NONE;
+        blood = tag.getFloat("blood");
+        selected = tag.getInt("selected");
+        int[] cd = tag.getIntArray("cooldowns");
+        for (int i = 0; i < MAX_ABILITIES; i++) {
+            cooldowns[i] = i < cd.length ? cd[i] : 0;
+            cooldownMax[i] = Math.max(cooldowns[i], 1);
+        }
+    }
+
+    /** Copy on respawn / dimension travel. Dying knocks you back into human form. */
+    public void copyFrom(HybridData other, boolean death) {
+        load(other.save());
+        if (death) {
+            transformed = false;
+            clearCooldowns();
+        }
+        markDirty();
+    }
+
+    // ------------------------------------------------------------------ network
+    public void writeSync(FriendlyByteBuf buf, boolean full) {
+        buf.writeByte(type.ordinal());
+        buf.writeBoolean(transformed);
+        buf.writeFloat(blood);
+        buf.writeByte(selected);
+        buf.writeBoolean(full);
+        if (full) {
+            for (int i = 0; i < MAX_ABILITIES; i++) {
+                buf.writeVarInt(cooldowns[i]);
+                buf.writeVarInt(cooldownMax[i]);
+            }
+        }
+    }
+
+    /** Applies a sync payload written by {@link #writeSync}. */
+    public static void readSyncInto(FriendlyByteBuf buf, SyncState out) {
+        out.type = HybridType.byOrdinal(buf.readByte());
+        out.transformed = buf.readBoolean();
+        out.blood = buf.readFloat();
+        out.selected = buf.readByte();
+        out.full = buf.readBoolean();
+        if (out.full) {
+            for (int i = 0; i < MAX_ABILITIES; i++) {
+                out.cooldowns[i] = buf.readVarInt();
+                out.cooldownMax[i] = buf.readVarInt();
+            }
+        }
+    }
+
+    public void applySync(SyncState s) {
+        this.type = s.type;
+        this.transformed = s.transformed;
+        this.blood = s.blood;
+        this.selected = s.selected;
+        if (s.full) {
+            System.arraycopy(s.cooldowns, 0, cooldowns, 0, MAX_ABILITIES);
+            System.arraycopy(s.cooldownMax, 0, cooldownMax, 0, MAX_ABILITIES);
+        }
+    }
+
+    public static final class SyncState {
+        public HybridType type = HybridType.NONE;
+        public boolean transformed;
+        public float blood;
+        public int selected;
+        public boolean full;
+        public final int[] cooldowns = new int[MAX_ABILITIES];
+        public final int[] cooldownMax = new int[MAX_ABILITIES];
+    }
+}

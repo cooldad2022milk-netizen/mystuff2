@@ -1,0 +1,142 @@
+{
+ "version": 3,
+ "name": "gun_headshot",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 20,
+  "stopTick": 23,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    }
+   },
+   {
+    "tick": 6,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": -0.15,
+     "yaw": 0,
+     "roll": 0
+    },
+    "rightArm": {
+     "pitch": 0.1,
+     "yaw": 0,
+     "roll": 0.3
+    },
+    "leftArm": {
+     "pitch": 0.1,
+     "yaw": 0,
+     "roll": -0.3
+    }
+   },
+   {
+    "tick": 11,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "head": {
+     "pitch": 0.05,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": -0.2,
+     "yaw": 0,
+     "roll": 0
+    },
+    "rightArm": {
+     "pitch": 0.15,
+     "yaw": 0,
+     "roll": 0.3
+    },
+    "leftArm": {
+     "pitch": 0.15,
+     "yaw": 0,
+     "roll": -0.3
+    }
+   },
+   {
+    "tick": 12,
+    "easing": "EASEOUTEXPO",
+    "turn": 0,
+    "head": {
+     "pitch": -0.55,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": 0.2,
+     "yaw": 0,
+     "roll": 0
+    },
+    "rightArm": {
+     "pitch": -0.3,
+     "yaw": 0,
+     "roll": 0.5
+    },
+    "leftArm": {
+     "pitch": -0.3,
+     "yaw": 0,
+     "roll": -0.5
+    }
+   },
+   {
+    "tick": 20,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    }
+   }
+  ]
+ }
+}

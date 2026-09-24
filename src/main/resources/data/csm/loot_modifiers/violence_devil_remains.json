@@ -1,0 +1,12 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:violence_devil_remains",
+  "tables": [
+    "minecraft:chests/simple_dungeon",
+    "minecraft:chests/abandoned_mineshaft",
+    "minecraft:chests/pillager_outpost",
+    "minecraft:chests/bastion_hoglin_stable"
+  ],
+  "chance": 0.05
+}

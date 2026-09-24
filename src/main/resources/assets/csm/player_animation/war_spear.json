@@ -1,0 +1,112 @@
+{
+ "version": 3,
+ "name": "war_spear",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 22,
+  "stopTick": 25,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 8,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -2.6,
+     "yaw": -0.1,
+     "roll": 0.35
+    },
+    "leftArm": {
+     "pitch": -1.2,
+     "yaw": 0,
+     "roll": -0.4
+    },
+    "torso": {
+     "pitch": 0.12,
+     "yaw": 0.45,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 11,
+    "easing": "EASEINQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.3,
+     "yaw": 0.2,
+     "roll": 0.0
+    },
+    "leftArm": {
+     "pitch": -0.2,
+     "yaw": 0,
+     "roll": -0.3
+    },
+    "torso": {
+     "pitch": -0.25,
+     "yaw": -0.4,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 15,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -0.9,
+     "yaw": 0.2,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.2,
+     "yaw": -0.35,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 22,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

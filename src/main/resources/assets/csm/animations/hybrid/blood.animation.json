@@ -1,0 +1,330 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "emerge": {
+   "animation_length": 0.8,
+   "bones": {
+    "form_horns": {
+     "scale": {
+      "0.0000": {
+       "vector": [
+        0.5,
+        0.5,
+        0.5
+       ]
+      },
+      "0.2500": {
+       "vector": [
+        1.12,
+        1.12,
+        1.12
+       ],
+       "easing": "easeOutBack"
+      },
+      "0.4000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      }
+     }
+    },
+    "form_side_horns_0": {
+     "scale": {
+      "0.0000": {
+       "vector": [
+        0.02,
+        0.02,
+        0.02
+       ]
+      },
+      "0.2000": {
+       "vector": [
+        0.02,
+        0.02,
+        0.02
+       ]
+      },
+      "0.4000": {
+       "vector": [
+        1.15,
+        1.15,
+        1.15
+       ],
+       "easing": "easeOutBack"
+      },
+      "0.5000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      }
+     }
+    },
+    "form_side_horns_1": {
+     "scale": {
+      "0.0000": {
+       "vector": [
+        0.02,
+        0.02,
+        0.02
+       ]
+      },
+      "0.3200": {
+       "vector": [
+        0.02,
+        0.02,
+        0.02
+       ]
+      },
+      "0.5200": {
+       "vector": [
+        1.15,
+        1.15,
+        1.15
+       ],
+       "easing": "easeOutBack"
+      },
+      "0.6200": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      }
+     }
+    }
+   }
+  },
+  "retract": {
+   "animation_length": 0.4,
+   "bones": {
+    "form_horns": {
+     "scale": {
+      "0.0000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "0.3500": {
+       "vector": [
+        0.5,
+        0.5,
+        0.5
+       ],
+       "easing": "easeInQuad"
+      }
+     }
+    }
+   },
+   "loop": "hold_on_last_frame"
+  },
+  "idle": {
+   "animation_length": 2.0,
+   "bones": {},
+   "loop": true
+  },
+  "hammer": {
+   "animation_length": 1.0,
+   "bones": {
+    "fx_hammer_right": {
+     "scale": {
+      "0.0000": {
+       "vector": [
+        1.0,
+        0.05,
+        1.0
+       ]
+      },
+      "0.0500": {
+       "vector": [
+        1.0,
+        0.05,
+        1.0
+       ]
+      },
+      "0.3000": {
+       "vector": [
+        1.05,
+        1.1,
+        1.05
+       ],
+       "easing": "easeOutBack"
+      },
+      "0.4000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "0.8000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "0.9200": {
+       "vector": [
+        1.0,
+        0.05,
+        1.0
+       ],
+       "easing": "easeInQuad"
+      }
+     }
+    }
+   }
+  },
+  "spear": {
+   "animation_length": 0.6,
+   "bones": {
+    "fx_bspear_right": {
+     "scale": {
+      "0.0000": {
+       "vector": [
+        1.0,
+        0.05,
+        1.0
+       ]
+      },
+      "0.2000": {
+       "vector": [
+        1.05,
+        1.1,
+        1.05
+       ],
+       "easing": "easeOutBack"
+      },
+      "0.2800": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "0.3000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "0.4000": {
+       "vector": [
+        1.0,
+        0.05,
+        1.0
+       ],
+       "easing": "easeInQuad"
+      }
+     }
+    }
+   }
+  },
+  "scythe": {
+   "animation_length": 0.9,
+   "bones": {
+    "fx_scythe_right": {
+     "scale": {
+      "0.0000": {
+       "vector": [
+        1.0,
+        0.05,
+        1.0
+       ]
+      },
+      "0.0500": {
+       "vector": [
+        1.0,
+        0.05,
+        1.0
+       ]
+      },
+      "0.3000": {
+       "vector": [
+        1.05,
+        1.1,
+        1.05
+       ],
+       "easing": "easeOutBack"
+      },
+      "0.4000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "0.7000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "0.8200": {
+       "vector": [
+        1.0,
+        0.05,
+        1.0
+       ],
+       "easing": "easeInQuad"
+      }
+     }
+    }
+   }
+  },
+  "control": {
+   "animation_length": 0.9,
+   "bones": {}
+  },
+  "rain": {
+   "animation_length": 1.7,
+   "bones": {
+    "form_horns": {
+     "scale": {
+      "0.0000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      },
+      "0.2000": {
+       "vector": [
+        1.12,
+        1.12,
+        1.12
+       ],
+       "easing": "easeOutQuad"
+      },
+      "1.5000": {
+       "vector": [
+        1.12,
+        1.12,
+        1.12
+       ]
+      },
+      "1.7000": {
+       "vector": [
+        1.0,
+        1.0,
+        1.0
+       ]
+      }
+     }
+    }
+   }
+  },
+  "drink": {
+   "animation_length": 1.0,
+   "bones": {}
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "version": 3,
+ "name": "bomb_flick",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 10,
+  "stopTick": 13,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    }
+   },
+   {
+    "tick": 3,
+    "easing": "EASEINQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.35,
+     "yaw": 0.1,
+     "roll": -0.2
+    }
+   },
+   {
+    "tick": 4,
+    "easing": "EASEOUTBACK",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.6,
+     "yaw": -0.05,
+     "roll": 0.15
+    }
+   },
+   {
+    "tick": 10,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    }
+   }
+  ]
+ }
+}

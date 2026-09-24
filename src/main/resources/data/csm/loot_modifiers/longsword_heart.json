@@ -1,0 +1,13 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:longsword_devil_heart",
+  "tables": [
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/end_city_treasure",
+    "minecraft:chests/ancient_city",
+    "minecraft:chests/stronghold_crossing",
+    "minecraft:chests/simple_dungeon"
+  ],
+  "chance": 0.06
+}

@@ -1,0 +1,47 @@
+{
+ "version": 3,
+ "name": "shark_form",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 200,
+  "stopTick": 203,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 200,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

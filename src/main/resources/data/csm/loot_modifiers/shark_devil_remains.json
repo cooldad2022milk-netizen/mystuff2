@@ -1,0 +1,12 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:shark_devil_remains",
+  "tables": [
+    "minecraft:chests/shipwreck_treasure",
+    "minecraft:chests/underwater_ruin_big",
+    "minecraft:chests/buried_treasure",
+    "minecraft:chests/shipwreck_supply"
+  ],
+  "chance": 0.05
+}

@@ -1,0 +1,198 @@
+{
+ "version": 3,
+ "name": "spear_thrust",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 14,
+  "stopTick": 17,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 1,
+    "easing": "EASEINQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.35,
+     "yaw": 0.1,
+     "roll": 0.1,
+     "x": -5.0,
+     "y": 2.0,
+     "z": 2.2
+    },
+    "leftArm": {
+     "pitch": -0.5,
+     "yaw": 0.3,
+     "roll": -0.3
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.3,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 3,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.57,
+     "yaw": 0.0,
+     "roll": 0.0,
+     "x": -5.0,
+     "y": 2.0,
+     "z": -2.2
+    },
+    "leftArm": {
+     "pitch": -0.3,
+     "yaw": 0.1,
+     "roll": -0.4
+    },
+    "torso": {
+     "pitch": -0.14,
+     "yaw": -0.25,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 5,
+    "easing": "EASEINQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.35,
+     "yaw": 0.1,
+     "roll": 0.1,
+     "x": -5.0,
+     "y": 2.0,
+     "z": 2.2
+    },
+    "leftArm": {
+     "pitch": -0.5,
+     "yaw": 0.3,
+     "roll": -0.3
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.3,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 7,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.57,
+     "yaw": 0.0,
+     "roll": 0.0,
+     "x": -5.0,
+     "y": 2.0,
+     "z": -2.2
+    },
+    "leftArm": {
+     "pitch": -0.3,
+     "yaw": 0.1,
+     "roll": -0.4
+    },
+    "torso": {
+     "pitch": -0.14,
+     "yaw": -0.25,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 9,
+    "easing": "EASEINQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.35,
+     "yaw": 0.1,
+     "roll": 0.1,
+     "x": -5.0,
+     "y": 2.0,
+     "z": 2.2
+    },
+    "leftArm": {
+     "pitch": -0.5,
+     "yaw": 0.3,
+     "roll": -0.3
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.3,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 11,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.57,
+     "yaw": 0.0,
+     "roll": 0.0,
+     "x": -5.0,
+     "y": 2.0,
+     "z": -2.2
+    },
+    "leftArm": {
+     "pitch": -0.3,
+     "yaw": 0.1,
+     "roll": -0.4
+    },
+    "torso": {
+     "pitch": -0.14,
+     "yaw": -0.25,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 14,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -0.4,
+     "yaw": 0.0,
+     "roll": 0.1,
+     "x": -5.0,
+     "y": 2.0,
+     "z": 0.0
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:crossbow_devil_heart",
+  "tables": [
+    "minecraft:chests/stronghold_corridor",
+    "minecraft:chests/pillager_outpost",
+    "minecraft:chests/woodland_mansion",
+    "minecraft:chests/ancient_city",
+    "minecraft:chests/end_city_treasure"
+  ],
+  "chance": 0.06
+}

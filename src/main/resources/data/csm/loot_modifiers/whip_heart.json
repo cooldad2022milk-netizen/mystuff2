@@ -1,0 +1,13 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:whip_devil_heart",
+  "tables": [
+    "minecraft:chests/simple_dungeon",
+    "minecraft:chests/jungle_temple",
+    "minecraft:chests/igloo_chest",
+    "minecraft:chests/village/village_weaponsmith",
+    "minecraft:chests/ancient_city"
+  ],
+  "chance": 0.06
+}

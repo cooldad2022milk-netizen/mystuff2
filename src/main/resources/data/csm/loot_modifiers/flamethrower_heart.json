@@ -1,0 +1,13 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:flamethrower_devil_heart",
+  "tables": [
+    "minecraft:chests/bastion_treasure",
+    "minecraft:chests/nether_bridge",
+    "minecraft:chests/ruined_portal",
+    "minecraft:chests/desert_pyramid",
+    "minecraft:chests/bastion_other"
+  ],
+  "chance": 0.06
+}

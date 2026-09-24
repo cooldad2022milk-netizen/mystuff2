@@ -1,0 +1,137 @@
+{
+ "version": 3,
+ "name": "katana_counter",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 30,
+  "stopTick": 33,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "rightLeg": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "leftLeg": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 4,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -0.4,
+     "yaw": 0.9,
+     "roll": 0.3
+    },
+    "leftArm": {
+     "pitch": -0.6,
+     "yaw": 0.4,
+     "roll": -0.1
+    },
+    "torso": {
+     "pitch": -0.3,
+     "yaw": 0.3,
+     "roll": 0
+    },
+    "rightLeg": {
+     "pitch": -0.5,
+     "yaw": 0,
+     "roll": 0.1
+    },
+    "leftLeg": {
+     "pitch": 0.35,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 26,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -0.42,
+     "yaw": 0.92,
+     "roll": 0.32
+    },
+    "leftArm": {
+     "pitch": -0.62,
+     "yaw": 0.42,
+     "roll": -0.1
+    },
+    "torso": {
+     "pitch": -0.32,
+     "yaw": 0.3,
+     "roll": 0
+    },
+    "rightLeg": {
+     "pitch": -0.5,
+     "yaw": 0,
+     "roll": 0.1
+    },
+    "leftLeg": {
+     "pitch": 0.35,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 30,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "rightLeg": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "leftLeg": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

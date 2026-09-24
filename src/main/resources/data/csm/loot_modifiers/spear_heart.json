@@ -1,0 +1,13 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:spear_devil_heart",
+  "tables": [
+    "minecraft:chests/stronghold_crossing",
+    "minecraft:chests/pillager_outpost",
+    "minecraft:chests/underwater_ruin_big",
+    "minecraft:chests/bastion_hoglin_stable",
+    "minecraft:chests/woodland_mansion"
+  ],
+  "chance": 0.06
+}

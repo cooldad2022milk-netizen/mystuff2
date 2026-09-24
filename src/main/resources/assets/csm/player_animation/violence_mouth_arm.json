@@ -1,0 +1,142 @@
+{
+ "version": 3,
+ "name": "violence_mouth_arm",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 22,
+  "stopTick": 25,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 4,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.3,
+     "yaw": 0,
+     "roll": 0.6
+    },
+    "leftArm": {
+     "pitch": 0.3,
+     "yaw": 0,
+     "roll": -0.6
+    },
+    "head": {
+     "pitch": -0.4,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": 0.1,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 8,
+    "easing": "EASEOUTBACK",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.4,
+     "yaw": 0,
+     "roll": 0.7
+    },
+    "leftArm": {
+     "pitch": 0.4,
+     "yaw": 0,
+     "roll": -0.7
+    },
+    "head": {
+     "pitch": 0.05,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": -0.2,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 13,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.4,
+     "yaw": 0,
+     "roll": 0.7
+    },
+    "leftArm": {
+     "pitch": 0.4,
+     "yaw": 0,
+     "roll": -0.7
+    },
+    "head": {
+     "pitch": 0.2,
+     "yaw": -0.3,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": -0.3,
+     "yaw": -0.2,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 22,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

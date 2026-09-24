@@ -1,0 +1,13 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:chainsaw_devil_heart",
+  "tables": [
+    "minecraft:chests/simple_dungeon",
+    "minecraft:chests/abandoned_mineshaft",
+    "minecraft:chests/woodland_mansion",
+    "minecraft:chests/ancient_city",
+    "minecraft:chests/shipwreck_supply"
+  ],
+  "chance": 0.06
+}

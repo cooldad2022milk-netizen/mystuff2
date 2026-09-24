@@ -1,0 +1,12 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:cosmos_devil_remains",
+  "tables": [
+    "minecraft:chests/end_city_treasure",
+    "minecraft:chests/stronghold_library",
+    "minecraft:chests/ancient_city",
+    "minecraft:chests/woodland_mansion"
+  ],
+  "chance": 0.05
+}

@@ -1,0 +1,257 @@
+{
+ "version": 3,
+ "name": "spear_pull_spear",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 26,
+  "stopTick": 29,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 4,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -3.0972,
+     "yaw": 0.2043,
+     "roll": 0.6713,
+     "x": -5.0,
+     "y": 2.0,
+     "z": 0.0
+    },
+    "leftArm": {
+     "pitch": -0.15,
+     "yaw": 0,
+     "roll": -0.2
+    },
+    "head": {
+     "pitch": 0.266,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.05,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 6,
+    "easing": "EASEINOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -3.8715,
+     "yaw": 0.2554,
+     "roll": 0.8191,
+     "x": -5.538,
+     "y": 2.426,
+     "z": -0.618
+    },
+    "leftArm": {
+     "pitch": -0.2,
+     "yaw": 0,
+     "roll": -0.25
+    },
+    "head": {
+     "pitch": 0.38,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.1,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 10,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -3.9475,
+     "yaw": 0.1942,
+     "roll": 0.7387,
+     "x": -4.625,
+     "y": 1.63,
+     "z": 0.552
+    },
+    "leftArm": {
+     "pitch": -0.2,
+     "yaw": 0,
+     "roll": -0.3
+    },
+    "head": {
+     "pitch": 0.38,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.08,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 14,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -4.0172,
+     "yaw": 0.3202,
+     "roll": 0.4767,
+     "x": -3.938,
+     "y": 0.727,
+     "z": 1.933
+    },
+    "leftArm": {
+     "pitch": -0.2,
+     "yaw": 0,
+     "roll": -0.3
+    },
+    "head": {
+     "pitch": 0.2,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": -0.02,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 16,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -2.7,
+     "yaw": 0.1,
+     "roll": 0.1,
+     "x": -5.0,
+     "y": 2.0,
+     "z": 0.0
+    },
+    "leftArm": {
+     "pitch": -0.3,
+     "yaw": 0,
+     "roll": -0.35
+    },
+    "head": {
+     "pitch": -0.2,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": 0.08,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 18,
+    "easing": "EASEOUTBACK",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.5,
+     "yaw": -0.1,
+     "roll": 0.0
+    },
+    "leftArm": {
+     "pitch": -0.4,
+     "yaw": 0.4,
+     "roll": -0.5
+    },
+    "head": {
+     "pitch": -0.25,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": -0.15,
+     "yaw": -0.2,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 22,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -1.45,
+     "yaw": -0.1,
+     "roll": 0.0
+    },
+    "leftArm": {
+     "pitch": -0.4,
+     "yaw": 0.4,
+     "roll": -0.5
+    },
+    "head": {
+     "pitch": -0.2,
+     "yaw": 0,
+     "roll": 0
+    },
+    "torso": {
+     "pitch": -0.12,
+     "yaw": -0.2,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 26,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -0.3,
+     "yaw": 0,
+     "roll": 0.1
+    },
+    "leftArm": {
+     "pitch": -0.1,
+     "yaw": 0,
+     "roll": -0.2
+    },
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

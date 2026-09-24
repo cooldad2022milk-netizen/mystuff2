@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "entries": [
+    "csm:chainsaw_heart",
+    "csm:crossbow_heart",
+    "csm:flamethrower_heart",
+    "csm:whip_heart",
+    "csm:bomb_heart",
+    "csm:spear_heart",
+    "csm:katana_heart",
+    "csm:longsword_heart",
+    "csm:blood_devil_remains",
+    "csm:shark_devil_remains",
+    "csm:violence_devil_remains",
+    "csm:cosmos_devil_remains",
+    "csm:gun_devil_flesh"
+  ]
+}

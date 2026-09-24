@@ -1,0 +1,13 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:katana_devil_heart",
+  "tables": [
+    "minecraft:chests/pillager_outpost",
+    "minecraft:chests/woodland_mansion",
+    "minecraft:chests/stronghold_corridor",
+    "minecraft:chests/village/village_weaponsmith",
+    "minecraft:chests/ancient_city"
+  ],
+  "chance": 0.06
+}

@@ -1,0 +1,117 @@
+{
+ "version": 3,
+ "name": "war_sword",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 18,
+  "stopTick": 21,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 5,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -2.8,
+     "yaw": 0.3,
+     "roll": -0.2
+    },
+    "leftArm": {
+     "pitch": -0.4,
+     "yaw": 0,
+     "roll": -0.2
+    },
+    "torso": {
+     "pitch": 0.1,
+     "yaw": 0.25,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 8,
+    "easing": "EASEINQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -0.6,
+     "yaw": -0.2,
+     "roll": 0.1
+    },
+    "torso": {
+     "pitch": -0.25,
+     "yaw": -0.2,
+     "roll": 0
+    },
+    "head": {
+     "pitch": 0.1,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 11,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": -0.45,
+     "yaw": -0.25,
+     "roll": 0.1
+    },
+    "torso": {
+     "pitch": -0.22,
+     "yaw": -0.18,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 18,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    },
+    "head": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

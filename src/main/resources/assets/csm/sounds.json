@@ -1,0 +1,587 @@
+{
+  "chainsaw.idle": {
+    "subtitle": "subtitles.csm.chainsaw.idle",
+    "sounds": [
+      {
+        "name": "csm:chainsaw/idle",
+        "stream": true
+      }
+    ]
+  },
+  "chainsaw.rev": {
+    "subtitle": "subtitles.csm.chainsaw.rev",
+    "sounds": [
+      {
+        "name": "csm:chainsaw/rev",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw.start": {
+    "subtitle": "subtitles.csm.chainsaw.start",
+    "sounds": [
+      {
+        "name": "csm:chainsaw/start",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw.sputter": {
+    "subtitle": "subtitles.csm.chainsaw.sputter",
+    "sounds": [
+      {
+        "name": "csm:chainsaw/sputter",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw.cord_pull": {
+    "subtitle": "subtitles.csm.chainsaw.cord_pull",
+    "sounds": [
+      {
+        "name": "csm:chainsaw/cord_pull",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw.cut": {
+    "subtitle": "subtitles.csm.chainsaw.cut",
+    "sounds": [
+      {
+        "name": "csm:chainsaw/cut",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw.chain_throw": {
+    "subtitle": "subtitles.csm.chainsaw.chain_throw",
+    "sounds": [
+      {
+        "name": "csm:chainsaw/chain_throw",
+        "stream": false
+      }
+    ]
+  },
+  "chainsaw.chain_hit": {
+    "subtitle": "subtitles.csm.chainsaw.chain_hit",
+    "sounds": [
+      {
+        "name": "csm:chainsaw/chain_hit",
+        "stream": false
+      }
+    ]
+  },
+  "crossbow.arrow_pull": {
+    "subtitle": "subtitles.csm.crossbow.arrow_pull",
+    "sounds": [
+      {
+        "name": "csm:crossbow/arrow_pull",
+        "stream": false
+      }
+    ]
+  },
+  "crossbow.fire": {
+    "subtitle": "subtitles.csm.crossbow.fire",
+    "sounds": [
+      {
+        "name": "csm:crossbow/fire",
+        "stream": false
+      }
+    ]
+  },
+  "crossbow.charge": {
+    "subtitle": "subtitles.csm.crossbow.charge",
+    "sounds": [
+      {
+        "name": "csm:crossbow/charge",
+        "stream": false
+      }
+    ]
+  },
+  "crossbow.pierce": {
+    "subtitle": "subtitles.csm.crossbow.pierce",
+    "sounds": [
+      {
+        "name": "csm:crossbow/pierce",
+        "stream": false
+      }
+    ]
+  },
+  "crossbow.flash_step": {
+    "subtitle": "subtitles.csm.crossbow.flash_step",
+    "sounds": [
+      {
+        "name": "csm:crossbow/flash_step",
+        "stream": false
+      }
+    ]
+  },
+  "flamethrower.molar": {
+    "subtitle": "subtitles.csm.flamethrower.molar",
+    "sounds": [
+      {
+        "name": "csm:flamethrower/molar",
+        "stream": false
+      }
+    ]
+  },
+  "flamethrower.ignite": {
+    "subtitle": "subtitles.csm.flamethrower.ignite",
+    "sounds": [
+      {
+        "name": "csm:flamethrower/ignite",
+        "stream": false
+      }
+    ]
+  },
+  "flamethrower.stream": {
+    "subtitle": "subtitles.csm.flamethrower.stream",
+    "sounds": [
+      {
+        "name": "csm:flamethrower/stream",
+        "stream": false
+      }
+    ]
+  },
+  "flamethrower.burst": {
+    "subtitle": "subtitles.csm.flamethrower.burst",
+    "sounds": [
+      {
+        "name": "csm:flamethrower/burst",
+        "stream": false
+      }
+    ]
+  },
+  "whip.snap": {
+    "subtitle": "subtitles.csm.whip.snap",
+    "sounds": [
+      {
+        "name": "csm:whip/snap",
+        "stream": false
+      }
+    ]
+  },
+  "whip.crack": {
+    "subtitle": "subtitles.csm.whip.crack",
+    "sounds": [
+      {
+        "name": "csm:whip/crack",
+        "stream": false
+      }
+    ]
+  },
+  "whip.lash": {
+    "subtitle": "subtitles.csm.whip.lash",
+    "sounds": [
+      {
+        "name": "csm:whip/lash",
+        "stream": false
+      }
+    ]
+  },
+  "bomb.pin": {
+    "subtitle": "subtitles.csm.bomb.pin",
+    "sounds": [
+      {
+        "name": "csm:bomb/pin",
+        "stream": false
+      }
+    ]
+  },
+  "bomb.fuse": {
+    "subtitle": "subtitles.csm.bomb.fuse",
+    "sounds": [
+      {
+        "name": "csm:bomb/fuse",
+        "stream": false
+      }
+    ]
+  },
+  "bomb.blast": {
+    "subtitle": "subtitles.csm.bomb.blast",
+    "sounds": [
+      {
+        "name": "csm:bomb/blast",
+        "stream": false
+      }
+    ]
+  },
+  "bomb.explosion": {
+    "subtitle": "subtitles.csm.bomb.explosion",
+    "sounds": [
+      {
+        "name": "csm:bomb/explosion",
+        "stream": false
+      }
+    ]
+  },
+  "spear.pull": {
+    "subtitle": "subtitles.csm.spear.pull",
+    "sounds": [
+      {
+        "name": "csm:spear/pull",
+        "stream": false
+      }
+    ]
+  },
+  "spear.throw": {
+    "subtitle": "subtitles.csm.spear.throw",
+    "sounds": [
+      {
+        "name": "csm:spear/throw",
+        "stream": false
+      }
+    ]
+  },
+  "spear.impact": {
+    "subtitle": "subtitles.csm.spear.impact",
+    "sounds": [
+      {
+        "name": "csm:spear/impact",
+        "stream": false
+      }
+    ]
+  },
+  "spear.erupt": {
+    "subtitle": "subtitles.csm.spear.erupt",
+    "sounds": [
+      {
+        "name": "csm:spear/erupt",
+        "stream": false
+      }
+    ]
+  },
+  "katana.draw": {
+    "subtitle": "subtitles.csm.katana.draw",
+    "sounds": [
+      {
+        "name": "csm:katana/draw",
+        "stream": false
+      }
+    ]
+  },
+  "katana.slash": {
+    "subtitle": "subtitles.csm.katana.slash",
+    "sounds": [
+      {
+        "name": "csm:katana/slash",
+        "stream": false
+      }
+    ]
+  },
+  "katana.iai": {
+    "subtitle": "subtitles.csm.katana.iai",
+    "sounds": [
+      {
+        "name": "csm:katana/iai",
+        "stream": false
+      }
+    ]
+  },
+  "katana.sheathe": {
+    "subtitle": "subtitles.csm.katana.sheathe",
+    "sounds": [
+      {
+        "name": "csm:katana/sheathe",
+        "stream": false
+      }
+    ]
+  },
+  "longsword.draw": {
+    "subtitle": "subtitles.csm.longsword.draw",
+    "sounds": [
+      {
+        "name": "csm:longsword/draw",
+        "stream": false
+      }
+    ]
+  },
+  "longsword.clang": {
+    "subtitle": "subtitles.csm.longsword.clang",
+    "sounds": [
+      {
+        "name": "csm:longsword/clang",
+        "stream": false
+      }
+    ]
+  },
+  "longsword.cleave": {
+    "subtitle": "subtitles.csm.longsword.cleave",
+    "sounds": [
+      {
+        "name": "csm:longsword/cleave",
+        "stream": false
+      }
+    ]
+  },
+  "blood.form": {
+    "subtitle": "subtitles.csm.blood.form",
+    "sounds": [
+      {
+        "name": "csm:blood/form",
+        "stream": false
+      }
+    ]
+  },
+  "blood.slam": {
+    "subtitle": "subtitles.csm.blood.slam",
+    "sounds": [
+      {
+        "name": "csm:blood/slam",
+        "stream": false
+      }
+    ]
+  },
+  "blood.rain": {
+    "subtitle": "subtitles.csm.blood.rain",
+    "sounds": [
+      {
+        "name": "csm:blood/rain",
+        "stream": false
+      }
+    ]
+  },
+  "shark.dive": {
+    "subtitle": "subtitles.csm.shark.dive",
+    "sounds": [
+      {
+        "name": "csm:shark/dive",
+        "stream": false
+      }
+    ]
+  },
+  "shark.bite": {
+    "subtitle": "subtitles.csm.shark.bite",
+    "sounds": [
+      {
+        "name": "csm:shark/bite",
+        "stream": false
+      }
+    ]
+  },
+  "violence.mask": {
+    "subtitle": "subtitles.csm.violence.mask",
+    "sounds": [
+      {
+        "name": "csm:violence/mask",
+        "stream": false
+      }
+    ]
+  },
+  "violence.punch": {
+    "subtitle": "subtitles.csm.violence.punch",
+    "sounds": [
+      {
+        "name": "csm:violence/punch",
+        "stream": false
+      }
+    ]
+  },
+  "cosmos.halloween": {
+    "subtitle": "subtitles.csm.cosmos.halloween",
+    "sounds": [
+      {
+        "name": "csm:cosmos/halloween",
+        "stream": false
+      }
+    ]
+  },
+  "cosmos.void": {
+    "subtitle": "subtitles.csm.cosmos.void",
+    "sounds": [
+      {
+        "name": "csm:cosmos/void",
+        "stream": false
+      }
+    ]
+  },
+  "gun.shot": {
+    "subtitle": "subtitles.csm.gun.shot",
+    "sounds": [
+      {
+        "name": "csm:gun/shot",
+        "stream": false
+      }
+    ]
+  },
+  "gun.cannon": {
+    "subtitle": "subtitles.csm.gun.cannon",
+    "sounds": [
+      {
+        "name": "csm:gun/cannon",
+        "stream": false
+      }
+    ]
+  },
+  "gun.cock": {
+    "subtitle": "subtitles.csm.gun.cock",
+    "sounds": [
+      {
+        "name": "csm:gun/cock",
+        "stream": false
+      }
+    ]
+  },
+  "fiend.possess": {
+    "subtitle": "subtitles.csm.fiend.possess",
+    "sounds": [
+      {
+        "name": "csm:fiend/possess",
+        "stream": false
+      }
+    ]
+  },
+  "heart.rip": {
+    "subtitle": "subtitles.csm.heart.rip",
+    "sounds": [
+      {
+        "name": "csm:heart/rip",
+        "stream": false
+      }
+    ]
+  },
+  "heart.beat": {
+    "subtitle": "subtitles.csm.heart.beat",
+    "sounds": [
+      {
+        "name": "csm:heart/beat",
+        "stream": false
+      }
+    ]
+  },
+  "blood.drink": {
+    "subtitle": "subtitles.csm.blood.drink",
+    "sounds": [
+      {
+        "name": "csm:blood/drink",
+        "stream": false
+      }
+    ]
+  },
+  "hybrid.transform": {
+    "subtitle": "subtitles.csm.hybrid.transform",
+    "sounds": [
+      {
+        "name": "csm:hybrid/transform",
+        "stream": false
+      }
+    ]
+  },
+  "hybrid.revert": {
+    "subtitle": "subtitles.csm.hybrid.revert",
+    "sounds": [
+      {
+        "name": "csm:hybrid/revert",
+        "stream": false
+      }
+    ]
+  },
+  "control.bang": {
+    "subtitle": "subtitles.csm.control.bang",
+    "sounds": [
+      {
+        "name": "csm:control/bang",
+        "stream": false
+      }
+    ]
+  },
+  "control.crush": {
+    "subtitle": "subtitles.csm.control.crush",
+    "sounds": [
+      {
+        "name": "csm:control/crush",
+        "stream": false
+      }
+    ]
+  },
+  "control.chain": {
+    "subtitle": "subtitles.csm.control.chain",
+    "sounds": [
+      {
+        "name": "csm:control/chain",
+        "stream": false
+      }
+    ]
+  },
+  "control.dominate": {
+    "subtitle": "subtitles.csm.control.dominate",
+    "sounds": [
+      {
+        "name": "csm:control/dominate",
+        "stream": false
+      }
+    ]
+  },
+  "devil.roar": {
+    "subtitle": "subtitles.csm.devil.roar",
+    "sounds": [
+      {
+        "name": "csm:devil/roar",
+        "stream": false
+      }
+    ]
+  },
+  "devil.growl": {
+    "subtitle": "subtitles.csm.devil.growl",
+    "sounds": [
+      {
+        "name": "csm:devil/growl",
+        "stream": false
+      }
+    ]
+  },
+  "devil.screech": {
+    "subtitle": "subtitles.csm.devil.screech",
+    "sounds": [
+      {
+        "name": "csm:devil/screech",
+        "stream": false
+      }
+    ]
+  },
+  "devil.death": {
+    "subtitle": "subtitles.csm.devil.death",
+    "sounds": [
+      {
+        "name": "csm:devil/death",
+        "stream": false
+      }
+    ]
+  },
+  "devil.flap": {
+    "subtitle": "subtitles.csm.devil.flap",
+    "sounds": [
+      {
+        "name": "csm:devil/flap",
+        "stream": false
+      }
+    ]
+  },
+  "devil.bite": {
+    "subtitle": "subtitles.csm.devil.bite",
+    "sounds": [
+      {
+        "name": "csm:devil/bite",
+        "stream": false
+      }
+    ]
+  },
+  "devil.slam": {
+    "subtitle": "subtitles.csm.devil.slam",
+    "sounds": [
+      {
+        "name": "csm:devil/slam",
+        "stream": false
+      }
+    ]
+  },
+  "devil.gust": {
+    "subtitle": "subtitles.csm.devil.gust",
+    "sounds": [
+      {
+        "name": "csm:devil/gust",
+        "stream": false
+      }
+    ]
+  }
+}

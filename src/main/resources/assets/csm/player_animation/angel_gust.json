@@ -1,0 +1,97 @@
+{
+ "version": 3,
+ "name": "angel_gust",
+ "author": "CSM Hybrids",
+ "description": "Chainsaw Man hybrid animation",
+ "emote": {
+  "beginTick": 0,
+  "endTick": 16,
+  "stopTick": 19,
+  "isLoop": false,
+  "returnTick": 0,
+  "nsfw": false,
+  "degrees": false,
+  "moves": [
+   {
+    "tick": 0,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   },
+   {
+    "tick": 4,
+    "easing": "EASEOUTQUAD",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.5,
+     "yaw": 0,
+     "roll": 0.5
+    },
+    "leftArm": {
+     "pitch": 0.5,
+     "yaw": 0,
+     "roll": -0.5
+    },
+    "torso": {
+     "pitch": 0.15,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 8,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.3,
+     "yaw": 0,
+     "roll": 0.3
+    },
+    "leftArm": {
+     "pitch": 0.3,
+     "yaw": 0,
+     "roll": -0.3
+    },
+    "torso": {
+     "pitch": -0.1,
+     "yaw": 0,
+     "roll": 0
+    }
+   },
+   {
+    "tick": 16,
+    "easing": "EASEINOUTSINE",
+    "turn": 0,
+    "rightArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": 0.08
+    },
+    "leftArm": {
+     "pitch": 0.0,
+     "yaw": 0.0,
+     "roll": -0.08
+    },
+    "torso": {
+     "pitch": -0.0,
+     "yaw": 0.0,
+     "roll": 0.0
+    }
+   }
+  ]
+ }
+}

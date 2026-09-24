@@ -1,0 +1,11 @@
+{
+  "type": "csm:devil_heart_loot",
+  "conditions": [],
+  "item": "csm:hell_devil_contract",
+  "tables": [
+    "minecraft:chests/nether_bridge",
+    "minecraft:chests/bastion_other",
+    "minecraft:chests/ruined_portal"
+  ],
+  "chance": 0.03
+}

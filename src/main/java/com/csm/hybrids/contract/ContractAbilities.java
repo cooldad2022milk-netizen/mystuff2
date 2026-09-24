@@ -43,6 +43,7 @@ public final class ContractAbilities {
             case SNAKE -> List.of(new SnakeSwallow(), new SnakeRelease(), new SnakeTail());
             case OCTOPUS -> List.of(new OctopusGrab(), new OctopusInk(), new TentacleLift());
             case DOLL -> List.of(new DollTouch(), new DollCommand());
+            case HELL -> List.of(new HellHand());
         };
     }
 
@@ -528,6 +529,55 @@ public final class ContractAbilities {
             AbilityUtil.sound(player, ModSounds.CONTROL_DOMINATE.get(), 0.8f, 1.5f);
             player.displayClientMessage(Component.translatable(t != null ? "msg.csm.doll_attack" : "msg.csm.doll_recall",
                     n).withStyle(ChatFormatting.RED), true);
+        }
+    }
+
+    // ================================================================== Hell Devil (Santa Claus)
+    /**
+     * The Hell Devil's giant six-fingered hand comes up out of the ground where you point, closes on everything there
+     * and drags it down to Hell. The price is three lives from around you, taken first: your dolls if you have any,
+     * then any other creature (never a person). With fewer than three about, Hell doesn't answer.
+     */
+    public static class HellHand extends ContractAbility {
+        public HellHand() {
+            super(Contract.HELL, "contract_hell");
+            timing(24, 3600);
+            anim("contract_hell", "");
+            reach(32);
+        }
+
+        @Override
+        public String checkUse(ServerPlayer player, HybridData data) {
+            String fail = super.checkUse(player, data);
+            if (fail != null) {
+                return fail;
+            }
+            return Contracts.hellOfferings(player).size() < Contracts.HELL_PRICE ? "msg.csm.hell_price" : null;
+        }
+
+        @Override
+        protected void perform(ServerPlayer player, HybridData data, AbilityRun run) {
+            ServerLevel level = player.serverLevel();
+            if (run.tick == 4) {
+                // the price first: a single finger comes for each of them
+                for (LivingEntity e : Contracts.hellOfferings(player)) {
+                    Vec3 c = e.getBoundingBox().getCenter();
+                    Fx.fireBurst(level, c, 16, 0.2);
+                    Fx.smoke(level, c, 10, 0.3);
+                    e.invulnerableTime = 0;
+                    e.hurt(level.damageSources().magic(), Float.MAX_VALUE);
+                    if (e.isAlive()) {
+                        e.kill();
+                    }
+                }
+                AbilityUtil.sound(player, ModSounds.DEVIL_ROAR.get(), 1.4f, 0.4f);
+            }
+            if (run.tick != 9) {
+                return;
+            }
+            LivingEntity t = target(run);
+            Vec3 at = t != null ? t.position() : Contracts.aimPoint(player, reach);
+            ContractSummonEntity.summon(level, Kind.HELL_HAND, player, t, at, flat(at.subtract(player.position())));
         }
     }
 

@@ -138,6 +138,9 @@ public final class HybridLogic {
         if (data.isTransformed() && data.type() == HybridType.FLAMETHROWER && player.isOnFire()) {
             player.clearFire();
         }
+        if (data.isTransformed() && data.type() == HybridType.SPIDER && player.horizontalCollision) {
+            player.resetFallDistance(); // the Spider Devil walks up walls (the client moves her up them)
+        }
         if (data.consumeDirty() || Math.abs(data.blood() - data.lastSyncedBlood) >= 0.5f) {
             sync(player, data);
         }

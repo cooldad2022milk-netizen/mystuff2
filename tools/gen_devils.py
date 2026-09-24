@@ -112,6 +112,12 @@ def contract_texture(c):
         put([(7, 8), (8, 8)], DARK)
         put([(5, 10), (6, 11), (7, 10), (7, 12), (8, 10), (8, 12), (9, 11), (10, 10)], PD)
         put([(4, 12), (5, 13)], (20, 16, 24, 255))
+    elif c["id"] == "hell":          # a burning six-fingered hand
+        F, G = (170, 44, 32, 255), (255, 150, 40, 255)
+        put([(x, y) for y in (10, 11, 12) for x in range(5, 11)], F)
+        put([(5, 7), (5, 8), (5, 9), (7, 6), (7, 7), (7, 8), (7, 9), (9, 7), (9, 8), (9, 9), (11, 8), (11, 9),
+             (11, 10), (4, 11), (4, 10)], F)
+        put([(6, 11), (8, 10), (9, 12)], G)
     elif c["id"] == "doll":          # a doll's pale face with black button eyes
         F = (244, 226, 214, 255)
         put([(x, y) for y in (8, 9, 10, 11) for x in range(6, 10)] + [(7, 7), (8, 7), (7, 12), (8, 12)], F)
@@ -1124,6 +1130,98 @@ def icons_contract_moves2():
     finish(img, "contract_doll_command")
 
 
+def icons_round3():
+    """Princi the Spider Devil, the Aging Devil and the Hell Devil contract."""
+    SP = ((150, 120, 150), (24, 16, 26))
+    AG = ((200, 190, 160), (50, 44, 36))
+    HE = ((230, 100, 40), (50, 8, 6))
+    CH = (40, 30, 36, 255)
+    BLADE = (220, 218, 214, 255)
+    FLESH = (186, 170, 146, 255)
+
+    def spider_leg(d, pts, w=6):
+        d.line(pts, fill=CH, width=w, joint="curve")
+        x0, y0 = pts[-2]
+        x1, y1 = pts[-1]
+        d.line([(x1, y1), (x1 + (x1 - x0) * 0.35, y1 + (y1 - y0) * 0.35)], fill=BLADE, width=max(2, w - 2))
+
+    img, d = icon_canvas(*SP)  # Leg Impale: two knife legs driving down
+    for x in (44, 84):
+        spider_leg(d, [(64, 44), (x, 20), (x + (8 if x > 64 else -8), 70), (x + (4 if x > 64 else -4), 96)], 8)
+    blood_drops(d, [(56, 108, 5), (76, 110, 5)])
+    finish(img, "spider_impale")
+    img, d = icon_canvas(*SP)  # Scythe Legs: eight legs in a spinning ring
+    d.ellipse([48, 48, 80, 80], fill=CH)
+    for k in range(8):
+        a = math.radians(k * 45)
+        mid = (64 + math.cos(a) * 30, 64 + math.sin(a) * 30)
+        tip = (64 + math.cos(a + 0.5) * 50, 64 + math.sin(a + 0.5) * 50)
+        spider_leg(d, [(64, 64), mid, tip], 5)
+    d.arc([10, 10, 118, 118], 0, 300, fill=(255, 255, 255, 180), width=3)
+    finish(img, "spider_scythe")
+    img, d = icon_canvas(*SP)  # Burrow: legs bursting out of the ground
+    d.rectangle([12, 84, 116, 92], fill=(80, 60, 44, 255))
+    for x in (30, 48, 80, 98):
+        spider_leg(d, [(64, 110), (x, 70), (x + (6 if x > 64 else -6), 40)], 6)
+    for k in range(5):
+        d.ellipse([20 + k * 20, 76, 30 + k * 20, 86], fill=(110, 84, 60, 255))
+    finish(img, "spider_burrow")
+    img, d = icon_canvas(*SP)  # Unzip: a zipper down a face, pulled open
+    d.ellipse([30, 16, 98, 108], fill=(240, 222, 208, 255), outline=(40, 30, 34, 255), width=3)
+    d.pieslice([26, 8, 102, 70], 180, 360, fill=(22, 20, 26, 255))
+    d.polygon([(64, 30), (54, 100), (74, 100)], fill=(30, 10, 14, 255))
+    for k in range(9):
+        y = 32 + k * 7
+        d.rectangle([60 - k * 0.6, y, 63 - k * 0.6, y + 3], fill=(180, 176, 168, 255))
+        d.rectangle([65 + k * 0.6, y + 3, 68 + k * 0.6, y + 6], fill=(180, 176, 168, 255))
+    d.rectangle([58, 96, 70, 108], fill=(150, 146, 140, 255))
+    for sx in (-1, 1):
+        d.ellipse([64 + sx * 18 - 5, 50, 64 + sx * 18 + 5, 58], fill=(30, 24, 26, 255))
+    finish(img, "spider_unzip")
+
+    img, d = icon_canvas(*AG)  # Age: a hand withering into dust
+    d.rounded_rectangle([40, 50, 76, 96], 10, fill=FLESH, outline=(80, 66, 54, 255), width=2)
+    for k in range(4):
+        d.rounded_rectangle([40 + k * 9, 18 + k * 3, 47 + k * 9, 54], 3, fill=FLESH, outline=(80, 66, 54, 255), width=2)
+    for k in range(12):
+        x, y = 84 + (k % 4) * 8, 40 + (k // 4) * 14
+        d.ellipse([x, y, x + 4, y + 4], fill=(170, 156, 130, 220))
+    for y in (62, 72, 82):
+        d.line([(46, y), (70, y + 2)], fill=(120, 100, 86, 255), width=2)
+    finish(img, "aging_wither")
+    img, d = icon_canvas(*AG)  # The Punch: a gaunt fist and an impact
+    crack_star(d, 86, 60, 30)
+    d.rounded_rectangle([30, 44, 70, 80], 10, fill=FLESH, outline=(80, 66, 54, 255), width=3)
+    d.line([(10, 70), (32, 64)], fill=FLESH, width=10)
+    for k in range(3):
+        d.line([(40 + k * 10, 44), (40 + k * 10, 56)], fill=(90, 74, 62, 255), width=2)
+    finish(img, "aging_punch")
+    img, d = icon_canvas(*AG)  # Dust to Dust: an arrow crumbling in the air
+    d.line([(16, 64), (60, 64)], fill=(100, 80, 60, 255), width=5)
+    poly(d, [(60, 56), (74, 64), (60, 72)], (190, 190, 196, 255))
+    for k in range(18):
+        x, y = 70 + (k * 7) % 42, 50 + (k * 11) % 30
+        d.ellipse([x, y, x + 4, y + 4], fill=(180, 170, 150, 200))
+    finish(img, "aging_dust")
+    img, d = icon_canvas(*AG)  # The Forest by the Lake
+    d.ellipse([24, 76, 104, 100], fill=(70, 120, 150, 255))
+    for x in (28, 50, 78, 98):
+        d.polygon([(x, 30), (x - 12, 76), (x + 12, 76)], fill=(50, 100, 60, 255))
+    finish(img, "aging_realm")
+
+    img, d = icon_canvas(*HE)  # Hell: the six-fingered hand closing over a figure
+    d.ellipse([20, 90, 108, 116], fill=(30, 6, 4, 255))
+    d.ellipse([56, 60, 72, 76], fill=(200, 160, 140, 255))
+    d.line([(64, 76), (64, 98)], fill=(200, 160, 140, 255), width=7)
+    for k in range(6):
+        a = math.radians(-160 + k * 28)
+        base = (64 + math.cos(a) * 34, 104)
+        tip = (64 + math.cos(a) * 12, 104 - 58 - math.sin(a + 1.6) * 8)
+        d.line([base, (base[0] + (tip[0] - base[0]) * 0.3, 50), tip], fill=(150, 36, 26, 255), width=10, joint="curve")
+        d.line([base, (base[0] + (tip[0] - base[0]) * 0.3, 50)], fill=(255, 140, 40, 255), width=2)
+    finish(img, "contract_hell")
+
+
 # ----------------------------------------------------------------------------- particles
 def particles():
     base = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "main", "resources",
@@ -1150,5 +1248,6 @@ if __name__ == "__main__":
     icons_humanoid()
     icons_hero()
     icons_contract_moves2()
+    icons_round3()
     particles()
     print("devil assets generated")

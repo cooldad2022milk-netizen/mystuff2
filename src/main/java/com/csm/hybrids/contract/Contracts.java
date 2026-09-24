@@ -82,6 +82,11 @@ public final class Contracts {
                 player.causeFoodExhaustion(12f);
                 AbilityUtil.sound(player, ModSounds.SHARK_DIVE.get(), 0.9f, 0.6f);
             }
+            case HELL -> {
+                Fx.fireBurst(level, player.position().add(0, 0.2, 0), 30, 0.3);
+                player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.DARKNESS, 80, 0, false, false)));
+                AbilityUtil.sound(player, ModSounds.DEVIL_ROAR.get(), 0.6f, 0.4f);
+            }
             case DOLL -> {
                 // something in you goes stiff for a moment
                 player.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 3, false, false)));
@@ -275,6 +280,31 @@ public final class Contracts {
         if (doll.isAlive()) {
             doll.kill();
         }
+    }
+
+    // ------------------------------------------------------------------ the Hell Devil
+    /** Lives the Hell Devil takes for sending things to Hell. */
+    public static final int HELL_PRICE = 3;
+
+    /**
+     * The three lives the Hell Devil would take right now: the contractor's dolls nearest first, then other creatures
+     * nearby that aren't hostile (never a player, never a great devil). Fewer than {@link #HELL_PRICE}: it won't come.
+     */
+    public static java.util.List<LivingEntity> hellOfferings(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        java.util.List<LivingEntity> near = level.getEntitiesOfClass(LivingEntity.class,
+                player.getBoundingBox().inflate(16), e -> e != player && e.isAlive() && !(e instanceof net.minecraft.world.entity.player.Player)
+                        && !(e instanceof DevilEntity d && d.spec().boss)
+                        && !e.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES)
+                        && (isDollOf(e, player) || !(e instanceof net.minecraft.world.entity.monster.Enemy)));
+        near.sort(java.util.Comparator.<LivingEntity>comparingInt(e -> isDollOf(e, player) ? 0 : 1)
+                .thenComparingDouble(e -> e.distanceToSqr(player)));
+        return near.subList(0, Math.min(HELL_PRICE, near.size()));
+    }
+
+    private static boolean isDollOf(LivingEntity e, LivingEntity master) {
+        CompoundTag t = e.getPersistentData();
+        return t.getBoolean(DOLL) && t.hasUUID(DevilEntity.THRALL_TAG) && t.getUUID(DevilEntity.THRALL_TAG).equals(master.getUUID());
     }
 
     // ------------------------------------------------------------------ aiming

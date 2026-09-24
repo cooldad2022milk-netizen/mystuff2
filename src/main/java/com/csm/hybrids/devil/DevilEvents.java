@@ -87,6 +87,15 @@ public final class DevilEvents {
         }
         UUID masterId = tag.getUUID(DevilEntity.THRALL_TAG);
         Entity master = level.getEntity(masterId);
+        long summonedUntil = tag.getLong(com.csm.hybrids.ability.devil.SpiderMoves.SUMMONED_UNTIL);
+        if (summonedUntil > 0 && (level.getGameTime() > summonedUntil || !(master instanceof LivingEntity sm)
+                || !sm.isAlive())) {
+            // called up for a while (Makima out of Princi's zipper): gone again, back where it came from
+            Fx.smoke(level, e.getBoundingBox().getCenter(), 20, 0.6);
+            Fx.stars(level, e.getEyePosition(), 8, 0.3);
+            e.discard();
+            return;
+        }
         boolean doll = tag.getBoolean(com.csm.hybrids.contract.Contracts.DOLL);
         if (doll && (!(master instanceof LivingEntity dm) || !dm.isAlive()
                 || dm.distanceToSqr(e) > com.csm.hybrids.contract.Contracts.DOLL_RANGE
@@ -354,6 +363,21 @@ public final class DevilEvents {
         Vec3 c = e.getBoundingBox().getCenter();
         AbilityUtil.blood(level, c, 50, 0.4);
         Fx.impact(level, c, 1.2);
+    }
+
+    /** Something only called up for a while leaves nothing behind when it dies. */
+    @SubscribeEvent
+    public static void summonedDrops(net.minecraftforge.event.entity.living.LivingDropsEvent event) {
+        if (event.getEntity().getPersistentData().getLong(com.csm.hybrids.ability.devil.SpiderMoves.SUMMONED_UNTIL) > 0) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void summonedXp(net.minecraftforge.event.entity.living.LivingExperienceDropEvent event) {
+        if (event.getEntity().getPersistentData().getLong(com.csm.hybrids.ability.devil.SpiderMoves.SUMMONED_UNTIL) > 0) {
+            event.setCanceled(true);
+        }
     }
 
     /** The Doll Devil's touch spreads: whoever a doll hurts becomes a doll of the same contractor. */

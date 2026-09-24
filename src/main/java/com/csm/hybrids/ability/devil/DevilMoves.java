@@ -64,6 +64,8 @@ public final class DevilMoves {
             case FALLING -> PartTwoMoves.falling();
             case JUSTICE -> PartTwoMoves.justice();
             case CHAINSAW_DEVIL -> HeroMoves.chainsawDevil();
+            case SPIDER -> SpiderMoves.all();
+            case AGING -> AgingMoves.all();
             default -> List.of();
         };
     }

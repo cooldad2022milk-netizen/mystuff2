@@ -21,6 +21,7 @@
     "csm:ghost_devil_contract",
     "csm:snake_devil_contract",
     "csm:octopus_devil_contract",
+    "csm:hell_devil_contract",
     "csm:doll_devil_contract"
   ]
 }

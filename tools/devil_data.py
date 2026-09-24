@@ -233,6 +233,34 @@ DEVILS = [
                                            "slowed; devils break off and back away."),
          },
          lore="The Hero of Hell. What it eats is erased from existence."),
+    dict(id="spider", entity="spider_devil", name="Spider Devil", form="Spider Devil", color=(58, 42, 54), boss=True,
+         essence="Spider Devil's Essence", tooltip="Eight thin legs twitch inside it. There is a tiny zipper on it.",
+         became="You are the Spider Devil now, one of Makima's. Press V for the ability wheel, G to let your spider "
+                "half out: in that form you walk up walls (sneak to cling).",
+         moves={
+             "spider_impale": ("Leg Impale", "Rear up and drive your two front legs, sharp as knives, down into your "
+                                             "prey."),
+             "spider_scythe": ("Scythe Legs", "All eight legs out: spin and cut everything around you."),
+             "spider_burrow": ("Burrow", "Sink into the ground, run under it to your prey and burst up beneath it, "
+                                         "legs first."),
+             "spider_unzip": ("Unzip", "Pull the zipper in your face down: Makima steps out of you and fights on your "
+                                       "side for 30 seconds, then she's gone again. Costs 40 blood."),
+         },
+         lore="Princi can unzip herself to let Makima through - even into Hell."),
+    dict(id="aging", entity="aging_devil", name="Aging Devil", form="Aging Devil", color=(184, 168, 144), boss=True,
+         essence="Aging Devil's Essence", tooltip="It is older than anything. Holding it, so are you.",
+         became="You are the Aging Devil now, a Primal Devil. Press V for the ability wheel, G to take your true "
+                "form.",
+         moves={
+             "aging_wither": ("Age", "Look at your prey and it grows old: it withers, slows, weakens and can "
+                                     "barely dig."),
+             "aging_punch": ("The Punch", "One punch. It put the Chainsaw Devil down with a single one."),
+             "aging_dust": ("Dust to Dust", "Everything around you ages at once: arrows, bullets and whatever lies on "
+                                            "the ground crumble to dust in the air, and every living thing withers."),
+             "aging_realm": ("The Forest by the Lake", "Take your prey away to your own realm and let it go "
+                                                       "somewhere else entirely: far off, dazed and older."),
+         },
+         lore="Its face is sliced in half; its second face is only a mouth."),
 ]
 
 # Contracts (contract.Contract): what a hunter gets from the Fox, Curse, Future and Ghost devils. The Fox Devil only
@@ -337,6 +365,17 @@ CONTRACTS = [
                 "contract_doll_command": ("Doll Command", "Every doll you have turns on what you point at. Point at "
                                                           "nothing (or at a doll) and they come back to you.",
                                           "Price: unknown")}),
+    dict(id="hell", item="hell_devil_contract", name="Hell Devil",
+         item_name="Hell Devil Contract", color=(200, 58, 30),
+         tooltip="The paper is warm, and something on the other side of it is burning.",
+         price="Price: three lives, every time (Santa Claus paid with three children and one of her dolls).",
+         signed="The Hell Devil hears you. When you call it, it will want three lives from around you first.",
+         moves={"contract_hell": ("Hell", "The Hell Devil's giant six-fingered hand, its flesh burning, comes up out of "
+                                          "the ground where you point, closes on everything there and drags it down "
+                                          "to Hell. What isn't strong enough never comes back. It takes three lives "
+                                          "from around you first: your dolls, then any creature that isn't hostile "
+                                          "(never a person). Without three, it doesn't come.",
+                                  "Price: three lives")}),
 ]
 
 # chests a contract turns up in (the devil hunters who held it didn't all make it)
@@ -356,6 +395,9 @@ CONTRACT_LOOT = {
     # Yoshida's octopus: the sea
     "octopus_devil_contract": (["minecraft:chests/shipwreck_treasure", "minecraft:chests/buried_treasure",
                                 "minecraft:chests/underwater_ruin_big"], 0.04),
+    # the Hell Devil: the Nether
+    "hell_devil_contract": (["minecraft:chests/nether_bridge", "minecraft:chests/bastion_other",
+                             "minecraft:chests/ruined_portal"], 0.03),
     # Santa Claus: snow, and old houses full of dolls
     "doll_devil_contract": (["minecraft:chests/igloo_chest", "minecraft:chests/woodland_mansion",
                              "minecraft:chests/stronghold_library"], 0.03),
@@ -439,6 +481,9 @@ def lang():
         "msg.csm.doll_made": "The %s is your doll now (%s dolls).",
         "msg.csm.doll_attack": "%s dolls turn on it.",
         "msg.csm.doll_recall": "%s dolls come back to you.",
+        "msg.csm.hell_price": "Hell wants three lives from around you, and there aren't three here.",
+        "msg.csm.unzipped": "The zipper comes down. Makima steps out.",
+        "msg.csm.aging_realm": "A forest by a lake... then you are somewhere else entirely, and very tired.",
         "commands.csm.contract_unknown": "Unknown contract: %s",
         "commands.csm.contract_add": "%s made a contract with the %s",
         "commands.csm.contract_remove": "%s's contract with the %s is broken",

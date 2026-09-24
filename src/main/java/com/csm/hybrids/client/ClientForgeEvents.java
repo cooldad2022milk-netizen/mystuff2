@@ -46,6 +46,13 @@ public final class ClientForgeEvents {
             return;
         }
         HybridData data = HybridCapability.get(mc.player);
+        if (data != null && data.type() == HybridType.SPIDER && data.isTransformed() && mc.player.horizontalCollision
+                && !mc.player.getAbilities().flying) {
+            // the Spider Devil walks straight up walls (sneak to cling where you are)
+            Vec3 v = mc.player.getDeltaMovement();
+            mc.player.setDeltaMovement(v.x, mc.player.isShiftKeyDown() ? Math.max(v.y, 0.0) : 0.22, v.z);
+            mc.player.resetFallDistance();
+        }
         while (Keybinds.WHEEL.consumeClick()) {
             if (data != null && data.hasAbilities()) {
                 if (mc.screen == null) {

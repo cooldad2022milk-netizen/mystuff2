@@ -50,6 +50,8 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  *       its prey whole, or spits out something it swallowed earlier. {@link Kind#SNAKE_TAIL} - its tail.</li>
  *   <li>{@link Kind#OCTOPUS_GRAB} - the Octopus Devil's tentacles out of ink clouds; {@link Kind#OCTOPUS_LIFT} - one
  *       tentacle under the contractor's feet, flinging them.</li>
+ *   <li>{@link Kind#HELL_HAND} - the Hell Devil's six-fingered hand of burning flesh, dragging everything it closes
+ *       on down to Hell.</li>
  * </ul>
  * The server runs what the part does (its bite, grip, slam) here, so it keeps working after the contractor's own move
  * has finished. Positions are set once when summoned (the ghost's grip rises as it lifts its prey).
@@ -71,7 +73,8 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
         SNAKE_RELEASE("snake_head", "release", 34, false),
         SNAKE_TAIL("snake_tail", "tail", 26, false),
         OCTOPUS_GRAB("octopus", "grab", 52, false),
-        OCTOPUS_LIFT("octopus", "lift", 22, false);
+        OCTOPUS_LIFT("octopus", "lift", 22, false),
+        HELL_HAND("hell_hand", "drag", 58, false);
 
         /** geo/entity/contract/&lt;model&gt;.geo.json (and the texture and animation file of the same name). */
         public final String model;
@@ -185,6 +188,7 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
             case SNAKE_RELEASE -> snakeRelease(level, owner);
             case SNAKE_TAIL -> snakeTail(level, owner);
             case OCTOPUS_GRAB -> octopusGrab(level, owner);
+            case HELL_HAND -> hellHand(level, owner);
             case OCTOPUS_LIFT -> {
                 if (tickCount % 4 == 0) {
                     Fx.ink(level, anchor.add(0, 0.2, 0), 4, 0.6);
@@ -480,6 +484,67 @@ public class ContractSummonEntity extends Entity implements GeoEntity {
         if (tickCount == 40) {
             AbilityUtil.soundAt(level, anchor, ModSounds.DEVIL_SLAM.get(), 1.8f, 0.8f);
             Fx.shockwave(level, anchor, 3.8, Fx.STEEL_RING);
+        }
+    }
+
+    // ================================================================== Hell Devil
+    /**
+     * The hand comes up out of a burning crack in the ground and closes (tick 16) on everything there, pins it and
+     * drags it down; on tick 46 whatever isn't strong enough is gone to Hell, the rest are left burnt.
+     */
+    private void hellHand(ServerLevel level, LivingEntity owner) {
+        if (tickCount == 2) {
+            AbilityUtil.soundAt(level, anchor, ModSounds.DEVIL_ROAR.get(), 2.4f, 0.35f);
+            Fx.clods(level, anchor, 40, 0.5);
+            Fx.shockwave(level, anchor, 5.5, Fx.FIRE_RING);
+        }
+        if (tickCount < 50 && tickCount % 3 == 0) {
+            Fx.embers(level, anchor.add(0, 0.5, 0), 6, 2.0);
+            Fx.fireJet(level, anchor.add(0, 0.2, 0), new Vec3(0, 1, 0), 3, 0.25, 1.8);
+        }
+        if (tickCount == 16) {
+            AbilityUtil.soundAt(level, anchor, ModSounds.CONTROL_CRUSH.get(), 2.0f, 0.4f);
+            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,
+                    new net.minecraft.world.phys.AABB(anchor, anchor).inflate(5.0, 4.0, 5.0),
+                    e -> AbilityUtil.canHit(owner, e))) {
+                held.add(e);
+            }
+        }
+        if (tickCount < 16 || tickCount > 46) {
+            return;
+        }
+        held.removeIf(e -> !e.isAlive());
+        for (LivingEntity e : held) {
+            // pinned where it is, pulled down into the ground
+            e.setDeltaMovement(e.getDeltaMovement().multiply(0.1, 0, 0.1).add(0, -0.4, 0));
+            e.hurtMarked = true;
+            e.fallDistance = 0;
+            e.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 6)));
+            if (tickCount % 6 == 4) {
+                AbilityUtil.hurtIgnoringIFrames(owner, e, 5f);
+                e.setSecondsOnFire(3);
+            }
+            if (tickCount == 46) {
+                Vec3 c = e.getBoundingBox().getCenter();
+                boolean gone = !(e instanceof Player) && e.getMaxHealth() <= 120f && !(e instanceof DevilEntity d && d.spec().boss)
+                        && !e.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES);
+                Fx.fireBurst(level, c, 30, 0.35);
+                Fx.smoke(level, c, 16, 0.5);
+                if (gone) {
+                    e.invulnerableTime = 0;
+                    e.hurt(AbilityUtil.source(owner), Float.MAX_VALUE);
+                    if (e.isAlive()) {
+                        e.kill();
+                    }
+                } else {
+                    AbilityUtil.hurtIgnoringIFrames(owner, e, 30f);
+                    e.addEffect(AbilityUtil.quiet(new MobEffectInstance(MobEffects.DARKNESS, 100, 0)));
+                }
+            }
+        }
+        if (tickCount == 46) {
+            AbilityUtil.soundAt(level, anchor, ModSounds.DEVIL_SLAM.get(), 2.0f, 0.5f);
+            Fx.shockwave(level, anchor, 6.0, Fx.FIRE_RING);
         }
     }
 

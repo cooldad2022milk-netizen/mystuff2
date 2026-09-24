@@ -65,6 +65,12 @@ public final class DevilSpecs {
         // takeover form, and a boss)
         put(HybridType.CHAINSAW_DEVIL).stats(760, 16, 0.34, 14).size(1.4f, 3.6f).fight(0.5f, 3, 400)
                 .boss(BossBarColor.RED).egg(0x1A1A1E, 0xE0602A).form(2.8f, 40, 12, 0.25, 12).fpHidden("head", "scarf");
+
+        // ---------------------------------------------------------------- Makima's Spider Devil, and a Primal Devil
+        put(HybridType.SPIDER).stats(280, 12, 0.36, 8).size(2.4f, 2.8f).fight(0.4f, 3, 140).boss(BossBarColor.PURPLE)
+                .egg(0x1A1418, 0xF0E8E0).form(2.2f, 18, 7, 0.25, 8);
+        put(HybridType.AGING).stats(1150, 20, 0.26, 16).size(1.6f, 5.4f).fight(0.55f, 4, 600).boss(BossBarColor.WHITE)
+                .egg(0xB8A890, 0x4A3028).form(3.2f, 50, 12, 0.05, 14);
     }
 
     private static DevilSpec put(HybridType type) {

@@ -84,7 +84,11 @@ public enum HybridType {
      * The Chainsaw Devil's true form - Pochita as the Hero of Hell. It is fought as a mob, but no player eats its
      * essence: it only ever comes out of a Chainsaw hybrid, taking Denji over for a while (see {@link #host()}).
      */
-    CHAINSAW_DEVIL("chainsaw_devil", 0x2A2A30, false);
+    CHAINSAW_DEVIL("chainsaw_devil", 0x2A2A30, false),
+    /** Princi, the Spider Devil: a woman from the waist up with a zipper down her face, eight knife-legs below. */
+    SPIDER("spider", 0x3A2A36, false),
+    /** The Aging Devil, a Primal Devil from part 2. */
+    AGING("aging", 0xB8A890, false);
 
     public final String id;
     public final int color;

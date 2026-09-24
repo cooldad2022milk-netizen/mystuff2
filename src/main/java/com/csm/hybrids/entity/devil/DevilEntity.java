@@ -241,6 +241,8 @@ public class DevilEntity extends Monster implements GeoEntity {
         tickRun();
         if (bossEvent != null) {
             bossEvent.setProgress(getHealth() / getMaxHealth());
+            // one only called up for a while (Makima out of Princi's zipper) is on your side: no boss bar
+            bossEvent.setVisible(getPersistentData().getLong(com.csm.hybrids.ability.devil.SpiderMoves.SUMMONED_UNTIL) == 0);
         }
     }
 

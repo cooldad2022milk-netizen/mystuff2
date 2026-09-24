@@ -241,7 +241,7 @@ The barrel of an M1911 juts out from between your eyes, its hammer poking out of
 | Drink Blood | Heal by drinking |
 
 ## Devil contracts
-Public Safety's hunters don't become devils: they make **contracts** with them, pay the devil's price, and borrow a part of it. Contract papers turn up in structure chests. The contract devils also leave one behind when you beat them (the Fox gives its paw far more often than its head). The Snake, Octopus and Doll devils never turn up in person: their contracts are only found in chests. **Hold Use** on one to bite your thumb and seal it in blood. Its moves join your ability wheel (**V**, use with **R**), so a plain human gets a wheel too. You can hold several contracts at once, and on top of being a hybrid.
+Public Safety's hunters don't become devils: they make **contracts** with them, pay the devil's price, and borrow a part of it. Contract papers turn up in structure chests. The contract devils also leave one behind when you beat them (the Fox gives its paw far more often than its head). The Snake, Octopus, Doll and Hell devils never turn up in person: their contracts are only found in chests. **Hold Use** on one to bite your thumb and seal it in blood. Its moves join your ability wheel (**V**, use with **R**), so a plain human gets a wheel too. You can hold several contracts at once, and on top of being a hybrid.
 
 | Contract | Found in (per chest) | Price | What you get |
 |---|---|---|---|
@@ -252,6 +252,7 @@ Public Safety's hunters don't become devils: they make **contracts** with them, 
 | **Ghost Devil** | dungeons, mineshafts, ancient cities (3%) | your right eye | **Ghost Hand**: its invisible right arm closes round a throat and lifts. **Ghost Fling**: it snatches something and hurls it aside. Only you see the arm clearly; others see a shimmer. |
 | **Snake Devil** (Sawatari) | jungle temples, desert pyramids, ancient cities, stronghold libraries (3%) | a fingernail per command (release costs a nosebleed too) | An enormous green snake with red eyes set in black, and a mouth lined with interlocking human hands instead of teeth. **Snake: Swallow**: it rears up out of the ground behind your target and strikes down, swallowing it whole if it's weak enough (it holds up to 3) or biting it hard. **Snake: Release**: it spits out the last thing it swallowed, healed, to fight for you for two minutes. **Snake: Tail**: its tail bursts out of the ground beside you and swats everything in front of you. |
 | **Octopus Devil** (Yoshida) | shipwreck and buried treasure, big ocean ruins (4%) | unknown; you come away starving (hunger) | Cross two fingers: **Octopus**: tentacles covered in suckers come up out of clouds of ink round your target, coil round it and up to three things beside it, hoist them, squeeze and smash them down. **Ink**: a cloud of ink blinds everything round you and they lose track of you while you slip away. **Tentacle Lift**: a tentacle comes up under your feet and flings you where you're looking. |
+| **Hell Devil** (Santa Claus) | nether fortresses, bastions, ruined portals (3%) | three lives, taken first: your dolls, then any creature near you that isn't hostile (never a person). With fewer than three around, it won't come. | **Hell**: the Hell Devil's giant six-fingered hand of burning flesh comes up out of the ground where you point. It closes over everything within about 5 blocks, pins it and drags it down: whatever isn't strong enough goes to Hell for good, and the rest are left burnt. |
 | **Doll Devil** (Santa Claus) | igloos, woodland mansions, stronghold libraries (3%) | unknown | **Doll Touch**: whoever you touch becomes your doll. It obeys you, one arm is a blade now, and it can't be turned back. Anyone a doll hurts becomes a doll too. It does nothing to devils, hybrids or fiends. You can keep up to 12, and a doll you leave more than 48 blocks behind falls over, lifeless. **Doll Command**: every doll turns on what you point at, or comes back to you. |
 
 ## The full devils
@@ -278,6 +279,8 @@ The devils are mobs you fight. They don't spawn on their own: call them up with 
 | Curse Devil | a towering nailed skeleton with two horned heads (one human, one with three eye slits and tusks) |
 | Future Devil | a tree rooted in the floor, rising into a horned body with six eyes on its head and one in a hole in its chest |
 | Ghost Devil | a flower-covered pillar that walks on arms, with a withered face, long dark hair, eyes and mouth sewn shut |
+| Spider Devil (Princi) | from the waist up a woman with waist-length black hair, a zipper down the middle of her face, a white shirt and bowtie; below, a spider on eight legs that end in knife-sharp blades. As her: **Leg Impale**, **Scythe Legs**, **Burrow** (under the ground to come up beneath your prey) and **Unzip** (Makima steps out of your zipper and fights for you for 30 seconds). You walk up walls in her form (sneak to cling). |
+| Aging Devil | a Primal Devil: very tall, thin and gaunt, a withered mass of flesh full of holes, its face sliced in half and splayed apart, a second face on its chest that is only a mouth, feet like high heels. As it: **Age** (wither your prey), **The Punch**, **Dust to Dust** (arrows, bullets and dropped items crumble around you) and **The Forest by the Lake** (your prey is taken away and set down far off). |
 | Chainsaw Devil (Hero of Hell) | Pochita's true form: black armour and spikes, a horned chainsaw head with a grin and no eyes, four arm saws, guts for a scarf. Beaten, it leaves the Chainsaw Devil's heart instead of an essence: only a Chainsaw hybrid becomes it (Hero of Hell). |
 
 ## Effects
@@ -294,7 +297,7 @@ Every particle is the mod's own, and no vanilla particles are used:
 
 ## Commands (op)
 - `/csm hybrid <player> <none|any hybrid, fiend or full devil id>` (not the contract devils)
-- `/csm contract <player> <add|remove> <fox_head|fox_paw|curse|future|ghost|snake|octopus|doll>` and `/csm contract <player> list`
+- `/csm contract <player> <add|remove> <fox_head|fox_paw|curse|future|ghost|snake|octopus|doll|hell>` and `/csm contract <player> list`
 - `/csm blood <player> <amount>`
 - `/csm transform <player>`
 
@@ -315,11 +318,11 @@ Everything visual is generated by the Python scripts in `tools/` (numpy + Pillow
 | Script | Output |
 |---|---|
 | `tools/models/chainsaw.py`, `crossbow.py`, `flamethrower.py`, `whip.py`, `bomb.py`, `spear.py`, `katana.py`, `longsword.py`, `blood.py`, `shark.py`, `violence.py`, `cosmos.py`, `gun.py` | High-detail GeckoLib models (roughly 600-1300 cubes each), texture atlases, glow masks, GeckoLib animations, and software-rendered previews; `bomb.py` and `spear.py` also build the thrown bomb-head and spear entities |
-| `tools/models/control.py`, `angel.py`, `war.py`, `famine.py`, `bat.py`, `leech.py`, `zombie.py`, `tomato.py`, `sea_cucumber.py`, `eternity.py`, `darkness.py`, `gun_devil.py`, `typhoon.py`, `falling.py`, `justice.py`, `chainsaw_devil.py` | The full devils (entity/devil/*); the humanoid ones also build the parts a player wears in their form |
+| `tools/models/control.py`, `angel.py`, `war.py`, `famine.py`, `bat.py`, `leech.py`, `zombie.py`, `tomato.py`, `sea_cucumber.py`, `eternity.py`, `darkness.py`, `gun_devil.py`, `typhoon.py`, `falling.py`, `justice.py`, `chainsaw_devil.py`, `spider.py`, `aging.py` | The full devils (entity/devil/*); the humanoid ones also build the parts a player wears in their form |
 | `tools/models/fox.py`, `curse.py`, `future.py`, `ghost.py` | The contract devils as mobs, plus what their contracts summon (entity/contract/*: the fox's head for Kon, its paw, the Curse, the ghost's arm) |
-| `tools/models/snake.py`, `octopus.py` | What the Snake and Octopus contracts summon (entity/contract/snake_head, snake_tail, octopus) |
+| `tools/models/snake.py`, `octopus.py`, `hell.py` | What the Snake, Octopus and Hell contracts summon (entity/contract/snake_head, snake_tail, octopus, hell_hand) |
 | `tools/models/poses.py` | IK for the trigger poses, so the hand really meets the cord handle, the arrow in the eye, the grenade pin and the spear in the nape |
-| `tools/player_anims.py` | The 134 PlayerAnimator body animations |
+| `tools/player_anims.py` | The 135 PlayerAnimator body animations |
 | `tools/gen_assets.py` | Ability icons, item sprites, the bolt model |
 | `tools/gen_particles.py` | All custom particle sprites |
 | `tools/gen_sounds.py` | Synthesized sound effects |

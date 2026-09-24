@@ -1242,6 +1242,19 @@ def contracts():
     dc.k(12, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3)
     dc.save()
 
+    # Santa Claus calling the Hell Devil: palms pressed together, then both hands dragged down as the hand drags
+    # its prey under (the price is taken on tick 4, the hand comes on tick 9)
+    hl = A("contract_hell", 24)
+    PRAY_R, PRAY_L = (-1.25, 0.62, 0.0), (-1.25, -0.62, 0.0)
+    hl.k(0, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3, torso=Z3)
+    hl.k(3, "OUTQUAD", rightArm=PRAY_R, leftArm=PRAY_L, head=(0.25, 0, 0), torso=(0.05, 0, 0))
+    hl.k(7, rightArm=PRAY_R, leftArm=PRAY_L, head=(0.3, 0, 0), torso=(0.05, 0, 0))
+    hl.k(10, "OUTBACK", rightArm=(-0.9, -0.2, 0.2), leftArm=(-0.9, 0.2, -0.2), head=(0.2, 0, 0), torso=(0.12, 0, 0))
+    hl.k(18, "INOUTSINE", rightArm=(-0.35, -0.1, 0.25), leftArm=(-0.35, 0.1, -0.25), head=(0.35, 0, 0),
+         torso=(0.15, 0, 0))
+    hl.k(24, rightArm=NEUTRAL_R, leftArm=NEUTRAL_L, head=Z3, torso=Z3)
+    hl.save()
+
     # signing: bite the thumb, then press it to the paper held in the other hand
     MOUTH_R = (-2.35, -0.5, 0.2)
     c = A("contract_sign", 40)

@@ -27,6 +27,9 @@ import java.util.Locale;
  *       clouds of ink to seize, lift and smash; or it sprays ink.</li>
  *   <li>DOLL - Santa Claus's: whoever you touch becomes your doll, and every doll that touches someone makes another.
  *       It does nothing to devils, hybrids or fiends, and a doll you leave behind falls over, lifeless.</li>
+ *   <li>HELL - Santa Claus's other contract: the Hell Devil's six-fingered hand comes up and drags everything in an
+ *       area down to Hell. It takes three lives from around the contractor for it (she gave three children and one
+ *       of her dolls).</li>
  * </ul>
  * The mobs of the Fox, Curse, Future and Ghost devils still exist, but nobody becomes them any more: their loot is a
  * contract, not an essence. The Snake, Octopus and Doll devils are never met: only their contracts turn up.
@@ -39,7 +42,8 @@ public enum Contract {
     GHOST("ghost", HybridType.GHOST, 0xE8E0F0),
     SNAKE("snake", HybridType.NONE, 0x5A9A3A),
     OCTOPUS("octopus", HybridType.NONE, 0x9A4A7A),
-    DOLL("doll", HybridType.NONE, 0xE8C8B8);
+    DOLL("doll", HybridType.NONE, 0xE8C8B8),
+    HELL("hell", HybridType.NONE, 0xC83A1E);
 
     public final String id;
     /** The devil the contract is with (NONE for the devils that only exist as contracts in this world). */
